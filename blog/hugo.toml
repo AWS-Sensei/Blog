@@ -1,0 +1,19 @@
+baseURL = 'https://example.org/'
+languageCode = 'en-us'
+title = 'MARCELBALTZER'
+theme = "coder"
+languagecode = "en"
+defaultcontentlanguage = "en"
+
+#[markup.highlight]
+#style = "github-dark"
+
+[params]
+  author = "Marcel Baltzer"
+  info = ["Tech Lead Developer", "AWS Sensei"]
+  description = "Marcel Baltzer's personal website"
+
+  since = 2025
+
+  colorScheme = "auto"
+  hidecolorschemetoggle = false
