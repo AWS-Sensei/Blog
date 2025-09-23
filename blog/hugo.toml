@@ -1,19 +1,46 @@
 baseURL = 'https://example.org/'
-languageCode = 'en-us'
-title = 'MARCELBALTZER'
-theme = "coder"
-languagecode = "en"
-defaultcontentlanguage = "en"
+theme = "LoveIt"
 
-#[markup.highlight]
-#style = "github-dark"
+title = 'MARCELBALTZER'
+
+languageCode = 'en'
+defaultContentLanguage = "en"
+languageName = "English"
+
+enableEmoji = true
+
+[pagination]
+  disableAliases = false 
+  pagerSize = 10
+  path = "page"
+
+[menu]
+  [[menu.main]]
+    weight = 1
+    identifier = "posts"
+    name = "Posts"
+    url = "/posts/"
+  [[menu.main]]
+    weight = 2
+    identifier = "about"
+    name = "About"
+    url = "/about/"
+  [[menu.main]]
+    weight = 3
+    identifier = "projects"
+    name = "Projects"
+    url = "/projects/"
 
 [params]
-  author = "Marcel Baltzer"
-  info = ["Tech Lead Developer", "AWS Sensei"]
-  description = "Marcel Baltzer's personal website"
+  defaultTheme = "auto"
+  dateFormat = "2006-01-02"
+  title = "LoveIt"
+  description = "Hugo theme - LoveIt"
 
-  since = 2025
 
-  colorScheme = "auto"
-  hidecolorschemetoggle = false
+# Markup related configuration in Hugo
+[markup]
+  # Syntax Highlighting (https://gohugo.io/content-management/syntax-highlighting)
+  [markup.highlight]
+    # false is a necessary configuration (https://github.com/dillonzq/LoveIt/issues/158)
+    noClasses = false

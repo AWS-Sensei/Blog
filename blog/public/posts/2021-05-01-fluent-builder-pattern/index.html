@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <title>Create Test Data cleanly with Fluent Builder Pattern - MARCELBALTZER</title><meta name="Description" content="Helper methods make it easier to create test data. But they can become difficult to read over time as you need more variations of the test data to satisfy constantly evolving requirements from new tests."><meta property="og:url" content="https://example.org/posts/2021-05-01-fluent-builder-pattern/">
+  <meta property="og:site_name" content="MARCELBALTZER">
+  <meta property="og:title" content="Create Test Data cleanly with Fluent Builder Pattern">
+  <meta property="og:description" content="Helper methods make it easier to create test data. But they can become difficult to read over time as you need more variations of the test data to satisfy constantly evolving requirements from new tests.">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2021-05-01T00:00:00+02:00">
+    <meta property="article:modified_time" content="2021-05-01T00:00:00+02:00">
+    <meta property="article:tag" content="UnitTest">
+    <meta property="article:tag" content="C-Sharp">
+    <meta property="article:tag" content=".Net">
+    <meta property="og:image" content="https://example.org/posts/2021-05-01-fluent-builder-pattern/featured-image.jpg">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://example.org/posts/2021-05-01-fluent-builder-pattern/featured-image.jpg">
+  <meta name="twitter:title" content="Create Test Data cleanly with Fluent Builder Pattern">
+  <meta name="twitter:description" content="Helper methods make it easier to create test data. But they can become difficult to read over time as you need more variations of the test data to satisfy constantly evolving requirements from new tests.">
+<meta name="application-name" content="My cool site">
+<meta name="apple-mobile-web-app-title" content="My cool site"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="https://example.org/posts/2021-05-01-fluent-builder-pattern/" /><link rel="next" href="https://example.org/posts/2021-05-02-test-fixture-pattern/" /><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css"></noscript><link rel="preload" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"></noscript><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Create Test Data cleanly with Fluent Builder Pattern",
+        "inLanguage": "en",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https:\/\/example.org\/posts\/2021-05-01-fluent-builder-pattern\/"
+        },"image": [{
+                            "@type": "ImageObject",
+                            "url": "https:\/\/example.org\/posts\/2021-05-01-fluent-builder-pattern\/featured-image.jpg",
+                            "width":  4288 ,
+                            "height":  2848 
+                        }],"genre": "posts","keywords": "UnitTest, C-Sharp, .Net","wordcount":  506 ,
+        "url": "https:\/\/example.org\/posts\/2021-05-01-fluent-builder-pattern\/","datePublished": "2021-05-01T00:00:00+02:00","dateModified": "2021-05-01T00:00:00+02:00","publisher": {
+            "@type": "Organization",
+            "name": ""},"author": {
+                "@type": "Person",
+                "name": "Marcel"
+            },"description": "Helper methods make it easier to create test data. But they can become difficult to read over time as you need more variations of the test data to satisfy constantly evolving requirements from new tests."
+    }
+    </script></head>
+    <body data-header-desktop="fixed" data-header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="MARCELBALTZER">My cool site</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/about/"> About </a><a class="menu-item" href="/projects/"> Projects </a><span class="menu-item delimiter"></span><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                    <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+                </a></div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="MARCELBALTZER">My cool site</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/about/" title="">About</a><a class="menu-item" href="/projects/" title="">Projects</a><a href="javascript:void(0);" class="menu-item theme-switch" title="Switch Theme">
+                <i class="fas fa-adjust fa-fw" aria-hidden="true"></i>
+            </a></div>
+    </div>
+</header><main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">Contents</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Create Test Data cleanly with Fluent Builder Pattern</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Marcel</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw" aria-hidden="true"></i>&nbsp;<time datetime="2021-05-01">2021-05-01</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i>&nbsp;506 words&nbsp;
+                <i class="far fa-clock fa-fw" aria-hidden="true"></i>&nbsp;3 minutes&nbsp;</div>
+        </div><div class="featured-image"><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="/posts/2021-05-01-fluent-builder-pattern/featured-image.jpg"
+        data-srcset="/posts/2021-05-01-fluent-builder-pattern/featured-image.jpg, /posts/2021-05-01-fluent-builder-pattern/featured-image.jpg 1.5x, /posts/2021-05-01-fluent-builder-pattern/featured-image.jpg 2x"
+        data-sizes="auto"
+        alt="/posts/2021-05-01-fluent-builder-pattern/featured-image.jpg"
+        title="Helper methods make it easier to create test data. But they can become difficult to read over time as you need more variations of the test data to satisfy constantly evolving requirements from new tests." /></div><div class="details toc" id="toc-static"  data-kept="">
+                <div class="details-summary toc-title">
+                    <span>Contents</span>
+                    <span><i class="details-icon fas fa-angle-right" aria-hidden="true"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents"></nav></div>
+            </div><div class="content" id="content"><p>Helper methods make it easier to create test data. But they can become difficult to read over time as
+you need more variations of the test data to satisfy constantly evolving requirements from new tests.</p>
+<p>Let say, we have the following Customer class.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-csharp" data-lang="csharp"><span class="line"><span class="cl"><span class="kd">public</span> <span class="k">class</span> <span class="nc">Customer</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">string</span> <span class="n">Name</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">DateTime</span><span class="p">?</span> <span class="n">DateOfBirth</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">string</span> <span class="n">Email</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">string</span> <span class="n">Address</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>In generally we create an instance of the Customer and set the respective properties as shown below.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-csharp" data-lang="csharp"><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">customer</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Customer</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="n">customer</span><span class="p">.</span><span class="n">Name</span> <span class="p">=</span> <span class="s">&#34;Jacob Knight&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">customer</span><span class="p">.</span><span class="n">DateOfBirth</span> <span class="p">=</span> <span class="k">new</span> <span class="n">DateTime</span><span class="p">(</span><span class="m">1988</span><span class="p">,</span> <span class="m">5</span><span class="p">,</span> <span class="m">1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">customer</span><span class="p">.</span><span class="n">Email</span> <span class="p">=</span> <span class="s">&#34;nofec547@anim.com&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">customer</span><span class="p">.</span><span class="n">Address</span> <span class="p">=</span> <span class="s">&#34;4429 Kelley Road&#34;</span><span class="p">;</span>
+</span></span></code></pre></div><p>The second step could be a helper method.
+This helper method starts with just a single parameter:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-csharp" data-lang="csharp"><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">customer</span> <span class="p">=</span> <span class="n">NewCustomer</span><span class="p">(</span><span class="s">&#34;Jacob Knight&#34;</span><span class="p">);</span>
+</span></span></code></pre></div><p>But soon it acquires more and more parameters. Conditionals creep into the NewCustomer() method body to handle the nulls,
+and the method calls become hard to read due to the long parameter lists:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-csharp" data-lang="csharp"><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">validDate</span> <span class="p">=</span> <span class="n">NewCustomer</span><span class="p">(</span><span class="s">&#34;&#34;</span><span class="p">,</span> <span class="k">new</span> <span class="n">DateTime</span><span class="p">(</span><span class="m">1988</span><span class="p">,</span> <span class="m">5</span><span class="p">,</span> <span class="m">1</span><span class="p">),</span> <span class="kc">null</span><span class="p">,</span> <span class="kc">null</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">validEmail</span> <span class="p">=</span> <span class="n">NewCustomer</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="s">&#34;nofec547@anim.com&#34;</span><span class="p">,</span> <span class="kc">null</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">validAddress</span> <span class="p">=</span> <span class="n">NewCustomer</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="s">&#34;4429 Kelley Road&#34;</span><span class="p">);</span>
+</span></span></code></pre></div><p>Or a new method is added each time a test needs a different combination of fields:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-csharp" data-lang="csharp"><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">validDate</span> <span class="p">=</span> <span class="n">NewCustomerWithDate</span><span class="p">(</span><span class="s">&#34;Jacob Knight&#34;</span><span class="p">,</span> <span class="k">new</span> <span class="n">DateTime</span><span class="p">(</span><span class="m">1988</span><span class="p">,</span> <span class="m">5</span><span class="p">,</span> <span class="m">1</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">validEmail</span> <span class="p">=</span> <span class="n">NewCustomerWithEmail</span><span class="p">(</span><span class="s">&#34;nofec547@anim.com&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">validAddress</span> <span class="p">=</span> <span class="n">NewCustomerWithAddress</span><span class="p">(</span><span class="s">&#34;4429 Kelley Road&#34;</span><span class="p">);</span>
+</span></span></code></pre></div><p>Instead you can use the fluent builder pattern: create a helper method that returns a partially-built object whose state can be overridden in tests. The helper method initializes logically-required fields to reasonable defaults, so each test can specify only
+fields relevant to the case being tested:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-csharp" data-lang="csharp"><span class="line"><span class="cl"><span class="kd">public</span> <span class="k">class</span> <span class="nc">CustomerBuilder</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="kt">string</span> <span class="n">_name</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="n">DateTime</span><span class="p">?</span> <span class="n">_dateOfBirth</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="kt">string</span> <span class="n">_email</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">private</span> <span class="kt">string</span> <span class="n">_address</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">CustomerBuilder</span> <span class="n">WithName</span><span class="p">(</span><span class="kt">string</span> <span class="n">name</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">_name</span> <span class="p">=</span> <span class="n">name</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">CustomerBuilder</span> <span class="n">WithDateOfBirth</span><span class="p">(</span><span class="n">DateTime</span><span class="p">?</span> <span class="n">dateOfBirth</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">_dateOfBirth</span> <span class="p">=</span> <span class="n">dateOfBirth</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">CustomerBuilder</span> <span class="n">WithEmail</span><span class="p">(</span><span class="kt">string</span> <span class="n">email</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">_email</span> <span class="p">=</span> <span class="n">email</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">CustomerBuilder</span> <span class="n">WithAddress</span><span class="p">(</span><span class="kt">string</span> <span class="n">address</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">_address</span> <span class="p">=</span> <span class="n">address</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">Customer</span> <span class="n">Build</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="k">new</span> <span class="n">Customer</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">Name</span> <span class="p">=</span> <span class="n">_name</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">DateOfBirth</span> <span class="p">=</span> <span class="n">_dateOfBirth</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">Email</span> <span class="p">=</span> <span class="n">_email</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">Address</span> <span class="p">=</span> <span class="n">_address</span>
+</span></span><span class="line"><span class="cl">        <span class="p">};</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>You can use it now like:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-csharp" data-lang="csharp"><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">customer</span> <span class="p">=</span> <span class="k">new</span> <span class="n">CustomerBuilder</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">            <span class="p">.</span><span class="n">WithName</span><span class="p">(</span><span class="s">&#34;Jacob Knight&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="p">.</span><span class="n">WithDateOfBirth</span><span class="p">(</span><span class="n">Convert</span><span class="p">.</span><span class="n">ToDateTime</span><span class="p">(</span><span class="s">&#34;01/05/1988&#34;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">            <span class="p">.</span><span class="n">WithEmail</span><span class="p">(</span><span class="s">&#34;nofec547@anim.com&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="p">.</span><span class="n">WithAddress</span><span class="p">(</span><span class="s">&#34;4429 Kelley Roa&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="p">.</span><span class="n">Build</span><span class="p">();</span>
+</span></span></code></pre></div><p>With an implicit operator in the CustomerBuilder you can also hide the Build() part.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-csharp" data-lang="csharp"><span class="line"><span class="cl"><span class="kd">public</span> <span class="k">class</span> <span class="nc">CustomerBuilder</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">//...</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">implicit</span> <span class="kd">operator</span> <span class="n">Customer</span><span class="p">(</span><span class="n">CustomerBuilder</span> <span class="n">instance</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">instance</span><span class="p">.</span><span class="n">Build</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-csharp" data-lang="csharp"><span class="line"><span class="cl"><span class="n">Customer</span> <span class="n">implicitCustomer</span> <span class="p">=</span> <span class="k">new</span> <span class="n">CustomerBuilder</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">            <span class="p">.</span><span class="n">WithName</span><span class="p">(</span><span class="s">&#34;Jacob Knight&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="p">.</span><span class="n">WithDateOfBirth</span><span class="p">(</span><span class="n">Convert</span><span class="p">.</span><span class="n">ToDateTime</span><span class="p">(</span><span class="s">&#34;01/05/1988&#34;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">            <span class="p">.</span><span class="n">WithEmail</span><span class="p">(</span><span class="s">&#34;nofec547@anim.com&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="p">.</span><span class="n">WithAddress</span><span class="p">(</span><span class="s">&#34;4429 Kelley Roa&#34;</span><span class="p">);</span>
+</span></span></code></pre></div><p>A big benefit is that the test code is now easier to write and read because the parameters are clearly identified.</p>
+<p>Also note that tests should never rely on default values that are specified by a helper method since
+that forces readers to read the helper method’s implementation details in order to understand the test.</p>
+<p>In some cases, Builders have so improved the code that they ended up being used in the production code as well.</p>
+<p>You can learn more about this topic <a href="http://www.natpryce.com/articles/000714.html" target="_blank" rel="noopener noreffer ">here</a>.</p>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>Updated on 2021-05-01</span>
+            </div></div>
+        <div class="post-info-line">
+            <div class="post-info-md"></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="Share on Twitter" data-sharer="twitter" data-url="https://example.org/posts/2021-05-01-fluent-builder-pattern/" data-title="Create Test Data cleanly with Fluent Builder Pattern" data-hashtags="UnitTest,C-Sharp,.Net"><i class="fab fa-twitter fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Facebook" data-sharer="facebook" data-url="https://example.org/posts/2021-05-01-fluent-builder-pattern/" data-hashtag="UnitTest"><i class="fab fa-facebook-square fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Hacker News" data-sharer="hackernews" data-url="https://example.org/posts/2021-05-01-fluent-builder-pattern/" data-title="Create Test Data cleanly with Fluent Builder Pattern"><i class="fab fa-hacker-news fa-fw" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on Line" data-sharer="line" data-url="https://example.org/posts/2021-05-01-fluent-builder-pattern/" data-title="Create Test Data cleanly with Fluent Builder Pattern"><i data-svg-src="https://cdn.jsdelivr.net/npm/simple-icons@7.3.0/icons/line.svg" aria-hidden="true"></i></a><a href="javascript:void(0);" title="Share on 微博" data-sharer="weibo" data-url="https://example.org/posts/2021-05-01-fluent-builder-pattern/" data-title="Create Test Data cleanly with Fluent Builder Pattern"><i class="fab fa-weibo fa-fw" aria-hidden="true"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/unittest/">UnitTest</a>,&nbsp;<a href="/tags/c-sharp/">C-Sharp</a>,&nbsp;<a href="/tags/.net/">.Net</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">Back</a></span>&nbsp;|&nbsp;<span><a href="/">Home</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav">
+            <a href="/posts/2021-05-02-test-fixture-pattern/" class="next" rel="next" title="Share context between tests with fixtures">Share context between tests with fixtures<i class="fas fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.150.0">Hugo</a> | Theme - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.3.0"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden="true"></i> LoveIt</a>
+                </div><div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork"><i class="far fa-copyright fa-fw" aria-hidden="true"></i><span itemprop="copyrightYear">2022 - 2025</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">xxxx</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="Back to Top">
+                <i class="fas fa-arrow-up fa-fw" aria-hidden="true"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="View Comments">
+                <i class="fas fa-comment fa-fw" aria-hidden="true"></i>
+            </a>
+        </div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@2.5.0/css/lightgallery-bundle.min.css"><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.5.0/lightgallery.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.5.0/plugins/thumbnail/lg-thumbnail.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lightgallery@2.5.0/plugins/zoom/lg-zoom.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sharer.js@0.5.1/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"Copy to clipboard","maxShownLines":50},"comment":{},"lightgallery":true};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>
