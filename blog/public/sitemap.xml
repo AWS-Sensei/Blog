@@ -2,16 +2,16 @@
     xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
     xmlns:xhtml="http://www.w3.org/1999/xhtml"
     ><url>
-            <loc>https://example.org/about/</loc><lastmod>2025-09-01T11:04:49&#43;08:00</lastmod></url><url>
-            <loc>https://example.org/</loc><lastmod>2025-09-01T11:04:49&#43;08:00</lastmod></url><url>
-            <loc>https://example.org/projects/</loc><lastmod>2025-09-01T11:04:49&#43;08:00</lastmod></url><url>
-            <loc>https://example.org/tags/.net/</loc><lastmod>2021-05-06T00:00:00&#43;02:00</lastmod></url><url>
-            <loc>https://example.org/tags/c-sharp/</loc><lastmod>2021-05-06T00:00:00&#43;02:00</lastmod></url><url>
-            <loc>https://example.org/posts/2021-05-06-overridable-members/</loc><lastmod>2021-05-06T00:00:00&#43;02:00</lastmod></url><url>
-            <loc>https://example.org/posts/</loc><lastmod>2021-05-06T00:00:00&#43;02:00</lastmod></url><url>
-            <loc>https://example.org/tags/</loc><lastmod>2021-05-06T00:00:00&#43;02:00</lastmod></url><url>
-            <loc>https://example.org/tags/unittest/</loc><lastmod>2021-05-06T00:00:00&#43;02:00</lastmod></url><url>
-            <loc>https://example.org/posts/2021-05-04-datetime-provider/</loc><lastmod>2021-05-04T00:00:00&#43;02:00</lastmod></url><url>
-            <loc>https://example.org/posts/2021-05-02-test-fixture-pattern/</loc><lastmod>2021-05-02T00:00:00&#43;02:00</lastmod></url><url>
-            <loc>https://example.org/posts/2021-05-01-fluent-builder-pattern/</loc><lastmod>2021-05-01T00:00:00&#43;02:00</lastmod></url><url>
-            <loc>https://example.org/categories/</loc></url></urlset>
+            <loc>http://localhost:1313/about/</loc><lastmod>2025-09-01T11:04:49&#43;08:00</lastmod></url><url>
+            <loc>http://localhost:1313/</loc><lastmod>2025-09-01T11:04:49&#43;08:00</lastmod></url><url>
+            <loc>http://localhost:1313/projects/</loc><lastmod>2025-09-01T11:04:49&#43;08:00</lastmod></url><url>
+            <loc>http://localhost:1313/tags/.net/</loc><lastmod>2021-05-06T00:00:00&#43;02:00</lastmod></url><url>
+            <loc>http://localhost:1313/tags/c-sharp/</loc><lastmod>2021-05-06T00:00:00&#43;02:00</lastmod></url><url>
+            <loc>http://localhost:1313/posts/2021-05-06-overridable-members/</loc><lastmod>2021-05-06T00:00:00&#43;02:00</lastmod></url><url>
+            <loc>http://localhost:1313/posts/</loc><lastmod>2021-05-06T00:00:00&#43;02:00</lastmod></url><url>
+            <loc>http://localhost:1313/tags/</loc><lastmod>2021-05-06T00:00:00&#43;02:00</lastmod></url><url>
+            <loc>http://localhost:1313/tags/unittest/</loc><lastmod>2021-05-06T00:00:00&#43;02:00</lastmod></url><url>
+            <loc>http://localhost:1313/posts/2021-05-04-datetime-provider/</loc><lastmod>2021-05-04T00:00:00&#43;02:00</lastmod></url><url>
+            <loc>http://localhost:1313/posts/2021-05-02-test-fixture-pattern/</loc><lastmod>2021-05-02T00:00:00&#43;02:00</lastmod></url><url>
+            <loc>http://localhost:1313/posts/2021-05-01-fluent-builder-pattern/</loc><lastmod>2021-05-01T00:00:00&#43;02:00</lastmod></url><url>
+            <loc>http://localhost:1313/categories/</loc></url></urlset>

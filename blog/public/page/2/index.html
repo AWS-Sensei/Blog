@@ -68,66 +68,41 @@
         alt="/images/avatar.png"
         title="/images/avatar.png" width="180" height="180" /></a></div><h1 class="home-title">Tech Lead and AWS Developer</h1><div class="home-subtitle"><div id="id-1" class="typeit"></div></div><div class="links"><a href="https://github.com/Marcel-Baltzer" title="GitHub" target="_blank" rel="noopener noreffer me"><i class="fab fa-github fa-fw" aria-hidden="true"></i></a><a href="https://linkedin.com/in/marcel-baltzer-4a369a93" title="LinkedIn" target="_blank" rel="noopener noreffer me"><i class="fab fa-linkedin fa-fw" aria-hidden="true"></i></a><a href="https://www.xing.com/profile/Marcel_Baltzer" title="Xing" target="_blank" rel="noopener noreffer me"><i class="fab fa-xing fa-fw" aria-hidden="true"></i></a><a href="mailto:marcel.baltzer@hotmail.de" title="Email" rel="me"><i class="far fa-envelope fa-fw" aria-hidden="true"></i></a><a href="/index.xml" title="RSS" target="_blank" rel="noopener noreffer me"><i class="fas fa-rss fa-fw" aria-hidden="true"></i></a></div></div>
 <article class="single summary" itemscope itemtype="http://schema.org/Article"><div class="featured-image-preview">
-            <a href="/posts/2021-05-06-overridable-members/"><img
+            <a href="/posts/2021-05-01-fluent-builder-pattern/"><img
         class="lazyload"
         src="/svg/loading.min.svg"
-        data-src="/posts/2021-05-06-overridable-members/featured-image.jpg"
-        data-srcset="/posts/2021-05-06-overridable-members/featured-image.jpg, /posts/2021-05-06-overridable-members/featured-image.jpg 1.5x, /posts/2021-05-06-overridable-members/featured-image.jpg 2x"
+        data-src="/posts/2021-05-01-fluent-builder-pattern/featured-image.jpg"
+        data-srcset="/posts/2021-05-01-fluent-builder-pattern/featured-image.jpg, /posts/2021-05-01-fluent-builder-pattern/featured-image.jpg 1.5x, /posts/2021-05-01-fluent-builder-pattern/featured-image.jpg 2x"
         data-sizes="auto"
-        alt="/posts/2021-05-06-overridable-members/featured-image.jpg"
-        title="Fake Dependencies with an Interface and Dependency Injection is easy and the usual approach. But how can you fake without Dependency Injection or an Interface. I will show you two situations that came up in production code." /></a>
+        alt="/posts/2021-05-01-fluent-builder-pattern/featured-image.jpg"
+        title="Helper methods make it easier to create test data. But they can become difficult to read over time as you need more variations of the test data to satisfy constantly evolving requirements from new tests." /></a>
         </div><h1 class="single-title" itemprop="name headline">
-        <a href="/posts/2021-05-06-overridable-members/">Fake Methods and Dependencies without Dependency Injection</a>
-    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Marcel</a></span>&nbsp;<span class="post-publish">published on <time datetime="2021-05-06">2021-05-06</time></span></div><div class="content"><h2 id="mocking-via-virtual-method">Mocking via virtual method</h2>
-<p>Fake Dependencies with an Interface and Dependency Injection is easy and the usual approach. But how can you fake without Dependency Injection or an Interface. I will show you two situations that came up in production code.</p>
-<h3 id="factory-method">Factory Method</h3>
-<p>The first situation is a small AWS Lambda function with an http call. We want to mock the .Net HttpClient and write a UnitTest for our Request method.</p></div><div class="post-footer">
-        <a href="/posts/2021-05-06-overridable-members/">Read More</a><div class="post-tags">
-                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/unittest/">UnitTest</a>,&nbsp;<a href="/tags/c-sharp/">C-Sharp</a>,&nbsp;<a href="/tags/.net/">.Net</a></div></div>
-</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><div class="featured-image-preview">
-            <a href="/posts/2021-05-04-datetime-provider/"><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="/posts/2021-05-04-datetime-provider/featured-image.jpg"
-        data-srcset="/posts/2021-05-04-datetime-provider/featured-image.jpg, /posts/2021-05-04-datetime-provider/featured-image.jpg 1.5x, /posts/2021-05-04-datetime-provider/featured-image.jpg 2x"
-        data-sizes="auto"
-        alt="/posts/2021-05-04-datetime-provider/featured-image.jpg"
-        title="Our code is often time-dependent. We use the date or time to implement logic and make decisions in our code. The behavior of DateTime.Now or DateTime.UtcNow can differ due to the system, timezone and the time change (summer/winter). This means that we have to control this for our tests." /></a>
-        </div><h1 class="single-title" itemprop="name headline">
-        <a href="/posts/2021-05-04-datetime-provider/">Fake static property DateTime.Now() with a DateTime Provider</a>
-    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Marcel</a></span>&nbsp;<span class="post-publish">published on <time datetime="2021-05-04">2021-05-04</time></span></div><div class="content"><p>Our code is often time-dependent. We use the date or time to implement logic and make decisions in our code. The behavior of DateTime.Now or DateTime.UtcNow can differ due to the system, timezone and the time change (summer/winter). This means that we have to control this for our tests.</p>
-<p>Take this method for instance:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-csharp" data-lang="csharp"><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">double</span> <span class="n">ReturnCurrentOffset</span><span class="p">()</span>
+        <a href="/posts/2021-05-01-fluent-builder-pattern/">Create Test Data cleanly with Fluent Builder Pattern</a>
+    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Marcel</a></span>&nbsp;<span class="post-publish">published on <time datetime="2021-05-01">2021-05-01</time></span></div><div class="content"><p>Helper methods make it easier to create test data. But they can become difficult to read over time as
+you need more variations of the test data to satisfy constantly evolving requirements from new tests.</p>
+<p>Let say, we have the following Customer class.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-csharp" data-lang="csharp"><span class="line"><span class="cl"><span class="kd">public</span> <span class="k">class</span> <span class="nc">Customer</span>
 </span></span><span class="line"><span class="cl"><span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="kt">var</span> <span class="n">result</span> <span class="p">=</span> <span class="n">DateTime</span><span class="p">.</span><span class="n">Now</span> <span class="p">-</span> <span class="n">DateTime</span><span class="p">.</span><span class="n">UtcNow</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">result</span><span class="p">.</span><span class="n">TotalMinutes</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">string</span> <span class="n">Name</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="n">DateTime</span><span class="p">?</span> <span class="n">DateOfBirth</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">string</span> <span class="n">Email</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">public</span> <span class="kt">string</span> <span class="n">Address</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></div><p>As you see, this method calculates the current offset with <code>DateTime.Now</code> and <code>DateTime.UtcNow</code>. Now suppose you want to write unit test for it. We can not control the static properties. The result will be different over the year and the test will fail in the future.</p></div><div class="post-footer">
-        <a href="/posts/2021-05-04-datetime-provider/">Read More</a><div class="post-tags">
+</span></span></code></pre></div><p>In generally we create an instance of the Customer and set the respective properties as shown below.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-csharp" data-lang="csharp"><span class="line"><span class="cl"><span class="kt">var</span> <span class="n">customer</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Customer</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="n">customer</span><span class="p">.</span><span class="n">Name</span> <span class="p">=</span> <span class="s">&#34;Jacob Knight&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">customer</span><span class="p">.</span><span class="n">DateOfBirth</span> <span class="p">=</span> <span class="k">new</span> <span class="n">DateTime</span><span class="p">(</span><span class="m">1988</span><span class="p">,</span> <span class="m">5</span><span class="p">,</span> <span class="m">1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">customer</span><span class="p">.</span><span class="n">Email</span> <span class="p">=</span> <span class="s">&#34;nofec547@anim.com&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">customer</span><span class="p">.</span><span class="n">Address</span> <span class="p">=</span> <span class="s">&#34;4429 Kelley Road&#34;</span><span class="p">;</span>
+</span></span></code></pre></div><p>The second step could be a helper method.
+This helper method starts with just a single parameter:</p></div><div class="post-footer">
+        <a href="/posts/2021-05-01-fluent-builder-pattern/">Read More</a><div class="post-tags">
                 <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/unittest/">UnitTest</a>,&nbsp;<a href="/tags/c-sharp/">C-Sharp</a>,&nbsp;<a href="/tags/.net/">.Net</a></div></div>
-</article><article class="single summary" itemscope itemtype="http://schema.org/Article"><div class="featured-image-preview">
-            <a href="/posts/2021-05-02-test-fixture-pattern/"><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="/posts/2021-05-02-test-fixture-pattern/featured-image.jpg"
-        data-srcset="/posts/2021-05-02-test-fixture-pattern/featured-image.jpg, /posts/2021-05-02-test-fixture-pattern/featured-image.jpg 1.5x, /posts/2021-05-02-test-fixture-pattern/featured-image.jpg 2x"
-        data-sizes="auto"
-        alt="/posts/2021-05-02-test-fixture-pattern/featured-image.jpg"
-        title="Imagine your about to sit down to eat your lunch. The dirty breakfast dish is still on the table. You got three options. You can get a new plate, you can clean the old plate, or you can just eat lunch off the dirty plate. Thats it. New plate, clean plate, dirty plate. The same rules apply to tests." /></a>
-        </div><h1 class="single-title" itemprop="name headline">
-        <a href="/posts/2021-05-02-test-fixture-pattern/">Share context between tests with fixtures</a>
-    </h1><div class="post-meta"><span class="post-author"><a href="/" title="Author" rel="author" class="author"><i class="fas fa-user-circle fa-fw" aria-hidden="true"></i>Marcel</a></span>&nbsp;<span class="post-publish">published on <time datetime="2021-05-02">2021-05-02</time></span></div><div class="content"><h2 id="test-fixtures">Test Fixtures</h2>
-<p>Imagine your about to sit down to eat your lunch. The dirty breakfast dish is still on the table. You got three options. You can get a new plate, you can clean the old plate, or you can just eat lunch off the dirty plate. Thats it. New plate, clean plate, dirty plate. The same rules apply to tests.</p>
-<h3 id="transient-fresh-fixture">Transient Fresh Fixture</h3>
-<p>Getting a new plate is what Meszaros calls in the book &ldquo;XUnit Test Patterns&rdquo; a Transient Fresh Fixture. The fixture is created from scratch at the beginning of each test.</p></div><div class="post-footer">
-        <a href="/posts/2021-05-02-test-fixture-pattern/">Read More</a><div class="post-tags">
-                <i class="fas fa-tags fa-fw" aria-hidden="true"></i>&nbsp;<a href="/tags/unittest/">UnitTest</a>,&nbsp;<a href="/tags/c-sharp/">C-Sharp</a>,&nbsp;<a href="/tags/.net/">.Net</a></div></div>
-</article><ul class="pagination"><li class="page-item active">
+</article><ul class="pagination"><li class="page-item ">
                     <span class="page-link">
                         <a href="/">1</a>
                     </span>
-                </li><li class="page-item ">
+                </li><li class="page-item active">
                     <span class="page-link">
                         <a href="/page/2/">2</a>
                     </span>

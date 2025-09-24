@@ -1,7 +1,7 @@
 baseURL = 'https://example.org/'
 theme = "LoveIt"
 
-title = 'MARCELBALTZER'
+title = "AWS Sensei"
 
 languageCode = 'en'
 defaultContentLanguage = "en"
@@ -30,12 +30,60 @@ enableEmoji = true
     identifier = "projects"
     name = "Projects"
     url = "/projects/"
+  [[menu.main]]
+    weight = 4
+    identifier = "github"
+    pre = "<i class='fab fa-github fa-fw' aria-hidden='true'></i>"
+    url = "https://github.com/AWS-Sensei/Blog"
+    title = "GitHub"
 
 [params]
   defaultTheme = "auto"
+  gitRepo = "https://github.com/AWS-Sensei/Blog"
   dateFormat = "2006-01-02"
-  title = "LoveIt"
-  description = "Hugo theme - LoveIt"
+  title = "Marcel Baltzer"
+  description = "Marcel Baltzer's Blog"
+
+[params.header]
+  [params.header.title]
+    name="AWS Sensei"
+
+[params.footer]
+  enable = false
+
+[params.section]
+  paginate = 20
+  dateFormat = "01-02"
+  rss = 10
+
+[params.home]
+  rss = 10
+  [params.home.profile]
+    enable = true
+    avatarURL = "/images/avatar.png"
+    title = "Tech Lead and AWS Developer"
+    subtitle = "Here I show everything I do!"
+    typeit = true
+    social = true
+    [params.home.posts]
+      enable = true
+      paginate = 3
+
+[params.social]
+  GitHub = "Marcel-Baltzer"
+  Linkedin = "marcel-baltzer-4a369a93"
+  Xing = "Marcel_Baltzer"
+  Email = "marcel.baltzer@hotmail.de"
+  RSS = true
+
+[params.page]
+  [params.page.share]
+    enable = false
+  [params.page.code]
+   copy = true
+  [params.page.comment]
+   enable = true
+
 
 
 # Markup related configuration in Hugo
