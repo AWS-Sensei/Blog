@@ -18,9 +18,6 @@ Resources:
   WebsiteBucket:
     Type: AWS::S3::Bucket
     Properties:
-      WebsiteConfiguration:
-        IndexDocument: index.html
-        ErrorDocument: 404.html
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
         BlockPublicPolicy: true
@@ -42,6 +39,16 @@ Resources:
             Condition:
               StringEquals:
                 AWS:SourceArn: !Sub "arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution}"
+                
+  CloudFrontOAC:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: !Sub "${AWS::StackName}-oac"
+        Description: Access control for CloudFront to reach S3
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
                 
   CloudFrontDistribution:
     Type: AWS::CloudFront::Distribution
@@ -68,6 +75,7 @@ Resources:
           - Id: s3Origin
             DomainName: !GetAtt WebsiteBucket.RegionalDomainName
             S3OriginConfig: {}
+            OriginAccessControlId: !Ref CloudFrontOAC
 
   RootDomainRecord:
     Type: AWS::Route53::RecordSet
