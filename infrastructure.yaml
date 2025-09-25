@@ -3,7 +3,7 @@ Transform: AWS::Serverless-2016-10-31
 
 Resources:
   WebsiteBucket:
-    Type: AWS::S3::Bucket
+    Type: AWS::S3::Bucket 
     Properties:
       WebsiteConfiguration:
         IndexDocument: index.html
