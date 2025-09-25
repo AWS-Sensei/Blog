@@ -14,6 +14,7 @@ phases:
   pre_build:
     commands:
       - echo "Initializing Git submodules..."
+      - git submodule sync
       - git submodule update --init --recursive
   build:
     commands:
