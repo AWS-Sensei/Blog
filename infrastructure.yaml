@@ -55,6 +55,9 @@ Resources:
     Properties:
       Name: !Sub "${AWS::StackName}-rewrite"
       AutoPublish: true
+      FunctionConfig:
+        Comment: "Rewrite /path/ to /path/index.html"
+        Runtime: cloudfront-js-1.0
       FunctionCode: |
         function handler(event) {
           var request = event.request;
