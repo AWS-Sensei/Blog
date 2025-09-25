@@ -18,5 +18,5 @@ phases:
       - hugo --minify
   post_build:
     commands:
-      - echo "Deploying to $WEBSITE_BUCKET...""
+      - echo "Deploying to $WEBSITE_BUCKET..."
       - aws s3 sync public/ s3://$WEBSITE_BUCKET --delete
