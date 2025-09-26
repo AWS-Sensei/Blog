@@ -1,4 +1,4 @@
-baseURL = 'aws-sensei.cloud'
+baseURL = "https://aws-sensei.cloud/"
 theme = "LoveIt"
 
 title = "AWS Sensei"
