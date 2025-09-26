@@ -5,8 +5,6 @@ draft: false
 description: "Projects"
 ---
 
-# Projects
-
 Over the years, I've worked on a variety of projects – from enterprise-scale systems to small experiments.
 Here's a curated selection of work I'm proud of.
 
