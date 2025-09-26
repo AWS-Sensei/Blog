@@ -1,4 +1,4 @@
-baseURL = 'https://example.org/'
+baseURL = 'aws-sensei.cloud'
 theme = "LoveIt"
 
 title = "AWS Sensei"
@@ -13,36 +13,79 @@ enableEmoji = true
   disableAliases = false 
   pagerSize = 10
   path = "page"
-
-[menu]
-  [[menu.main]]
+  
+[languages]
+  [languages.en]
     weight = 1
-    identifier = "posts"
-    name = "Posts"
-    url = "/posts/"
-  [[menu.main]]
-    weight = 2
-    identifier = "about"
-    name = "About"
-    url = "/about/"
-  [[menu.main]]
-    weight = 3
-    identifier = "projects"
-    name = "Projects"
-    url = "/projects/"
-  [[menu.main]]
-    weight = 4
-    identifier = "github"
-    pre = "<i class='fab fa-github fa-fw' aria-hidden='true'></i>"
-    url = "https://github.com/AWS-Sensei/Blog"
-    title = "GitHub"
+    languageCode = "en"
+    languageName = "English"
+    hasCJKLanguage = false
+    [languages.en.menu]
+      [[languages.en.menu.main]]
+        weight = 1
+        identifier = "posts"
+        name = "Posts"
+        url = "/posts/"
+      [[languages.en.menu.main]]
+        weight = 2
+        identifier = "about"
+        name = "About"
+        url = "/about/"
+      [[languages.en.menu.main]]
+        weight = 3
+        identifier = "projects"
+        name = "Projects"
+        url = "/projects/"
+      [[languages.en.menu.main]]
+        weight = 4
+        identifier = "github"
+        pre = "<i class='fab fa-github fa-fw' aria-hidden='true'></i>"
+        url = "https://github.com/AWS-Sensei/Blog"
+        title = "GitHub"
+    [languages.en.params.home]
+      [languages.en.params.home.profile]
+        title = "Tech Lead and AWS Developer"
+        subtitle = "This blog is a place for me to share what I’ve learned, capture my thoughts, and hopefully help others along the way."
+  [languages.de]
+    weight = 1
+    languageCode = "de"
+    languageName = "Deutsch"
+    hasCJKLanguage = false
+    [languages.de.menu]
+      [[languages.de.menu.main]]
+        weight = 1
+        identifier = "posts"
+        name = "Beiträge"
+        url = "/posts/"
+      [[languages.de.menu.main]]
+        weight = 2
+        identifier = "about"
+        name = "Über mich"
+        url = "/about/"
+      [[languages.de.menu.main]]
+        weight = 3
+        identifier = "projects"
+        name = "Projekte"
+        url = "/projects/"
+      [[languages.de.menu.main]]
+        weight = 4
+        identifier = "github"
+        pre = "<i class='fab fa-github fa-fw' aria-hidden='true'></i>"
+        url = "https://github.com/AWS-Sensei/Blog"
+        title = "GitHub"
+    [languages.de.params.home]
+      [languages.de.params.home.profile]
+        title = "Tech Lead und AWS Developer"
+        subtitle = "Mit diesem Blog möchte ich mein Wissen teilen, Gedanken festhalten und vielleicht auch anderen Entwickler:innen auf ihrem Weg weiterhelfen."
+
+
 
 [params]
   defaultTheme = "auto"
   gitRepo = "https://github.com/AWS-Sensei/Blog"
   dateFormat = "2006-01-02"
-  title = "Marcel Baltzer"
-  description = "Marcel Baltzer's Blog"
+#  title = "Marcel Baltzer"
+#  description = "Marcel Baltzer's Blog"
 
 [params.header]
   [params.header.title]
@@ -61,8 +104,8 @@ enableEmoji = true
   [params.home.profile]
     enable = true
     avatarURL = "/images/avatar.png"
-    title = "Tech Lead and AWS Developer"
-    subtitle = "Here I show everything I do!"
+#    title = "Tech Lead and AWS Developer"
+#    subtitle = "This blog is a place for me to share what I’ve learned, capture my thoughts, and hopefully help others along the way."
     typeit = true
     social = true
     [params.home.posts]
