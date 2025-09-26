@@ -20,3 +20,5 @@ phases:
     commands:
       - echo "Deploying to $WEBSITE_BUCKET..."
       - aws s3 sync public/ s3://$WEBSITE_BUCKET --delete
+      - echo "Invalidating CloudFront cache..."
+      - aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_DISTRIBUTION_ID --paths "/*"

@@ -114,3 +114,8 @@ Outputs:
     Value: !Ref WebsiteBucket
     Export:
       Name: WebsiteBucketName
+  CloudFrontDistribution:
+    Description: "CloudFrontDistribution for Hugo site"
+    Value: !Ref CloudFrontDistribution
+    Export:
+      Name: CloudFrontDistribution
