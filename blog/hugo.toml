@@ -40,7 +40,7 @@ enableEmoji = true
         weight = 4
         identifier = "github"
         pre = "<i class='fab fa-github fa-fw' aria-hidden='true'></i>"
-        url = "https://github.com/AWS-Sensei/Blog"
+        url = "https://github.com/AWS-Sensei"
         title = "GitHub"
     [languages.en.params.home]
       [languages.en.params.home.profile]
@@ -71,7 +71,7 @@ enableEmoji = true
         weight = 4
         identifier = "github"
         pre = "<i class='fab fa-github fa-fw' aria-hidden='true'></i>"
-        url = "https://github.com/AWS-Sensei/Blog"
+        url = "https://github.com/AWS-Sensei"
         title = "GitHub"
     [languages.de.params.home]
       [languages.de.params.home.profile]
@@ -135,3 +135,14 @@ enableEmoji = true
   [markup.highlight]
     # false is a necessary configuration (https://github.com/dillonzq/LoveIt/issues/158)
     noClasses = false
+
+[params.cognitoDrafts]
+  enable = true
+  domain = "YOUR_DOMAIN"
+  clientId = "YOUR_CLIENT_ID"
+  redirectUri = "https://aws-sensei.cloud/"
+  logoutUri = "https://aws-sensei.cloud/"
+  scope = "openid email profile"
+
+[params.library]
+  js = ["js/cognito-drafts.js"]
