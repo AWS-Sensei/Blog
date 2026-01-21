@@ -13,7 +13,7 @@ For the past **6 years**, I’ve been working extensively with **AWS**, building
 
 A major turning point in my journey was discovering the principles of **DevOps**. Reading **"The Phoenix Project"** fundamentally changed the way I think about software delivery. Since then, I’ve been committed to bridging the gap between Dev, Ops, and Business – driven by automation, transparency, and continuous improvement.
 
-### What I’m passionate about:
+### What I’m passionate about
 
 - Clean Code & Test-Driven Development
 - Automated CI/CD pipelines

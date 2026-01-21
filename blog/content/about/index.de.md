@@ -1,13 +1,11 @@
 ---
-title: "About Me"
+title: "Über mich"
 date: 2025-09-01T11:04:49+08:00
 draft: false
-description: "About Me"
+description: "Über mich"
 ---
 
-# Über mich
-
-Hallo und willkommen auf meinem Blog! 👋
+## Hallo und willkommen auf meinem Blog! 👋
 
 Ich bin ein leidenschaftlicher Softwareentwickler mit über **10 Jahren Erfahrung** in der professionellen Softwareentwicklung – hauptsächlich mit **C# und Java**. In dieser Zeit habe ich nicht nur unzählige Zeilen Code geschrieben, sondern vor allem eines gelernt: **guter Code allein reicht nicht – es kommt auf das Gesamtbild an**.
 
@@ -15,7 +13,7 @@ Seit **6 Jahren arbeite ich intensiv mit AWS** und entwickle skalierbare, wartba
 
 Ein weiterer Meilenstein auf meinem Weg war die Auseinandersetzung mit DevOps-Prinzipien. Das Buch **"The Phoenix Project"** hat mir die Augen geöffnet und meine Sicht auf moderne Softwareentwicklung nachhaltig verändert. Seitdem versuche ich, Brücken zwischen Dev, Ops und Business zu schlagen – mit Automatisierung, Transparenz und kontinuierlicher Verbesserung als Leitprinzipien.
 
-## Was mich besonders interessiert:
+## Was mich besonders interessiert
 
 - Clean Code & Test-Driven Development
 - Automatisierte CI/CD Pipelines
