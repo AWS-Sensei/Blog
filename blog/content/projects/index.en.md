@@ -7,7 +7,7 @@ description: "Projects"
 
 ## Portfolio of Enterprise and Modernization Projects
 
-Over the years, I've worked on a variety of projects – from enterprise-scale systems to small experiments.
+Over the years, I've worked on a variety of projects – from enterprise-scale systems to small experiments.  
 Here's a curated selection of work I'm proud of.
 
 ---
