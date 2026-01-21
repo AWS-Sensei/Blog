@@ -5,12 +5,14 @@ draft: false
 description: "Projekte"
 ---
 
+## Portfolio von Unternehmens- und Modernisierungsprojekten
+
 Im Laufe der Jahre habe ich an einer Vielzahl von Projekten gearbeitet – von Enterprise-Systemen bis hin zu kleinen Experimenten.  
 Hier ist eine kuratierte Auswahl an Arbeiten, auf die ich stolz bin.
 
 ---
 
-## 💵 Cloud-basiertes Payment Next System
+### 💵 Cloud-basiertes Payment Next System
 
 **Beschreibung**:  
 Ein serverloser camt-Import ... .
@@ -21,7 +23,7 @@ Ein serverloser camt-Import ... .
 
 ---
 
-## 🛠️ Migration von Logistik- und Einkaufs-Monolith zu Microservices
+### 🛠️ Migration von Logistik- und Einkaufs-Monolith zu Microservices
 
 **Beschreibung**:  
 Leitung der Re-Architektur eines Legacy-Visual-Basic-Monolithen hin zu skalierbaren Microservices.
@@ -32,7 +34,7 @@ Leitung der Re-Architektur eines Legacy-Visual-Basic-Monolithen hin zu skalierba
 
 ---
 
-## ✈️ Modernisierung von Group Booking & Inventory System
+### ✈️ Modernisierung von Group Booking & Inventory System
 
 **Beschreibung**:  
 ...

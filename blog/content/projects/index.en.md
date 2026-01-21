@@ -5,12 +5,14 @@ draft: false
 description: "Projects"
 ---
 
+## Portfolio of Enterprise and Modernization Projects
+
 Over the years, I've worked on a variety of projects – from enterprise-scale systems to small experiments.
 Here's a curated selection of work I'm proud of.
 
 ---
 
-## 💵 Cloud-based Payment Next System
+### 💵 Cloud-based Payment Next System
 
 **Description**:
 A serverless camt import ... .
@@ -21,7 +23,7 @@ A serverless camt import ... .
 
 ---
 
-## 🛠️ Logistic and Purchase Monolith to Microservices Migration
+### 🛠️ Logistic and Purchase Monolith to Microservices Migration
 
 **Description**:
 Lead the re-architecture of a legacy Visual Basix monolith into scalable microservices.
@@ -32,7 +34,7 @@ Lead the re-architecture of a legacy Visual Basix monolith into scalable microse
 
 ---
 
-## ✈️ Group Booking & Inventory System Modernization
+### ✈️ Group Booking & Inventory System Modernization
 
 **Description**:
 ...
