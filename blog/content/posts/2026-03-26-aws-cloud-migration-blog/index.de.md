@@ -1,14 +1,18 @@
 ---
 title: "Von Vercel zu AWS — Migration meines Blogs in die Cloud"
 date: 2026-03-26T00:00:00+02:00
-lastmod: 2026-03-26T00:00:00+02:00
 draft: false
 author: "Marcel"
 description: "Warum ich meinen Vue-Blog auf Vercel aufgegeben und ihn mit Hugo, S3, CloudFront und einer vollautomatischen CodeBuild-Pipeline auf AWS neu aufgebaut habe — als Infrastructure as Code."
+
+images: []
 resources:
 - name: "featured-image"
   src: "featured-image.jpg"
+
 tags: ["AWS", "Hugo", "CloudFront", "S3", "CodeBuild", "IaC", "Migration", "Vercel"]
+
+lightgallery: true
 ---
 
 Ich arbeite seit über sechs Jahren mit AWS — in Projekten, in der Architektur, im Alltag. Irgendwann war klar: Wenn ich mein AWS-Wissen ernst nehme und nach außen zeigen will, sollte meine eigene Infrastruktur das widerspiegeln.
