@@ -110,14 +110,14 @@ Resources:
   WebsiteBucketNameParam:
     Type: AWS::SSM::Parameter
     Properties:
-      Name: /aws-sensei/blog/bucket-name
+      Name: /sensei/blog/bucket-name
       Type: String
       Value: !Ref WebsiteBucket
 
   CloudFrontDistributionParam:
     Type: AWS::SSM::Parameter
     Properties:
-      Name: /aws-sensei/blog/cloudfront-distribution-id
+      Name: /sensei/blog/cloudfront-distribution-id
       Type: String
       Value: !Ref CloudFrontDistribution
 
