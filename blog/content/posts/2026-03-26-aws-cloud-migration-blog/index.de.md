@@ -31,7 +31,7 @@ Das verwendete Theme ist **LoveIt** — es unterstützt Dark Mode, Syntax-Highli
 
 ## Die Infrastruktur im Überblick
 
-```
+```text
 Browser → Route53 → CloudFront → S3
                         ↑
                   ACM-Zertifikat
