@@ -108,6 +108,20 @@ Resources:
         DNSName: !GetAtt CloudFrontDistribution.DomainName
         HostedZoneId: Z2FDTNDATAQYW2  # CloudFront's fixed zone ID
         
+  WebsiteBucketNameParam:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: /aws-sensei/blog/bucket-name
+      Type: String
+      Value: !Ref WebsiteBucket
+
+  CloudFrontDistributionParam:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: /aws-sensei/blog/cloudfront-distribution-id
+      Type: String
+      Value: !Ref CloudFrontDistribution
+
 Outputs:
   WebsiteBucketName:
     Description: "S3 bucket for Hugo site"
