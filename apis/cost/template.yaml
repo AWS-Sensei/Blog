@@ -30,7 +30,7 @@ Resources:
     Properties:
       FunctionName: sensei-cost-read
       Handler: handler.lambda_handler
-      CodeUri: src/
+      CodeUri: src/read/
       Policies:
         - Version: '2012-10-17'
           Statement:
@@ -57,7 +57,7 @@ Resources:
     Properties:
       FunctionName: sensei-cost-refresh
       Handler: refresh.lambda_handler
-      CodeUri: src/
+      CodeUri: src/refresh/
       Policies:
         - Version: '2012-10-17'
           Statement:
