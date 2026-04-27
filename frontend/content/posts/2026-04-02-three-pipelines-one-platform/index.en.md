@@ -167,4 +167,4 @@ Infrastructure as Code down to the last bolt.
 
 ## What's Coming Next
 
-The APIs pipeline is ready — its first feature is already live: a **sentiment analysis widget** powered by AWS Comprehend. Visitors type a sentence and see in real time whether it reads as positive, negative, or neutral. How it was built is covered in the [next post](/posts/2026-04-27-sentiment-widget/).
+The APIs pipeline is ready — its first feature is already live: a **sentiment analysis widget** powered by AWS Comprehend. Visitors type a sentence and see in real time whether it reads as positive, negative, or neutral. How it was built is covered in the [next post](/posts/2026-04-10-sentiment-widget/).

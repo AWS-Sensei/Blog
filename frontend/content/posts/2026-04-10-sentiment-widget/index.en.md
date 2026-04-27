@@ -1,7 +1,7 @@
 ---
 title: "Sentiment Analysis in the Blog — with AWS Comprehend, Lambda and API Gateway"
-date: 2026-04-27T00:00:00+02:00
-lastmod: 2026-04-27T00:00:00+02:00
+date: 2026-04-10T00:00:00+02:00
+lastmod: 2026-04-10T00:00:00+02:00
 draft: false
 author: "Marcel"
 description: "How I built an interactive sentiment analysis widget into my blog — Lambda, API Gateway, AWS Comprehend and a Hugo shortcode."
