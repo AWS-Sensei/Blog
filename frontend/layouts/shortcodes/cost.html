@@ -82,7 +82,7 @@ var serviceNames = {
   const error = document.getElementById("cost-error");
 
   try {
-    const res = await fetch("{{ .Site.Params.costApiUrl | default "https://PLACEHOLDER.execute-api.eu-central-1.amazonaws.com/prod/cost" }}");
+    const res = await fetch("https://i5sqtn1bli.execute-api.eu-central-1.amazonaws.com/prod/cost");
     const data = await res.json();
 
     if (!res.ok || data.error) {
