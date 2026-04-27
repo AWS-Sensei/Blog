@@ -167,10 +167,4 @@ Infrastructure as Code down to the last bolt.
 
 ## What's Coming Next
 
-The APIs pipeline is ready — it's waiting for its first feature. That will be a **sentiment analysis widget** powered by AWS Comprehend: a text field directly in the blog where visitors type a sentence and see in real time whether it reads as positive, negative, or neutral. Lambda, API Gateway, a bit of JavaScript — and a dedicated blog post about how it's built.
-
----
-
-**Try it out:** The widget is already live. Type any sentence below and AWS Comprehend will tell you how it reads.
-
-{{< sentiment >}}
+The APIs pipeline is ready — its first feature is already live: a **sentiment analysis widget** powered by AWS Comprehend. Visitors type a sentence and see in real time whether it reads as positive, negative, or neutral. How it was built is covered in the [next post](/posts/2026-04-27-sentiment-widget/).

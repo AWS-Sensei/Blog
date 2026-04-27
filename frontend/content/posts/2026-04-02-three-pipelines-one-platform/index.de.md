@@ -167,10 +167,4 @@ Infrastructure as Code bis zur letzten Schraube.
 
 ## Was als nächstes kommt
 
-Die APIs-Pipeline ist bereit — sie wartet auf ihr erstes Feature. Das wird ein **Sentiment-Analyse Widget** mit AWS Comprehend: Ein Textfeld direkt im Blog, Besucher tippen einen Satz ein und sehen in Echtzeit ob er positiv, negativ oder neutral klingt. Lambda, API Gateway, ein bisschen JavaScript — und ein eigener Blog Post darüber.
-
----
-
-**Direkt ausprobieren:** Das Widget ist bereits live. Tippe einen beliebigen Satz und AWS Comprehend zeigt dir, wie er klingt.
-
-{{< sentiment >}}
+Die APIs-Pipeline ist bereit — ihr erstes Feature ist bereits live: ein **Sentiment-Analyse Widget** mit AWS Comprehend. Besucher tippen einen Satz ein und sehen in Echtzeit ob er positiv, negativ oder neutral klingt. Wie es gebaut wurde, beschreibt der [nächste Post](/posts/2026-04-27-sentiment-widget/).
