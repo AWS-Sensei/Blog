@@ -1,0 +1,155 @@
+<div class="sentiment-widget">
+  <textarea
+    id="sentiment-input"
+    placeholder="Type a sentence and see if it reads as positive, negative, or neutral..."
+    maxlength="5000"
+    rows="3"
+  ></textarea>
+  <div class="sentiment-controls">
+    <button id="sentiment-btn" onclick="analyzeSentiment()">Analyze</button>
+    <span id="sentiment-char-count">0 / 5000</span>
+  </div>
+  <div id="sentiment-result" class="sentiment-result" style="display:none;"></div>
+</div>
+
+<style>
+.sentiment-widget {
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin: 1.5rem 0;
+  background: rgba(255,255,255,0.03);
+}
+.sentiment-widget textarea {
+  width: 100%;
+  background: rgba(0,0,0,0.2);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 6px;
+  color: inherit;
+  font-family: inherit;
+  font-size: 0.95rem;
+  padding: 0.65rem 0.75rem;
+  resize: vertical;
+  box-sizing: border-box;
+}
+.sentiment-widget textarea:focus {
+  outline: none;
+  border-color: rgba(255,255,255,0.35);
+}
+.sentiment-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.75rem;
+}
+.sentiment-widget button {
+  background: #4a9eff;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.45rem 1.1rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.sentiment-widget button:hover { background: #3a8eef; }
+.sentiment-widget button:disabled { background: #555; cursor: not-allowed; }
+#sentiment-char-count {
+  font-size: 0.8rem;
+  opacity: 0.45;
+  margin-left: auto;
+}
+.sentiment-result {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+.sentiment-result.positive { background: rgba(72,199,116,0.15); border-left: 3px solid #48c774; }
+.sentiment-result.negative { background: rgba(255,99,88,0.15);  border-left: 3px solid #ff6358; }
+.sentiment-result.neutral  { background: rgba(255,255,255,0.07); border-left: 3px solid #aaa; }
+.sentiment-result.mixed    { background: rgba(255,193,7,0.15);  border-left: 3px solid #ffc107; }
+.sentiment-result.error    { background: rgba(255,99,88,0.1);   border-left: 3px solid #ff6358; opacity: 0.8; }
+.sentiment-label { font-weight: 600; text-transform: capitalize; margin-bottom: 0.4rem; }
+.sentiment-bars { display: flex; flex-direction: column; gap: 0.3rem; margin-top: 0.5rem; }
+.sentiment-bar-row { display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; }
+.sentiment-bar-label { width: 4.5rem; opacity: 0.7; }
+.sentiment-bar-track { flex: 1; height: 5px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; }
+.sentiment-bar-fill { height: 100%; border-radius: 3px; transition: width 0.4s ease; }
+.positive .sentiment-bar-fill.positive-fill { background: #48c774; }
+.negative .sentiment-bar-fill.negative-fill { background: #ff6358; }
+.neutral  .sentiment-bar-fill.neutral-fill  { background: #aaa; }
+.mixed    .sentiment-bar-fill.mixed-fill    { background: #ffc107; }
+.sentiment-bar-pct { width: 2.5rem; text-align: right; opacity: 0.6; font-size: 0.75rem; }
+</style>
+
+<script>
+(function () {
+  const input = document.getElementById("sentiment-input");
+  const counter = document.getElementById("sentiment-char-count");
+  input.addEventListener("input", function () {
+    counter.textContent = input.value.length + " / 5000";
+  });
+  input.addEventListener("keydown", function (e) {
+    if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) analyzeSentiment();
+  });
+})();
+
+async function analyzeSentiment() {
+  const input = document.getElementById("sentiment-input");
+  const btn = document.getElementById("sentiment-btn");
+  const result = document.getElementById("sentiment-result");
+  const text = input.value.trim();
+
+  if (!text) return;
+
+  btn.disabled = true;
+  btn.textContent = "Analyzing…";
+  result.style.display = "none";
+  result.className = "sentiment-result";
+
+  try {
+    const res = await fetch("https://bgb3jg1qy4.execute-api.eu-central-1.amazonaws.com/prod/sentiment", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.error || "Request failed");
+    }
+
+    const s = data.sentiment;
+    const sc = data.scores;
+    const bars = ["positive", "negative", "neutral", "mixed"];
+
+    result.className = "sentiment-result " + s;
+    result.innerHTML =
+      '<div class="sentiment-label">' + s + '</div>' +
+      '<div class="sentiment-bars">' +
+      bars.map(function (k) {
+        var pct = Math.round(sc[k] * 100);
+        return (
+          '<div class="sentiment-bar-row">' +
+          '<span class="sentiment-bar-label">' + k + '</span>' +
+          '<div class="sentiment-bar-track">' +
+          '<div class="sentiment-bar-fill ' + k + '-fill" style="width:' + pct + '%"></div>' +
+          '</div>' +
+          '<span class="sentiment-bar-pct">' + pct + '%</span>' +
+          "</div>"
+        );
+      }).join("") +
+      "</div>";
+    result.style.display = "block";
+  } catch (err) {
+    result.className = "sentiment-result error";
+    result.innerHTML = "Error: " + err.message;
+    result.style.display = "block";
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Analyze";
+  }
+}
+</script>
