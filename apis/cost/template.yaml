@@ -1,0 +1,84 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Cost Dashboard API — reads AWS Cost Explorer data cached in SSM
+
+Globals:
+  Function:
+    Timeout: 15
+    Runtime: python3.12
+    MemorySize: 128
+
+Resources:
+
+  CostApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: sensei-cost-api
+      StageName: prod
+      Cors:
+        AllowMethods: "'GET, OPTIONS'"
+        AllowHeaders: "'Content-Type'"
+        AllowOrigin: "'https://aws-sensei.cloud'"
+      MethodSettings:
+        - ResourcePath: "/*"
+          HttpMethod: "*"
+          ThrottlingRateLimit: 2
+          ThrottlingBurstLimit: 5
+
+  CostReadFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: sensei-cost-read
+      Handler: handler.lambda_handler
+      CodeUri: src/
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - ssm:GetParameter
+              Resource: !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/sensei/blog/cost-data"
+      Events:
+        CostGet:
+          Type: Api
+          Properties:
+            RestApiId: !Ref CostApi
+            Path: /cost
+            Method: GET
+        CostOptions:
+          Type: Api
+          Properties:
+            RestApiId: !Ref CostApi
+            Path: /cost
+            Method: OPTIONS
+
+  CostRefreshFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: sensei-cost-refresh
+      Handler: refresh.lambda_handler
+      CodeUri: src/
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - ce:GetCostAndUsage
+              Resource: "*"
+            - Effect: Allow
+              Action:
+                - ssm:PutParameter
+              Resource: !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/sensei/blog/cost-data"
+      Events:
+        DailyRefresh:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0 6 * * ? *)
+            Name: sensei-cost-refresh-daily
+
+Outputs:
+  CostApiUrl:
+    Description: Cost API endpoint URL
+    Value: !Sub "https://${CostApi}.execute-api.${AWS::Region}.amazonaws.com/prod/cost"
+    Export:
+      Name: sensei-cost-api-url

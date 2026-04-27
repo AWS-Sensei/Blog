@@ -1,0 +1,122 @@
+{{ $lang := .Page.Lang }}
+{{ $isDE := eq $lang "de" }}
+
+<div class="cost-widget" id="cost-widget">
+  <div id="cost-loading" class="cost-loading">
+    {{ if $isDE }}Kosten werden geladen…{{ else }}Loading cost data…{{ end }}
+  </div>
+  <div id="cost-content" style="display:none;">
+    <div class="cost-header">
+      <span class="cost-total-label">{{ if $isDE }}Kosten laufender Monat{{ else }}Current month costs{{ end }}</span>
+      <span class="cost-total" id="cost-total"></span>
+    </div>
+    <div class="cost-period" id="cost-period"></div>
+    <div class="cost-services" id="cost-services"></div>
+    <div class="cost-refreshed" id="cost-refreshed"></div>
+  </div>
+  <div id="cost-error" style="display:none;" class="cost-error">
+    {{ if $isDE }}Daten noch nicht verfügbar — werden täglich um 06:00 UTC aktualisiert.{{ else }}Data not yet available — refreshed daily at 06:00 UTC.{{ end }}
+  </div>
+</div>
+
+<style>
+.cost-widget {
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin: 1.5rem 0;
+  background: rgba(255,255,255,0.03);
+  font-size: 0.9rem;
+}
+.cost-loading { opacity: 0.5; }
+.cost-error { opacity: 0.6; }
+.cost-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.35rem;
+}
+.cost-total-label { opacity: 0.7; }
+.cost-total { font-size: 1.4rem; font-weight: 700; color: #4a9eff; }
+.cost-period { font-size: 0.75rem; opacity: 0.4; margin-bottom: 1rem; }
+.cost-services { display: flex; flex-direction: column; gap: 0.4rem; }
+.cost-service-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.3rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.cost-service-name { opacity: 0.8; }
+.cost-service-amount { font-variant-numeric: tabular-nums; opacity: 0.9; }
+.cost-refreshed { font-size: 0.72rem; opacity: 0.3; margin-top: 0.85rem; }
+</style>
+
+<script>
+var costI18n = {
+  refreshed: {{ if $isDE }}"Zuletzt aktualisiert: "{{ else }}"Last refreshed: "{{ end }},
+  period:    {{ if $isDE }}"Zeitraum: "{{ else }}"Period: "{{ end }},
+};
+
+var serviceNames = {
+  "Amazon Simple Storage Service": "S3",
+  "Amazon CloudFront": "CloudFront",
+  "AWS Lambda": "Lambda",
+  "Amazon API Gateway": "API Gateway",
+  "AWS CodeBuild": "CodeBuild",
+  "AWS CodePipeline": "CodePipeline",
+  "Amazon Route 53": "Route 53",
+  "Amazon Comprehend": "Comprehend",
+  "AWS Key Management Service": "KMS",
+  "AWS Secrets Manager": "Secrets Manager",
+  "Amazon DynamoDB": "DynamoDB",
+  "AWS CloudFormation": "CloudFormation",
+  "Amazon Simple Queue Service": "SQS",
+  "Amazon Simple Notification Service": "SNS",
+  "Amazon Bedrock": "Bedrock",
+};
+
+(async function () {
+  const loading = document.getElementById("cost-loading");
+  const content = document.getElementById("cost-content");
+  const error = document.getElementById("cost-error");
+
+  try {
+    const res = await fetch("{{ .Site.Params.costApiUrl | default "https://PLACEHOLDER.execute-api.eu-central-1.amazonaws.com/prod/cost" }}");
+    const data = await res.json();
+
+    if (!res.ok || data.error) {
+      loading.style.display = "none";
+      error.style.display = "block";
+      return;
+    }
+
+    document.getElementById("cost-total").textContent = "$" + data.total.toFixed(2);
+    document.getElementById("cost-period").textContent =
+      costI18n.period + data.period.start + " → " + data.period.end;
+
+    var servicesEl = document.getElementById("cost-services");
+    var sorted = Object.entries(data.services).sort(function (a, b) { return b[1] - a[1]; });
+    servicesEl.innerHTML = sorted.map(function (entry) {
+      var name = serviceNames[entry[0]] || entry[0];
+      var amount = "$" + entry[1].toFixed(4);
+      return (
+        '<div class="cost-service-row">' +
+        '<span class="cost-service-name">' + name + '</span>' +
+        '<span class="cost-service-amount">' + amount + '</span>' +
+        '</div>'
+      );
+    }).join("");
+
+    var refreshed = new Date(data.refreshed_at + "Z");
+    document.getElementById("cost-refreshed").textContent =
+      costI18n.refreshed + refreshed.toLocaleString();
+
+    loading.style.display = "none";
+    content.style.display = "block";
+  } catch (e) {
+    loading.style.display = "none";
+    error.style.display = "block";
+  }
+})();
+</script>
