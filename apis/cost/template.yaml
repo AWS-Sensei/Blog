@@ -56,7 +56,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: sensei-cost-refresh
-      Handler: refresh.lambda_handler
+      Handler: handler.lambda_handler
       CodeUri: src/refresh/
       Policies:
         - Version: '2012-10-17'
