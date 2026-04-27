@@ -108,7 +108,7 @@ var serviceNames = {
       );
     }).join("");
 
-    var refreshed = new Date(data.refreshed_at + "Z");
+    var refreshed = new Date(data.refreshed_at);
     document.getElementById("cost-refreshed").textContent =
       costI18n.refreshed + refreshed.toLocaleString();
 
