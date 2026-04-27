@@ -1,0 +1,55 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Sentiment Analysis API using AWS Comprehend
+
+Globals:
+  Function:
+    Timeout: 10
+    Runtime: python3.12
+    MemorySize: 128
+
+Resources:
+
+  SentimentFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: sensei-sentiment
+      Handler: handler.lambda_handler
+      CodeUri: .
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - comprehend:DetectSentiment
+              Resource: "*"
+      Events:
+        SentimentPost:
+          Type: Api
+          Properties:
+            RestApiId: !Ref SentimentApi
+            Path: /sentiment
+            Method: POST
+        SentimentOptions:
+          Type: Api
+          Properties:
+            RestApiId: !Ref SentimentApi
+            Path: /sentiment
+            Method: OPTIONS
+
+  SentimentApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: sensei-sentiment-api
+      StageName: prod
+      Cors:
+        AllowMethods: "'POST, OPTIONS'"
+        AllowHeaders: "'Content-Type'"
+        AllowOrigin: "'https://aws-sensei.cloud'"
+
+Outputs:
+  SentimentApiUrl:
+    Description: API Gateway endpoint URL
+    Value: !Sub "https://${SentimentApi}.execute-api.${AWS::Region}.amazonaws.com/prod/sentiment"
+    Export:
+      Name: sensei-sentiment-api-url
