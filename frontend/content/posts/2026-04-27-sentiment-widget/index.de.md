@@ -13,7 +13,7 @@ tags: ["AWS", "Lambda", "API Gateway", "Comprehend", "SAM", "Hugo", "Serverless"
 lightgallery: true
 ---
 
-Die APIs-Pipeline aus dem [vorherigen Post](/posts/2026-04-02-three-pipelines-one-platform/) stand bereit — sie wartete auf ihr erstes Feature. Das Ergebnis ist das Sentiment-Analyse Widget, das du am Ende dieses Posts ausprobieren kannst: Einen Satz eingeben, AWS Comprehend analysiert ihn in Echtzeit und zeigt ob er positiv, negativ, neutral oder gemischt klingt.
+Die APIs-Pipeline aus dem [vorherigen Post](/de/posts/2026-04-02-three-pipelines-one-platform/) stand bereit — sie wartete auf ihr erstes Feature. Das Ergebnis ist das Sentiment-Analyse Widget, das du am Ende dieses Posts ausprobieren kannst: Einen Satz eingeben, AWS Comprehend analysiert ihn in Echtzeit und zeigt ob er positiv, negativ, neutral oder gemischt klingt.
 
 ## Die Architektur
 
