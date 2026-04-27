@@ -11,8 +11,9 @@ phases:
           sam deploy \
             --template-file $template \
             --stack-name $stack_name \
-            --capabilities CAPABILITY_IAM \
+            --capabilities CAPABILITY_IAM CAPABILITY_AUTO_EXPAND \
             --s3-bucket $SAM_ARTIFACT_BUCKET \
+            --s3-sse aws:kms \
             --no-confirm-changeset \
             --no-fail-on-empty-changeset \
             --role-arn $CLOUDFORMATION_EXECUTION_ROLE_ARN
