@@ -9,6 +9,8 @@ CORS_HEADERS = {
     "Access-Control-Allow-Headers": "Content-Type",
 }
 
+SUPPORTED_LANGS = {"en", "de", "fr", "it", "es", "pt", "ar", "hi", "ja", "ko", "zh", "zh-TW"}
+
 
 def lambda_handler(event, context):
     if event.get("httpMethod") == "OPTIONS":
@@ -17,6 +19,10 @@ def lambda_handler(event, context):
     try:
         body = json.loads(event.get("body") or "{}")
         text = body.get("text", "").strip()
+        lang = body.get("lang", "en")
+
+        if lang not in SUPPORTED_LANGS:
+            lang = "en"
 
         if not text:
             return {
@@ -32,7 +38,7 @@ def lambda_handler(event, context):
                 "body": json.dumps({"error": "text must be 5000 characters or fewer"}),
             }
 
-        result = comprehend.detect_sentiment(Text=text, LanguageCode="en")
+        result = comprehend.detect_sentiment(Text=text, LanguageCode=lang)
 
         sentiment = result["Sentiment"].lower()
         scores = result["SentimentScore"]

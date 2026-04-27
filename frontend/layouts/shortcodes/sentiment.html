@@ -1,12 +1,15 @@
+{{ $lang := .Page.Lang }}
+{{ $isDE := eq $lang "de" }}
+
 <div class="sentiment-widget">
   <textarea
     id="sentiment-input"
-    placeholder="Type a sentence and see if it reads as positive, negative, or neutral..."
+    placeholder="{{ if $isDE }}Einen Satz eingeben und sehen ob er positiv, negativ oder neutral klingt...{{ else }}Type a sentence and see if it reads as positive, negative, or neutral...{{ end }}"
     maxlength="5000"
     rows="3"
   ></textarea>
   <div class="sentiment-controls">
-    <button id="sentiment-btn" onclick="analyzeSentiment()">Analyze</button>
+    <button id="sentiment-btn" onclick="analyzeSentiment()">{{ if $isDE }}Analysieren{{ else }}Analyze{{ end }}</button>
     <span id="sentiment-char-count">0 / 5000</span>
   </div>
   <div id="sentiment-result" class="sentiment-result" style="display:none;"></div>
@@ -95,6 +98,19 @@
   });
 })();
 
+var sentimentLang = "{{ $lang }}";
+var sentimentI18n = {
+  analyzing: {{ if $isDE }}"Analysiert..."{{ else }}"Analyzing…"{{ end }},
+  analyze:   {{ if $isDE }}"Analysieren"{{ else }}"Analyze"{{ end }},
+  error:     {{ if $isDE }}"Fehler: "{{ else }}"Error: "{{ end }},
+  labels: {
+    positive: {{ if $isDE }}"positiv"{{ else }}"positive"{{ end }},
+    negative: {{ if $isDE }}"negativ"{{ else }}"negative"{{ end }},
+    neutral:  {{ if $isDE }}"neutral"{{ else }}"neutral"{{ end }},
+    mixed:    {{ if $isDE }}"gemischt"{{ else }}"mixed"{{ end }},
+  }
+};
+
 async function analyzeSentiment() {
   const input = document.getElementById("sentiment-input");
   const btn = document.getElementById("sentiment-btn");
@@ -104,7 +120,7 @@ async function analyzeSentiment() {
   if (!text) return;
 
   btn.disabled = true;
-  btn.textContent = "Analyzing…";
+  btn.textContent = sentimentI18n.analyzing;
   result.style.display = "none";
   result.className = "sentiment-result";
 
@@ -112,7 +128,7 @@ async function analyzeSentiment() {
     const res = await fetch("https://bgb3jg1qy4.execute-api.eu-central-1.amazonaws.com/prod/sentiment", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text }),
+      body: JSON.stringify({ text, lang: sentimentLang }),
     });
 
     const data = await res.json();
@@ -123,17 +139,17 @@ async function analyzeSentiment() {
 
     const s = data.sentiment;
     const sc = data.scores;
-    const bars = ["positive", "negative", "neutral", "mixed"];
+    const barKeys = ["positive", "negative", "neutral", "mixed"];
 
     result.className = "sentiment-result " + s;
     result.innerHTML =
-      '<div class="sentiment-label">' + s + '</div>' +
+      '<div class="sentiment-label">' + sentimentI18n.labels[s] + '</div>' +
       '<div class="sentiment-bars">' +
-      bars.map(function (k) {
+      barKeys.map(function (k) {
         var pct = Math.round(sc[k] * 100);
         return (
           '<div class="sentiment-bar-row">' +
-          '<span class="sentiment-bar-label">' + k + '</span>' +
+          '<span class="sentiment-bar-label">' + sentimentI18n.labels[k] + '</span>' +
           '<div class="sentiment-bar-track">' +
           '<div class="sentiment-bar-fill ' + k + '-fill" style="width:' + pct + '%"></div>' +
           '</div>' +
@@ -145,11 +161,11 @@ async function analyzeSentiment() {
     result.style.display = "block";
   } catch (err) {
     result.className = "sentiment-result error";
-    result.innerHTML = "Error: " + err.message;
+    result.innerHTML = sentimentI18n.error + err.message;
     result.style.display = "block";
   } finally {
     btn.disabled = false;
-    btn.textContent = "Analyze";
+    btn.textContent = sentimentI18n.analyze;
   }
 }
 </script>
