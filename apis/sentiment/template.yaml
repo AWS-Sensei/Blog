@@ -15,7 +15,7 @@ Resources:
     Properties:
       FunctionName: sensei-sentiment
       Handler: handler.lambda_handler
-      CodeUri: .
+      CodeUri: src/
       Policies:
         - Version: '2012-10-17'
           Statement:
