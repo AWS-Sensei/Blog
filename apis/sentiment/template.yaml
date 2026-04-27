@@ -46,6 +46,11 @@ Resources:
         AllowMethods: "'POST, OPTIONS'"
         AllowHeaders: "'Content-Type'"
         AllowOrigin: "'https://aws-sensei.cloud'"
+      MethodSettings:
+        - ResourcePath: "/*"
+          HttpMethod: "*"
+          ThrottlingRateLimit: 1
+          ThrottlingBurstLimit: 5
 
 Outputs:
   SentimentApiUrl:
