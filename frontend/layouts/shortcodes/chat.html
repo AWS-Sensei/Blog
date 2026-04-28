@@ -6,8 +6,7 @@
 
   <!-- Name prompt -->
   <div id="chat-name-prompt" class="chat-name-prompt" style="display:none;">
-    <p class="chat-name-label">{{ if $isDE }}Dein Name (wird gespeichert){{ else }}Your name (saved locally){{ end }}</p>
-    <div class="chat-name-row">
+<div class="chat-name-row">
       <input id="chat-name-input" type="text" maxlength="30"
         placeholder="{{ if $isDE }}Name eingeben…{{ else }}Enter your name…{{ end }}" />
       <button onclick="chatJoin()">{{ if $isDE }}Beitreten{{ else }}Join{{ end }}</button>
@@ -156,6 +155,7 @@
       setStatus("connected");
       document.getElementById("chat-input").disabled = false;
       document.getElementById("chat-send-btn").disabled = false;
+      ws.send(JSON.stringify({ action: "getHistory", postSlug: POST_SLUG }));
     };
 
     ws.onclose = function () {
