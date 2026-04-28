@@ -139,6 +139,6 @@ Im Markdown reicht:
 
 {{< cost >}}
 
-## Kommentare
+---
 
 {{< chat >}}
