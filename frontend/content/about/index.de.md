@@ -25,3 +25,9 @@ Ein weiterer Meilenstein auf meinem Weg war die Auseinandersetzung mit DevOps-Pr
 Mit diesem Blog möchte ich mein Wissen teilen, Gedanken festhalten und vielleicht auch anderen Entwickler:innen auf ihrem Weg weiterhelfen. Egal ob du gerade erst startest oder schon tief im Code steckst – schön, dass du hier bist!
 
 **Let’s build better software. Gemeinsam.**
+
+## Was dieser Blog kostet
+
+Transparenz ist mir wichtig — auch bei den Kosten. Dieser Blog läuft vollständig auf AWS, serverless und so kosteneffizient wie möglich. Die aktuellen Kosten werden täglich automatisch aus AWS Cost Explorer abgerufen.
+
+{{< cost >}}

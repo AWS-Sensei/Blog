@@ -13,7 +13,7 @@ For the past **6 years**, I’ve been working extensively with **AWS**, building
 
 A major turning point in my journey was discovering the principles of **DevOps**. Reading **"The Phoenix Project"** fundamentally changed the way I think about software delivery. Since then, I’ve been committed to bridging the gap between Dev, Ops, and Business – driven by automation, transparency, and continuous improvement.
 
-### What I’m passionate about
+## What I’m passionate about
 
 - Clean Code & Test-Driven Development
 - Automated CI/CD pipelines
@@ -26,3 +26,9 @@ This blog is a place for me to share what I’ve learned, capture my thoughts, a
 Whether you're just getting started or already deep in the code – I'm glad you're here!
 
 **Let’s build better software. Together.**
+
+## What This Blog Costs
+
+Transparency matters to me — including when it comes to costs. This blog runs entirely on AWS, serverless and as cost-efficient as possible. Current costs are fetched automatically from AWS Cost Explorer every day.
+
+{{< cost >}}
