@@ -138,3 +138,7 @@ In Markdown all it takes is:
 ## Running Costs
 
 {{< cost >}}
+
+## Comments
+
+{{< chat >}}
