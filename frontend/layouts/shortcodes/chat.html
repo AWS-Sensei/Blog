@@ -4,6 +4,8 @@
 
 <div class="chat-widget" id="chat-widget">
 
+  <div class="chat-title">{{ if $isDE }}Kommentare{{ else }}Comments{{ end }}</div>
+
   <!-- Name prompt -->
   <div id="chat-name-prompt" class="chat-name-prompt" style="display:none;">
 <div class="chat-name-row">
@@ -35,6 +37,14 @@
 </div>
 
 <style>
+.chat-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.45;
+  margin-bottom: 1rem;
+}
 .chat-widget {
   border: 1px solid rgba(255,255,255,0.1);
   border-radius: 8px;
