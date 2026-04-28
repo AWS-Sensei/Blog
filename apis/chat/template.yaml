@@ -158,9 +158,10 @@ Resources:
           Statement:
             - Effect: Allow
               Action: [dynamodb:PutItem, dynamodb:Scan, dynamodb:DeleteItem]
-              Resource:
-                - !GetAtt ConnectionsTable.Arn
-                - !GetAtt MessagesTable.Arn
+              Resource: !GetAtt ConnectionsTable.Arn
+            - Effect: Allow
+              Action: [dynamodb:PutItem, dynamodb:Query]
+              Resource: !GetAtt MessagesTable.Arn
             - Effect: Allow
               Action: execute-api:ManageConnections
               Resource: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ChatWebSocketApi}/*"

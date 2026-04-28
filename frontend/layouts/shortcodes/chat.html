@@ -2,7 +2,7 @@
 {{ $isDE := eq $lang "de" }}
 {{ $postSlug := .Page.File.Dir | path.Base }}
 
-<hr style="margin: 2rem 0; opacity: 0.15;">
+<div class="chat-separator"></div>
 <div class="chat-widget" id="chat-widget">
 
   <!-- Name prompt -->
@@ -38,6 +38,10 @@
 </div>
 
 <style>
+.chat-separator {
+  border-top: 1px solid rgba(255,255,255,0.2);
+  margin: 2.5rem 0 1.5rem;
+}
 .chat-widget {
   border: 1px solid rgba(255,255,255,0.1);
   border-radius: 8px;
