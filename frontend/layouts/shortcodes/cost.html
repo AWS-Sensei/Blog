@@ -54,8 +54,8 @@
 
 <script>
 var costI18n = {
-  refreshed: {{ if $isDE }}"Zuletzt aktualisiert: "{{ else }}"Last refreshed: "{{ end }},
-  period:    {{ if $isDE }}"Zeitraum: "{{ else }}"Period: "{{ end }},
+  refreshed: "{{ if $isDE }}Zuletzt aktualisiert: {{ else }}Last refreshed: {{ end }}",
+  period:    "{{ if $isDE }}Zeitraum: {{ else }}Period: {{ end }}",
 };
 
 var serviceNames = {

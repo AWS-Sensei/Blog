@@ -100,14 +100,14 @@
 
 var sentimentLang = "{{ $lang }}";
 var sentimentI18n = {
-  analyzing: {{ if $isDE }}"Analysiert..."{{ else }}"Analyzing…"{{ end }},
-  analyze:   {{ if $isDE }}"Analysieren"{{ else }}"Analyze"{{ end }},
-  error:     {{ if $isDE }}"Fehler: "{{ else }}"Error: "{{ end }},
+  analyzing: "{{ if $isDE }}Analysiert...{{ else }}Analyzing…{{ end }}",
+  analyze:   "{{ if $isDE }}Analysieren{{ else }}Analyze{{ end }}",
+  error:     "{{ if $isDE }}Fehler: {{ else }}Error: {{ end }}",
   labels: {
-    positive: {{ if $isDE }}"positiv"{{ else }}"positive"{{ end }},
-    negative: {{ if $isDE }}"negativ"{{ else }}"negative"{{ end }},
-    neutral:  {{ if $isDE }}"neutral"{{ else }}"neutral"{{ end }},
-    mixed:    {{ if $isDE }}"gemischt"{{ else }}"mixed"{{ end }},
+    positive: "{{ if $isDE }}positiv{{ else }}positive{{ end }}",
+    negative: "{{ if $isDE }}negativ{{ else }}negative{{ end }}",
+    neutral:  "{{ if $isDE }}neutral{{ else }}neutral{{ end }}",
+    mixed:    "{{ if $isDE }}gemischt{{ else }}mixed{{ end }}",
   }
 };
 

@@ -110,7 +110,7 @@
 (function () {
   var WS_URL = "wss://wv1nl68r53.execute-api.eu-central-1.amazonaws.com/prod";
   var POST_SLUG = "{{ $postSlug }}";
-  var isDE = {{ if $isDE }}true{{ else }}false{{ end }};
+  var isDE = "{{ if $isDE }}true{{ else }}false{{ end }}" === "true";
 
   var i18n = {
     connected:    isDE ? "Verbunden" : "Connected",
