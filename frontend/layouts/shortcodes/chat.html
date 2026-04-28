@@ -1,0 +1,237 @@
+{{ $lang := .Page.Lang }}
+{{ $isDE := eq $lang "de" }}
+{{ $postSlug := .Page.File.Dir | path.Base }}
+
+<div class="chat-widget" id="chat-widget">
+
+  <!-- Name prompt -->
+  <div id="chat-name-prompt" class="chat-name-prompt" style="display:none;">
+    <p class="chat-name-label">{{ if $isDE }}Dein Name (wird gespeichert){{ else }}Your name (saved locally){{ end }}</p>
+    <div class="chat-name-row">
+      <input id="chat-name-input" type="text" maxlength="30"
+        placeholder="{{ if $isDE }}Name eingeben…{{ else }}Enter your name…{{ end }}" />
+      <button onclick="chatJoin()">{{ if $isDE }}Beitreten{{ else }}Join{{ end }}</button>
+    </div>
+  </div>
+
+  <!-- Chat -->
+  <div id="chat-main" style="display:none;">
+    <div class="chat-header">
+      <span id="chat-status" class="chat-status chat-status--connecting">
+        {{ if $isDE }}Verbinde…{{ else }}Connecting…{{ end }}
+      </span>
+      <button class="chat-name-reset" onclick="chatReset()">
+        {{ if $isDE }}Name ändern{{ else }}Change name{{ end }}
+      </button>
+    </div>
+    <div id="chat-messages" class="chat-messages"></div>
+    <div class="chat-input-row">
+      <input id="chat-input" type="text" maxlength="500"
+        placeholder="{{ if $isDE }}Nachricht…{{ else }}Message…{{ end }}"
+        onkeydown="if(event.key==='Enter') chatSend()" disabled />
+      <button id="chat-send-btn" onclick="chatSend()" disabled>
+        {{ if $isDE }}Senden{{ else }}Send{{ end }}
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<style>
+.chat-widget {
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin: 1.5rem 0;
+  background: rgba(255,255,255,0.03);
+  font-size: 0.9rem;
+}
+.chat-name-label { opacity: 0.7; margin: 0 0 0.6rem; }
+.chat-name-row { display: flex; gap: 0.5rem; }
+.chat-name-row input, .chat-input-row input {
+  flex: 1;
+  background: rgba(0,0,0,0.2);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 6px;
+  color: inherit;
+  font-family: inherit;
+  font-size: 0.9rem;
+  padding: 0.45rem 0.75rem;
+}
+.chat-name-row input:focus, .chat-input-row input:focus {
+  outline: none;
+  border-color: rgba(255,255,255,0.35);
+}
+.chat-name-row button, .chat-input-row button {
+  background: #4a9eff;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.45rem 1rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+.chat-name-row button:hover, .chat-input-row button:hover { background: #3a8eef; }
+.chat-name-row button:disabled, .chat-input-row button:disabled { background: #555; cursor: not-allowed; }
+.chat-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; }
+.chat-status { font-size: 0.78rem; opacity: 0.6; }
+.chat-status--connected { color: #48c774; opacity: 1; }
+.chat-status--disconnected { color: #ff6358; opacity: 1; }
+.chat-name-reset { background: none; border: none; color: inherit; font-size: 0.75rem; opacity: 0.4; cursor: pointer; padding: 0; }
+.chat-name-reset:hover { opacity: 0.8; }
+.chat-messages {
+  min-height: 6rem;
+  max-height: 18rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 0.75rem;
+  padding-right: 0.25rem;
+}
+.chat-msg { display: flex; flex-direction: column; gap: 0.1rem; }
+.chat-msg-meta { font-size: 0.72rem; opacity: 0.45; }
+.chat-msg-author { font-weight: 600; margin-right: 0.3rem; }
+.chat-msg-text { font-size: 0.88rem; word-break: break-word; }
+.chat-input-row { display: flex; gap: 0.5rem; }
+.chat-empty { opacity: 0.35; font-size: 0.82rem; text-align: center; margin: 1rem 0; }
+</style>
+
+<script>
+(function () {
+  var WS_URL = "wss://PLACEHOLDER.execute-api.eu-central-1.amazonaws.com/prod";
+  var POST_SLUG = "{{ $postSlug }}";
+  var isDE = {{ if $isDE }}true{{ else }}false{{ end }};
+
+  var i18n = {
+    connected:    isDE ? "Verbunden" : "Connected",
+    connecting:   isDE ? "Verbinde…" : "Connecting…",
+    disconnected: isDE ? "Getrennt" : "Disconnected",
+    noMessages:   isDE ? "Noch keine Nachrichten — schreib die erste!" : "No messages yet — write the first one!",
+    justNow:      isDE ? "gerade eben" : "just now",
+  };
+
+  var ws = null;
+  var author = localStorage.getItem("chat-author");
+
+  function init() {
+    if (author) {
+      showChat();
+    } else {
+      document.getElementById("chat-name-prompt").style.display = "block";
+    }
+  }
+
+  window.chatJoin = function () {
+    var input = document.getElementById("chat-name-input");
+    var name = input.value.trim();
+    if (!name) return;
+    localStorage.setItem("chat-author", name);
+    author = name;
+    document.getElementById("chat-name-prompt").style.display = "none";
+    showChat();
+  };
+
+  window.chatReset = function () {
+    if (ws) ws.close();
+    localStorage.removeItem("chat-author");
+    author = null;
+    document.getElementById("chat-main").style.display = "none";
+    document.getElementById("chat-name-prompt").style.display = "block";
+    document.getElementById("chat-name-input").value = "";
+  };
+
+  function showChat() {
+    document.getElementById("chat-main").style.display = "block";
+    connect();
+  }
+
+  function connect() {
+    setStatus("connecting");
+    ws = new WebSocket(WS_URL + "?postSlug=" + encodeURIComponent(POST_SLUG));
+
+    ws.onopen = function () {
+      setStatus("connected");
+      document.getElementById("chat-input").disabled = false;
+      document.getElementById("chat-send-btn").disabled = false;
+    };
+
+    ws.onclose = function () {
+      setStatus("disconnected");
+      document.getElementById("chat-input").disabled = true;
+      document.getElementById("chat-send-btn").disabled = true;
+      setTimeout(connect, 3000);
+    };
+
+    ws.onerror = function () { ws.close(); };
+
+    ws.onmessage = function (event) {
+      var data = JSON.parse(event.data);
+      if (data.type === "history") {
+        var container = document.getElementById("chat-messages");
+        container.innerHTML = "";
+        if (!data.messages.length) {
+          container.innerHTML = '<div class="chat-empty">' + i18n.noMessages + '</div>';
+          return;
+        }
+        data.messages.forEach(function (m) { appendMessage(m, false); });
+        container.scrollTop = container.scrollHeight;
+      } else if (data.type === "message") {
+        var container = document.getElementById("chat-messages");
+        var empty = container.querySelector(".chat-empty");
+        if (empty) empty.remove();
+        appendMessage(data.message, true);
+      }
+    };
+  }
+
+  function appendMessage(msg, scroll) {
+    var container = document.getElementById("chat-messages");
+    var div = document.createElement("div");
+    div.className = "chat-msg";
+    var time = formatTime(msg.createdAt);
+    div.innerHTML =
+      '<div class="chat-msg-meta">' +
+      '<span class="chat-msg-author">' + escapeHtml(msg.author) + '</span>' +
+      '<span>' + time + '</span>' +
+      '</div>' +
+      '<div class="chat-msg-text">' + escapeHtml(msg.message) + '</div>';
+    container.appendChild(div);
+    if (scroll) container.scrollTop = container.scrollHeight;
+  }
+
+  window.chatSend = function () {
+    var input = document.getElementById("chat-input");
+    var text = input.value.trim();
+    if (!text || !ws || ws.readyState !== WebSocket.OPEN) return;
+    ws.send(JSON.stringify({ action: "sendMessage", postSlug: POST_SLUG, author: author, message: text }));
+    input.value = "";
+  };
+
+  function setStatus(state) {
+    var el = document.getElementById("chat-status");
+    el.className = "chat-status chat-status--" + state;
+    el.textContent = i18n[state];
+  }
+
+  function formatTime(iso) {
+    if (!iso) return i18n.justNow;
+    var d = new Date(iso);
+    var now = new Date();
+    var diff = Math.floor((now - d) / 60000);
+    if (diff < 1) return i18n.justNow;
+    if (diff < 60) return diff + " min";
+    return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  }
+
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+
+  init();
+})();
+</script>
