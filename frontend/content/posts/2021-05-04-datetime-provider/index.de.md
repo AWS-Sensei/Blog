@@ -112,3 +112,7 @@ public void OffsetServiceTest()
 Das Ergebnis ist testbar, sauber und ich kann dir versichern, dass dieser Test wiederholbar ist – er wird jeden Tag grün bleiben.
 
 Happy coding.
+
+---
+
+{{< chat >}}

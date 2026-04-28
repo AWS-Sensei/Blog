@@ -154,3 +154,7 @@ that forces readers to read the helper method’s implementation details in orde
 In some cases, Builders have so improved the code that they ended up being used in the production code as well.
 
 You can learn more about this topic [here](http://www.natpryce.com/articles/000714.html).
+
+---
+
+{{< chat >}}

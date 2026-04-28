@@ -124,3 +124,7 @@ The environment variables `WEBSITE_BUCKET` and `CLOUDFRONT_DISTRIBUTION_ID` come
 All content exists twice — as `index.de.md` and `index.en.md` in the same folder. Hugo detects the language from the filename and builds both versions automatically. In `hugo.toml`, each language is configured with its own menu and profile text.
 
 Switching between DE and EN happens via a language switcher in the theme — no JavaScript, purely static links.
+
+---
+
+{{< chat >}}

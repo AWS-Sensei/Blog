@@ -198,3 +198,7 @@ Dispose Shared Fixture
 Just remember the fresher the better, and transient is top.
 
 You can learn more about this topic [here](http://xunitpatterns.com/Fresh%20Fixture.html) and [here](https://xunit.net/docs/shared-context).
+
+---
+
+{{< chat >}}

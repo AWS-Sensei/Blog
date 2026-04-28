@@ -151,3 +151,7 @@ New feature = new folder. The pipeline never needs to be touched.
 ## Try It Out
 
 {{< sentiment >}}
+
+---
+
+{{< chat >}}

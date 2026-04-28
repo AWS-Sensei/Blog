@@ -123,3 +123,7 @@ Die Umgebungsvariablen `WEBSITE_BUCKET` und `CLOUDFRONT_DISTRIBUTION_ID` kommen 
 Alle Inhalte existieren zweimal — als `index.de.md` und `index.en.md` im selben Ordner. Hugo erkennt die Sprache anhand des Dateinamens und baut beide Versionen automatisch. In `hugo.toml` ist jede Sprache mit eigenem Menü und eigenem Profil-Text konfiguriert.
 
 Das Umschalten zwischen DE und EN erfolgt über einen Sprachumschalter im Theme — ohne JavaScript, rein über statische Links.
+
+---
+
+{{< chat >}}

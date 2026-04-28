@@ -168,3 +168,7 @@ Infrastructure as Code bis zur letzten Schraube.
 ## Was als nächstes kommt
 
 Die APIs-Pipeline ist bereit — ihr erstes Feature ist bereits live: ein **Sentiment-Analyse Widget** mit AWS Comprehend. Besucher tippen einen Satz ein und sehen in Echtzeit ob er positiv, negativ oder neutral klingt. Wie es gebaut wurde, beschreibt der [nächste Post](/de/posts/2026-04-10-sentiment-widget/).
+
+---
+
+{{< chat >}}

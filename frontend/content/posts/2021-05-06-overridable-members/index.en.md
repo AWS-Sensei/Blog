@@ -181,3 +181,7 @@ public class ProductServiceTests
 ```
 
 You can learn more about this topic in the book [The Art of Unit Testing](https://www.artofunittesting.com/) from Roy Osherove.
+
+---
+
+{{< chat >}}

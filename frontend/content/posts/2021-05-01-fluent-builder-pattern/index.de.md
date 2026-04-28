@@ -156,3 +156,7 @@ Das würde Leser zwingen, die Implementierungsdetails der Hilfsmethode zu prüfe
 In manchen Fällen haben sich Builder als so nützlich erwiesen, dass sie schließlich auch im Produktionscode verwendet wurden.
 
 Mehr über dieses Thema erfährst du [hier](http://www.natpryce.com/articles/000714.html).
+
+---
+
+{{< chat >}}

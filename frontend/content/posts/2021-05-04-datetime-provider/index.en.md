@@ -107,3 +107,7 @@ public void OffsetServiceTest()
 It’s testable, clean and I can ensure you that this test is repeatable and it will be green every day.
 
 Happy coding.
+
+---
+
+{{< chat >}}
