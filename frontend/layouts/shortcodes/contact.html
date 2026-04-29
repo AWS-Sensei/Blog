@@ -1,0 +1,142 @@
+{{ $lang := .Page.Lang }}
+{{ $isDE := eq $lang "de" }}
+
+<div class="contact-widget">
+
+  <form id="contact-form" onsubmit="contactSubmit(event)">
+    <div class="contact-field">
+      <label for="contact-name">{{ if $isDE }}Name{{ else }}Name{{ end }}</label>
+      <input id="contact-name" type="text" maxlength="100"
+        placeholder="{{ if $isDE }}Dein Name{{ else }}Your name{{ end }}" required />
+    </div>
+    <div class="contact-field">
+      <label for="contact-email">E-Mail</label>
+      <input id="contact-email" type="email" maxlength="200"
+        placeholder="{{ if $isDE }}deine@email.de{{ else }}your@email.com{{ end }}" required />
+    </div>
+    <div class="contact-field">
+      <label for="contact-message">{{ if $isDE }}Nachricht{{ else }}Message{{ end }}</label>
+      <textarea id="contact-message" maxlength="2000" rows="5"
+        placeholder="{{ if $isDE }}Deine Nachricht…{{ else }}Your message…{{ end }}" required></textarea>
+    </div>
+    <div class="contact-footer">
+      <span id="contact-status" class="contact-status"></span>
+      <button type="submit" id="contact-submit">
+        {{ if $isDE }}Senden{{ else }}Send{{ end }}
+      </button>
+    </div>
+  </form>
+
+</div>
+
+<style>
+.contact-widget {
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin: 1.5rem 0;
+  background: rgba(255,255,255,0.03);
+  font-size: 0.9rem;
+}
+.contact-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-bottom: 0.9rem;
+}
+.contact-field label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  opacity: 0.5;
+}
+.contact-field input,
+.contact-field textarea {
+  background: rgba(0,0,0,0.2);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 6px;
+  color: inherit;
+  font-family: inherit;
+  font-size: 0.9rem;
+  padding: 0.45rem 0.75rem;
+  resize: vertical;
+}
+.contact-field input:focus,
+.contact-field textarea:focus {
+  outline: none;
+  border-color: rgba(255,255,255,0.35);
+}
+.contact-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+.contact-status {
+  font-size: 0.82rem;
+  opacity: 0.7;
+}
+.contact-status--success { color: #48c774; opacity: 1; }
+.contact-status--error   { color: #ff6358; opacity: 1; }
+.contact-widget button[type="submit"] {
+  background: #4a9eff;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.45rem 1.2rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+.contact-widget button[type="submit"]:hover { background: #3a8eef; }
+.contact-widget button[type="submit"]:disabled { background: #555; cursor: not-allowed; }
+</style>
+
+<script>
+(function () {
+  var API_URL = "https://placeholder.execute-api.eu-central-1.amazonaws.com/prod/contact";
+  var isDE = "{{ if $isDE }}true{{ else }}false{{ end }}" === "true";
+
+  var i18n = {
+    sending:  isDE ? "Wird gesendet…" : "Sending…",
+    success:  isDE ? "Nachricht gesendet!" : "Message sent!",
+    error:    isDE ? "Fehler beim Senden. Bitte versuche es erneut." : "Failed to send. Please try again.",
+  };
+
+  window.contactSubmit = function (e) {
+    e.preventDefault();
+    var btn = document.getElementById("contact-submit");
+    var status = document.getElementById("contact-status");
+
+    var name    = document.getElementById("contact-name").value.trim();
+    var email   = document.getElementById("contact-email").value.trim();
+    var message = document.getElementById("contact-message").value.trim();
+
+    btn.disabled = true;
+    status.className = "contact-status";
+    status.textContent = i18n.sending;
+
+    fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: name, email: email, message: message }),
+    })
+      .then(function (r) {
+        if (!r.ok) throw new Error();
+        return r.json();
+      })
+      .then(function () {
+        status.className = "contact-status contact-status--success";
+        status.textContent = i18n.success;
+        document.getElementById("contact-form").reset();
+      })
+      .catch(function () {
+        status.className = "contact-status contact-status--error";
+        status.textContent = i18n.error;
+        btn.disabled = false;
+      });
+  };
+})();
+</script>

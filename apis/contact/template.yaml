@@ -1,0 +1,61 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Contact form using SES
+
+Globals:
+  Function:
+    Timeout: 10
+    Runtime: python3.12
+    MemorySize: 128
+
+Resources:
+
+  ContactApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: sensei-contact-api
+      StageName: prod
+      Cors:
+        AllowOrigin: "'https://aws-sensei.cloud'"
+        AllowMethods: "'POST, OPTIONS'"
+        AllowHeaders: "'Content-Type'"
+      MethodSettings:
+        - ResourcePath: "/*"
+          HttpMethod: "*"
+          ThrottlingRateLimit: 1
+          ThrottlingBurstLimit: 5
+
+  ContactFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: sensei-contact
+      Handler: handler.lambda_handler
+      CodeUri: src/
+      Environment:
+        Variables:
+          TO_EMAIL: marcel.baltzer@hotmail.de
+          FROM_EMAIL: noreply@aws-sensei.cloud
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action: ses:SendEmail
+              Resource: "*"
+      Events:
+        ContactPost:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ContactApi
+            Path: /contact
+            Method: POST
+        ContactOptions:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ContactApi
+            Path: /contact
+            Method: OPTIONS
+
+Outputs:
+  ContactApiUrl:
+    Description: Contact form API URL
+    Value: !Sub "https://${ContactApi}.execute-api.${AWS::Region}.amazonaws.com/prod/contact"

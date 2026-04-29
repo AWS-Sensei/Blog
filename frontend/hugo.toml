@@ -38,11 +38,16 @@ enableEmoji = true
         url = "/projects/"
       [[languages.en.menu.main]]
         weight = 4
+        identifier = "contact"
+        name = "Contact"
+        url = "/contact/"
+      [[languages.en.menu.main]]
+        weight = 5
         identifier = "flashcards"
         name = "Flashcards"
         url = "https://flashcards.aws-sensei.cloud"
       [[languages.en.menu.main]]
-        weight = 5
+        weight = 6
         identifier = "github"
         pre = "<i class='fab fa-github fa-fw' aria-hidden='true'></i>"
         url = "https://github.com/AWS-Sensei"
@@ -74,11 +79,16 @@ enableEmoji = true
         url = "/projects/"
       [[languages.de.menu.main]]
         weight = 4
+        identifier = "contact"
+        name = "Kontakt"
+        url = "/contact/"
+      [[languages.de.menu.main]]
+        weight = 5
         identifier = "flashcards"
         name = "Lernkarten"
         url = "https://flashcards.aws-sensei.cloud"
       [[languages.de.menu.main]]
-        weight = 5
+        weight = 6
         identifier = "github"
         pre = "<i class='fab fa-github fa-fw' aria-hidden='true'></i>"
         url = "https://github.com/AWS-Sensei"
