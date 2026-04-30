@@ -156,6 +156,11 @@ enableEmoji = true
     # false is a necessary configuration (https://github.com/dillonzq/LoveIt/issues/158)
     noClasses = false
 
+[params.search]
+  enable = true
+  type = "lunr"
+  contentLength = 4000
+
 [params.cognitoDrafts]
   enable = true
   domain = "YOUR_DOMAIN"
