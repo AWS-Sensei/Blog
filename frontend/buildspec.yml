@@ -20,11 +20,7 @@ phases:
     commands:
       - echo "Deploying to $WEBSITE_BUCKET..."
       - aws s3 sync public/ s3://$WEBSITE_BUCKET --delete --exclude "audio/*" --exclude "_content/*"
-      - echo "Syncing changed markdown files for Polly triggers..."
-      - |
-        git -C $CODEBUILD_SRC_DIR diff-tree --no-commit-id -r --name-only HEAD -- frontend/content/posts/ | grep "\.md$" | while read file; do
-          echo "Uploading $file..."
-          aws s3 cp "$CODEBUILD_SRC_DIR/$file" "s3://$WEBSITE_BUCKET/_${file#frontend/}"
-        done
+      - echo "Syncing markdown files for Polly triggers..."
+      - aws s3 sync content/posts/ s3://$WEBSITE_BUCKET/_content/posts/ --exclude "*" --include "*.md"
       - echo "Invalidating CloudFront cache..."
       - aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_DISTRIBUTION_ID --paths "/*"

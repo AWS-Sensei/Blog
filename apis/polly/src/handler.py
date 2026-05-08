@@ -1,4 +1,5 @@
 import boto3
+import hashlib
 import os
 import re
 from html.parser import HTMLParser
@@ -173,6 +174,17 @@ def lambda_handler(event, _context):
         print(f"No text extracted from {html_key}")
         return
 
+    content_hash = hashlib.md5(text.encode()).hexdigest()
+    audio_key = f"audio/{slug}.{lang}.mp3"
+
+    try:
+        head = s3.head_object(Bucket=BUCKET, Key=audio_key)
+        if head.get("Metadata", {}).get("content-hash") == content_hash:
+            print(f"Content unchanged, skipping: {audio_key}")
+            return
+    except Exception:
+        pass
+
     audio_parts = []
     for chunk in to_ssml_chunks(text):
         resp = polly.synthesize_speech(
@@ -186,10 +198,11 @@ def lambda_handler(event, _context):
 
     s3.put_object(
         Bucket=BUCKET,
-        Key=f"audio/{slug}.{lang}.mp3",
+        Key=audio_key,
         Body=b"".join(audio_parts),
         ContentType="audio/mpeg",
         CacheControl="max-age=31536000",
+        Metadata={"content-hash": content_hash},
     )
 
     print(f"Generated audio/{slug}.{lang}.mp3")
