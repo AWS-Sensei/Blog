@@ -17,41 +17,74 @@ CODE_LABEL = {
 
 PARA_BREAK = "\x00"
 
+SKIP_IDS = {"chat-widget"}
+
 
 class ArticleExtractor(HTMLParser):
     def __init__(self):
         super().__init__()
+        self.in_title = False
         self.in_content = False
         self.content_depth = 0
-        self.skip_tags = {"pre", "script", "style"}
         self.skip_depth = 0
         self.in_pre = False
         self.parts = []
 
     def handle_starttag(self, tag, attrs):
         attrs_dict = dict(attrs)
-        if not self.in_content:
-            if attrs_dict.get("id") == "content":
-                self.in_content = True
-                self.content_depth = 1
-        else:
+        tag_id = attrs_dict.get("id", "")
+        tag_class = attrs_dict.get("class", "")
+
+        # Skip known unwanted sections
+        if tag_id in SKIP_IDS:
+            self.skip_depth += 1
+            return
+
+        if self.skip_depth > 0:
+            if tag == "div":
+                self.skip_depth += 1
+            return
+
+        # Title: <h1 class="single-title">
+        if tag == "h1" and "single-title" in tag_class:
+            self.in_title = True
+            return
+
+        # Content div
+        if not self.in_content and tag_id == "content":
+            self.in_content = True
+            self.content_depth = 1
+            return
+
+        if self.in_content:
             if tag == "div":
                 self.content_depth += 1
-            if tag == "pre":
+            elif tag == "pre":
                 self.in_pre = True
-            elif tag in self.skip_tags:
+            elif tag in ("script", "style"):
                 self.skip_depth += 1
 
     def handle_endtag(self, tag):
+        if self.skip_depth > 0:
+            if tag == "div":
+                self.skip_depth -= 1
+            return
+
+        if self.in_title and tag == "h1":
+            self.in_title = False
+            self.parts.append(PARA_BREAK)
+            return
+
         if not self.in_content:
             return
-        if tag in ("p", "h1", "h2", "h3", "h4", "li", "hr"):
-            if not self.in_pre and self.skip_depth == 0:
+
+        if tag in ("p", "h2", "h3", "h4", "li", "hr"):
+            if not self.in_pre:
                 self.parts.append(PARA_BREAK)
         elif tag == "pre":
             self.in_pre = False
             self.parts.append(PARA_BREAK)
-        elif tag in self.skip_tags:
+        elif tag in ("script", "style"):
             self.skip_depth -= 1
         elif tag == "div":
             self.content_depth -= 1
@@ -59,7 +92,9 @@ class ArticleExtractor(HTMLParser):
                 self.in_content = False
 
     def handle_data(self, data):
-        if self.in_content and not self.in_pre and self.skip_depth == 0:
+        if self.skip_depth > 0:
+            return
+        if (self.in_title or self.in_content) and not self.in_pre:
             self.parts.append(data)
 
     def get_text(self):
