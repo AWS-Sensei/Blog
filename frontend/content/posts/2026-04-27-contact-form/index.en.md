@@ -13,6 +13,8 @@ tags: ["AWS", "Lambda", "API Gateway", "SES", "SAM", "Hugo", "Serverless"]
 lightgallery: true
 ---
 
+{{< listen >}}
+
 Static blogs have no backend — but sometimes you still need a way for visitors to get in touch. The usual solution is a third-party service like Formspree or Netlify Forms. My solution: build everything on AWS myself.
 
 ## The Architecture

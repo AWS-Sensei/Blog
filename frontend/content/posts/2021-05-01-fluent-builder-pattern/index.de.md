@@ -15,6 +15,8 @@ tags: ["UnitTest", "C-Sharp", ".Net"]
 lightgallery: true
 ---
 
+{{< listen >}}
+
 Hilfsmethoden erleichtern das Erstellen von Testdaten. Aber mit der Zeit können sie schwer lesbar werden, 
 da man immer mehr Varianten der Testdaten benötigt, um den sich ständig weiterentwickelnden Anforderungen neuer Tests gerecht zu werden.
 

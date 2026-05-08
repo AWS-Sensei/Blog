@@ -13,6 +13,8 @@ tags: ["AWS", "Lambda", "API Gateway", "SES", "SAM", "Hugo", "Serverless"]
 lightgallery: true
 ---
 
+{{< listen >}}
+
 Statische Blogs haben kein Backend — aber manchmal braucht man trotzdem einen Weg damit Besucher Kontakt aufnehmen können. Die übliche Lösung ist ein Drittanbieter-Dienst wie Formspree oder Netlify Forms. Meine Lösung: alles selbst auf AWS bauen.
 
 ## Die Architektur

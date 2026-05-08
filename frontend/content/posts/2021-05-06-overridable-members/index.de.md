@@ -15,6 +15,8 @@ tags: ["UnitTest", "C-Sharp", ".Net"]
 lightgallery: true
 ---
 
+{{< listen >}}
+
 ## Mocking über virtuelle Methoden
 
 Fakes von Abhängigkeiten mit einem Interface und Dependency Injection sind einfach und üblich.  

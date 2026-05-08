@@ -13,6 +13,8 @@ tags: ["AWS", "Lambda", "API Gateway", "DynamoDB", "WebSocket", "SAM", "Hugo", "
 lightgallery: true
 ---
 
+{{< listen >}}
+
 Static blogs have a problem: no interaction. Comment systems like Disqus exist, but they load third-party JavaScript, track visitors, and never quite fit the blog's look. My solution: build a custom real-time comment section directly on AWS.
 
 The result is the widget at the bottom of this post — you can try it out right now.

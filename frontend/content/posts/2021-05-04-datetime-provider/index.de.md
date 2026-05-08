@@ -15,6 +15,8 @@ tags: ["UnitTest", "C-Sharp", ".Net"]
 lightgallery: true
 ---
 
+{{< listen >}}
+
 Unser Code ist oft zeitabhängig. Wir nutzen Datum oder Uhrzeit, um Logik umzusetzen und Entscheidungen im Code zu treffen.  
 Das Verhalten von `DateTime.Now` oder `DateTime.UtcNow` kann sich je nach System, Zeitzone oder Zeitumstellung (Sommer/Winter) unterscheiden.  
 Das bedeutet, dass wir dies für unsere Tests kontrollieren müssen.

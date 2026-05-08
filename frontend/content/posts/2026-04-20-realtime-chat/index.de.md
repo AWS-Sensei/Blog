@@ -13,6 +13,8 @@ tags: ["AWS", "Lambda", "API Gateway", "DynamoDB", "WebSocket", "SAM", "Hugo", "
 lightgallery: true
 ---
 
+{{< listen >}}
+
 Statische Blogs haben ein Problem: kein Austausch. Kommentarsysteme wie Disqus gibt es zwar, aber sie laden Drittanbieter-JavaScript, tracken Besucher und passen optisch nie wirklich zum Blog. Meine Lösung: eine eigene Echtzeit-Kommentarfunktion direkt auf AWS bauen.
 
 Das Ergebnis ist das Widget am Ende dieses Posts — du kannst es gleich ausprobieren.

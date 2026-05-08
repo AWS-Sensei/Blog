@@ -13,6 +13,8 @@ tags: ["AWS", "CodePipeline", "CodeBuild", "SAM", "IaC", "CI/CD", "CloudFormatio
 lightgallery: true
 ---
 
+{{< listen >}}
+
 In the [first post](/posts/2026-03-26-aws-cloud-migration-blog/) I described how aws-sensei.cloud is set up — Hugo, S3, CloudFront, a CodeBuild pipeline. That was a good start. But one pipeline for everything doesn't scale.
 
 The problem showed up in practice faster than expected: with a single pipeline, I kept hitting the CodeBuild free tier limit just by writing blog posts — even though I had only changed Markdown. Every commit triggered the full pipeline: Hugo build, infrastructure deploy, everything. Neither efficient nor cost-friendly.

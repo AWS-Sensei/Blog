@@ -16,6 +16,8 @@ tags: ["AWS", "Hugo", "CloudFront", "S3", "CodeBuild", "IaC", "Migration", "Verc
 lightgallery: true
 ---
 
+{{< listen >}}
+
 I have been working with AWS for over six years — in projects, in architecture, day to day. At some point it became clear: if I take my AWS knowledge seriously and want to show it to the world, my own infrastructure should reflect that.
 
 That is how **AWS Sensei** came about — as a platform to share knowledge, try things out, and make AWS skills visible. And if you are advertising your AWS skills, your own blog should run on AWS too.

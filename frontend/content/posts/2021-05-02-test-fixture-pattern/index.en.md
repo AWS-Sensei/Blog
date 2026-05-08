@@ -14,6 +14,8 @@ tags: ["UnitTest", "C-Sharp", ".Net"]
 lightgallery: true
 ---
 
+{{< listen >}}
+
 ## Test Fixtures
 
 Imagine your about to sit down to eat your lunch. The dirty breakfast dish is still on the table. You got three options. You can get a new plate, you can clean the old plate, or you can just eat lunch off the dirty plate. Thats it. New plate, clean plate, dirty plate. The same rules apply to tests.

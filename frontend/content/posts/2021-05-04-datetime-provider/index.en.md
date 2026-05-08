@@ -15,6 +15,8 @@ tags: ["UnitTest", "C-Sharp", ".Net"]
 lightgallery: true
 ---
 
+{{< listen >}}
+
 Our code is often time-dependent. We use the date or time to implement logic and make decisions in our code. The behavior of DateTime.Now or DateTime.UtcNow can differ due to the system, timezone and the time change (summer/winter). This means that we have to control this for our tests.
 
 Take this method for instance:

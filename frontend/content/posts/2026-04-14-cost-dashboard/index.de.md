@@ -13,6 +13,8 @@ tags: ["AWS", "Cost Explorer", "Lambda", "EventBridge", "FinOps", "SAM", "Hugo",
 lightgallery: true
 ---
 
+{{< listen >}}
+
 Eine Frage die ich mir bei jedem AWS-Projekt stelle: Was kostet das eigentlich? Bei diesem Blog habe ich die Antwort direkt eingebaut — am Ende dieses Posts siehst du live, was aws-sensei.cloud im laufenden Monat gekostet hat, aufgeschlüsselt nach AWS-Service.
 
 ## Die Idee

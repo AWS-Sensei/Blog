@@ -14,6 +14,8 @@ tags: ["UnitTest", "C-Sharp", ".Net"]
 lightgallery: true
 ---
 
+{{< listen >}}
+
 ## Test Fixtures
 
 Stell dir vor, du willst Mittag essen. Auf dem Tisch steht noch der schmutzige Frühstücksteller.  

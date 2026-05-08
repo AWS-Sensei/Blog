@@ -13,6 +13,8 @@ tags: ["AWS", "Lambda", "API Gateway", "Comprehend", "SAM", "Hugo", "Serverless"
 lightgallery: true
 ---
 
+{{< listen >}}
+
 The APIs pipeline from the [previous post](/posts/2026-04-02-three-pipelines-one-platform/) was ready — waiting for its first feature. The result is the sentiment analysis widget you can try out at the bottom of this post: type a sentence, AWS Comprehend analyzes it in real time and tells you whether it reads as positive, negative, neutral, or mixed.
 
 ## The Architecture

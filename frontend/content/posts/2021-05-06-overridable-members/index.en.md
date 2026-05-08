@@ -15,6 +15,8 @@ tags: ["UnitTest", "C-Sharp", ".Net"]
 lightgallery: true
 ---
 
+{{< listen >}}
+
 ## Mocking via virtual method
 
 Fake Dependencies with an Interface and Dependency Injection is easy and the usual approach. But how can you fake without Dependency Injection or an Interface. I will show you two situations that came up in production code.

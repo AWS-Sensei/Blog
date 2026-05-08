@@ -13,6 +13,8 @@ tags: ["Books", "Software Development", "Career", "Testing", "DevOps"]
 lightgallery: true
 ---
 
+{{< listen >}}
+
 Es gibt unzählige Bücher für Entwickler. Die meisten sind gut. Einige sind großartig. Und ein paar davon verändern wirklich die Art wie man denkt und arbeitet. Das hier sind meine fünf.
 
 ---
