@@ -40,23 +40,40 @@ Git Push
 
 ---
 
-## Warum Markdown als Trigger — und warum nicht `aws s3 sync`
+## Warum Markdown als Trigger — und wie Deduplizierung funktioniert
 
 Der erste Gedanke war, auf die HTML-Dateien zu triggern die Hugo generiert. Das Problem: Hugo baut *alle* HTML-Dateien bei jedem Deployment neu — jeder Post würde bei jedem Push triggern.
 
-Markdown-Dateien ändern sich nur wenn der Inhalt wirklich geändert wird — also die richtige Trigger-Quelle. Mein erster Ansatz war `aws s3 sync`, das ETags (MD5-Hashes) vergleicht und unveränderte Dateien überspringt.
-
-Das hat nicht funktioniert. Der S3-Bucket verwendet SSE-KMS-Verschlüsselung. Wenn S3 ein Objekt mit KMS speichert, wird der ETag aus dem *verschlüsselten* Inhalt abgeleitet — nicht aus dem Klartext. `aws s3 sync` berechnet also den lokalen MD5, vergleicht ihn mit dem KMS-modifizierten ETag in S3, sie stimmen nie überein, und jede Datei wird bei jedem Deployment neu hochgeladen.
-
-Die Lösung: `aws s3 sync` komplett weglassen. Stattdessen `git diff-tree` verwenden um nur die Dateien zu finden die sich im aktuellen Commit geändert haben:
+Markdown-Dateien ändern sich nur wenn der Inhalt wirklich geändert wird — also die richtige Trigger-Quelle. Die Pipeline synchronisiert sie mit `aws s3 sync`:
 
 ```bash
-git diff-tree --no-commit-id -r --name-only HEAD -- content/posts/ | grep "\.md$" | while read file; do
-  aws s3 cp "$file" "s3://$WEBSITE_BUCKET/_$file"
-done
+aws s3 sync content/posts/ s3://$WEBSITE_BUCKET/_content/posts/ --exclude "*" --include "*.md"
 ```
 
-Nur geänderte Posts werden hochgeladen. Nur diese triggern die Lambda. Kein ETag-Vergleich nötig.
+Es gibt aber einen Haken: Der S3-Bucket verwendet SSE-KMS-Verschlüsselung. Wenn S3 ein Objekt mit KMS speichert, wird der ETag aus dem *verschlüsselten* Inhalt abgeleitet — nicht aus dem Klartext. `aws s3 sync` berechnet also den lokalen MD5, vergleicht ihn mit dem KMS-modifizierten ETag in S3, sie stimmen nie überein, und jede Markdown-Datei wird bei jedem Deployment neu hochgeladen.
+
+Die eigentliche Deduplizierung findet in der Lambda statt: ein Content-Hash. Bevor Polly aufgerufen wird, berechnet die Lambda einen MD5-Hash des extrahierten Textes und vergleicht ihn mit dem in den S3-Metadaten der Audio-Datei gespeicherten Hash. Stimmen sie überein, ist das Audio bereits aktuell — keine Synthese nötig:
+
+```python
+content_hash = hashlib.md5(text.encode()).hexdigest()
+
+head = s3.head_object(Bucket=BUCKET, Key=audio_key)
+if head.get("Metadata", {}).get("content-hash") == content_hash:
+    print(f"Content unchanged, skipping: {audio_key}")
+    return
+```
+
+Wird Audio generiert, wird der Hash zusammen mit der MP3 gespeichert:
+
+```python
+s3.put_object(
+    Bucket=BUCKET, Key=audio_key, Body=b"".join(audio_parts),
+    ContentType="audio/mpeg",
+    Metadata={"content-hash": content_hash},
+)
+```
+
+So triggern zwar alle Markdown-Dateien die Lambda bei jedem Deployment, aber nur Posts mit wirklich geändertem Text durchlaufen Polly.
 
 ---
 

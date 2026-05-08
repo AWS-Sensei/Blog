@@ -40,23 +40,40 @@ Git Push
 
 ---
 
-## Why Markdown as the Trigger — and Why Not `aws s3 sync`
+## Why Markdown as the Trigger — and How Deduplication Works
 
 The first instinct was to trigger on the HTML files that Hugo generates. The problem: Hugo rebuilds *all* HTML on every deployment, so every post would trigger on every push.
 
-Markdown files only change when content actually changes — so they're the right trigger source. My first approach was `aws s3 sync`, which compares ETags (MD5 hashes) and skips unchanged files.
-
-That didn't work. The S3 bucket uses SSE-KMS encryption. When S3 stores an object with KMS, the ETag is derived from the *encrypted* content — not the plaintext. So `aws s3 sync` calculates the local MD5, compares it to the KMS-modified ETag in S3, they never match, and every file gets re-uploaded on every deployment.
-
-The fix: skip `aws s3 sync` entirely. Use `git diff-tree` instead to find only files that changed in the current commit:
+Markdown files only change when content actually changes — so they're the right trigger source. The pipeline syncs them with `aws s3 sync`:
 
 ```bash
-git diff-tree --no-commit-id -r --name-only HEAD -- content/posts/ | grep "\.md$" | while read file; do
-  aws s3 cp "$file" "s3://$WEBSITE_BUCKET/_$file"
-done
+aws s3 sync content/posts/ s3://$WEBSITE_BUCKET/_content/posts/ --exclude "*" --include "*.md"
 ```
 
-Only changed posts get uploaded. Only those trigger the Lambda. No ETags involved.
+There's a catch though: the S3 bucket uses SSE-KMS encryption. When S3 stores an object with KMS, the ETag is derived from the *encrypted* content — not the plaintext. So `aws s3 sync` calculates the local MD5, compares it to the KMS-modified ETag in S3, they never match, and every markdown file gets re-uploaded on every deployment.
+
+The fix lives in the Lambda instead: a content hash. Before calling Polly, the Lambda computes an MD5 hash of the extracted text and checks it against the hash stored in the audio file's S3 metadata. If they match, the audio is already up to date — no synthesis needed:
+
+```python
+content_hash = hashlib.md5(text.encode()).hexdigest()
+
+head = s3.head_object(Bucket=BUCKET, Key=audio_key)
+if head.get("Metadata", {}).get("content-hash") == content_hash:
+    print(f"Content unchanged, skipping: {audio_key}")
+    return
+```
+
+When audio is generated, the hash is saved alongside the MP3:
+
+```python
+s3.put_object(
+    Bucket=BUCKET, Key=audio_key, Body=b"".join(audio_parts),
+    ContentType="audio/mpeg",
+    Metadata={"content-hash": content_hash},
+)
+```
+
+So even though every markdown file triggers the Lambda on every deploy, only posts with actually changed text go through Polly.
 
 ---
 
