@@ -6,8 +6,8 @@ from html.parser import HTMLParser
 BUCKET = os.environ["WEBSITE_BUCKET"]
 
 VOICES = {
-    "en": "Joanna",
-    "de": "Vicki",
+    "en": "Matthew",
+    "de": "Daniel",
 }
 
 CODE_LABEL = {
