@@ -4,6 +4,10 @@ Parameters:
   DomainName:
     Type: String
     Default: aws-sensei.cloud
+  PollyFunctionArn:
+    Type: String
+    Default: "none"
+    Description: ARN of the Polly Lambda (set after sensei-api-polly stack is deployed)
   HostedZoneId:
     Type: String
     Description: The Route 53 hosted zone ID for aws-sensei.cloud
@@ -12,6 +16,9 @@ Parameters:
     Type: String
     Description: ACM certificate ARN for the domain (must be in us-east-1)
     Default: arn:aws:acm:us-east-1:804711834430:certificate/8c70eab8-1e9f-489e-b0ac-35c19bd85667
+
+Conditions:
+  HasPolly: !Not [!Equals [!Ref PollyFunctionArn, "none"]]
 
 Resources:
   WebsiteBucket:
@@ -22,17 +29,19 @@ Resources:
         BlockPublicPolicy: true
         IgnorePublicAcls: true
         RestrictPublicBuckets: true
-      NotificationConfiguration:
-        LambdaConfigurations:
-          - Event: "s3:ObjectCreated:*"
-            Filter:
-              S3Key:
-                Rules:
-                  - Name: prefix
-                    Value: _content/posts/
-                  - Name: suffix
-                    Value: .md
-            Function: "{{resolve:ssm:/sensei/polly/function-arn}}"
+      NotificationConfiguration: !If
+        - HasPolly
+        - LambdaConfigurations:
+            - Event: "s3:ObjectCreated:*"
+              Filter:
+                S3Key:
+                  Rules:
+                    - Name: prefix
+                      Value: _content/posts/
+                    - Name: suffix
+                      Value: .md
+              Function: !Ref PollyFunctionArn
+        - !Ref AWS::NoValue
         
   WebsiteBucketPolicy:
     Type: AWS::S3::BucketPolicy
