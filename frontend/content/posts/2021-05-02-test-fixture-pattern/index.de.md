@@ -83,7 +83,7 @@ public class FreshFixtureTests
 
 Führen wir die Tests aus, sieht das so aus:
 
-```
+```text
 Initialize Fixture
 Execute Test 1
 Initialize Fixture
@@ -124,7 +124,7 @@ public class FreshFixtureTests : IDisposable
 
 Beim Ausführen wird die `Dispose`-Funktion nach jedem Test aufgerufen:
 
-```
+```text
 Initialize Fixture
 Execute Test 1
 Dispose Fixture
@@ -189,7 +189,7 @@ public class DatabaseTests : IClassFixture<DatabaseFixture>
 
 Führen wir diesen Test aus, sieht das so aus:
 
-```
+```text
 Initialize Shared Fixture
 Execute Test 2
 Execute Test 1
@@ -198,7 +198,7 @@ Dispose Shared Fixture
 
 Kombiniert man alle Fixture-Typen, ergibt sich:
 
-```
+```text
 Initialize Shared Fixture
 Initialize Fixture
 Execute Test 1

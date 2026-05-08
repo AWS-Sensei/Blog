@@ -115,7 +115,7 @@ public class FreshFixtureTests : IDisposable
 
 As you can see, when we run it, the dispose function is called after each test.
 
-```
+```text
 Initialize Fixture
 Execute Test 1
 Dispose Fixture
@@ -177,7 +177,7 @@ public class DatabaseTests : IClassFixture<DatabaseFixture>
 
 When we run this test we can see that the DatabaseFixture constructor is called add the beginning and dispose after the last test.
 
-```
+```text
 Initialize Shared Fixture
 Execute Test 2
 Execute Test 1
@@ -186,7 +186,7 @@ Dispose Shared Fixture
 
 If you combine all type of fixtures the output would be.
 
-```
+```text
 Initialize Shared Fixture
 Initialize Fixture
 Execute Test 1
