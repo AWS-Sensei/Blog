@@ -40,11 +40,23 @@ Git Push
 
 ---
 
-## Warum Markdown als Trigger?
+## Warum Markdown als Trigger — und warum nicht `aws s3 sync`
 
 Der erste Gedanke war, auf die HTML-Dateien zu triggern die Hugo generiert. Das Problem: Hugo baut *alle* HTML-Dateien bei jedem Deployment neu — jeder Post würde bei jedem Push triggern.
 
-Markdown-Dateien ändern sich nur wenn der Inhalt wirklich geändert wird. `aws s3 sync` vergleicht ETags und überspringt unveränderte Dateien — die Lambda feuert also nur für wirklich neue oder geänderte Posts.
+Markdown-Dateien ändern sich nur wenn der Inhalt wirklich geändert wird — also die richtige Trigger-Quelle. Mein erster Ansatz war `aws s3 sync`, das ETags (MD5-Hashes) vergleicht und unveränderte Dateien überspringt.
+
+Das hat nicht funktioniert. Der S3-Bucket verwendet SSE-KMS-Verschlüsselung. Wenn S3 ein Objekt mit KMS speichert, wird der ETag aus dem *verschlüsselten* Inhalt abgeleitet — nicht aus dem Klartext. `aws s3 sync` berechnet also den lokalen MD5, vergleicht ihn mit dem KMS-modifizierten ETag in S3, sie stimmen nie überein, und jede Datei wird bei jedem Deployment neu hochgeladen.
+
+Die Lösung: `aws s3 sync` komplett weglassen. Stattdessen `git diff-tree` verwenden um nur die Dateien zu finden die sich im aktuellen Commit geändert haben:
+
+```bash
+git diff-tree --no-commit-id -r --name-only HEAD -- content/posts/ | grep "\.md$" | while read file; do
+  aws s3 cp "$file" "s3://$WEBSITE_BUCKET/_$file"
+done
+```
+
+Nur geänderte Posts werden hochgeladen. Nur diese triggern die Lambda. Kein ETag-Vergleich nötig.
 
 ---
 
