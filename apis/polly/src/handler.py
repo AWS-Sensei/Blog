@@ -1,5 +1,6 @@
 import boto3
 import hashlib
+import html
 import os
 import re
 from html.parser import HTMLParser
@@ -127,7 +128,8 @@ def to_ssml_chunks(text):
     current = ""
 
     for segment in segments:
-        addition = (SSML_BREAK if current else "") + segment
+        escaped = html.escape(segment)
+        addition = (SSML_BREAK if current else "") + escaped
         if len(current) + len(addition) > MAX_SSML_CHARS:
             if current:
                 chunks.append(f"<speak>{current}</speak>")
