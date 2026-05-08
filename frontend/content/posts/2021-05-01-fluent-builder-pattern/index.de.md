@@ -17,8 +17,7 @@ lightgallery: true
 
 {{< listen >}}
 
-Hilfsmethoden erleichtern das Erstellen von Testdaten. Aber mit der Zeit können sie schwer lesbar werden, 
-da man immer mehr Varianten der Testdaten benötigt, um den sich ständig weiterentwickelnden Anforderungen neuer Tests gerecht zu werden.
+Hilfsmethoden erleichtern das Erstellen von Testdaten. Aber mit der Zeit können sie schwer lesbar werden, da man immer mehr Varianten der Testdaten benötigt, um den sich ständig weiterentwickelnden Anforderungen neuer Tests gerecht zu werden.
 
 Nehmen wir an, wir haben die folgende `Customer`-Klasse:
 
@@ -49,8 +48,7 @@ Diese Hilfsmethode beginnt mit nur einem einzigen Parameter:
 var customer = NewCustomer("Jacob Knight");
 ```
 
-Doch schon bald kommen immer mehr Parameter hinzu. Bedingte Abfragen schleichen sich in den `NewCustomer()`-Methodenkörper ein, 
-um `null`-Werte zu behandeln, und die Methodenaufrufe werden durch die langen Parameterlisten schwer lesbar:
+Doch schon bald kommen immer mehr Parameter hinzu. Bedingte Abfragen schleichen sich in den `NewCustomer()`-Methodenkörper ein, um `null`-Werte zu behandeln, und die Methodenaufrufe werden durch die langen Parameterlisten schwer lesbar:
 
 ```csharp
 var validDate = NewCustomer("", new DateTime(1988, 5, 1), null, null);
@@ -148,16 +146,14 @@ Customer implicitCustomer = new CustomerBuilder()
             .WithAddress("4429 Kelley Roa");
 ```
 
-Ein großer Vorteil ist, dass der Testcode jetzt leichter zu schreiben und zu lesen ist, 
-weil die Parameter klar benannt sind.
+Ein großer Vorteil ist, dass der Testcode jetzt leichter zu schreiben und zu lesen ist, weil die Parameter klar benannt sind.
 
-Beachte außerdem, dass Tests niemals von Standardwerten abhängen sollten, 
-die durch eine Hilfsmethode gesetzt werden.  
+Beachte außerdem, dass Tests niemals von Standardwerten abhängen sollten, die durch eine Hilfsmethode gesetzt werden.  
 Das würde Leser zwingen, die Implementierungsdetails der Hilfsmethode zu prüfen, um den Test zu verstehen.
 
 In manchen Fällen haben sich Builder als so nützlich erwiesen, dass sie schließlich auch im Produktionscode verwendet wurden.
 
-Mehr über dieses Thema erfährst du [hier](http://www.natpryce.com/articles/000714.html).
+Mehr über dieses Thema erfährst du [in diesem Artikel](http://www.natpryce.com/articles/000714.html).
 
 ---
 

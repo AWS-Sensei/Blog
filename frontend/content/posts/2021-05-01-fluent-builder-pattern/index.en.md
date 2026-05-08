@@ -18,8 +18,7 @@ lightgallery: true
 
 {{< listen >}}
 
-Helper methods make it easier to create test data. But they can become difficult to read over time as
-you need more variations of the test data to satisfy constantly evolving requirements from new tests.
+Helper methods make it easier to create test data. But they can become difficult to read over time as you need more variations of the test data to satisfy constantly evolving requirements from new tests.
 
 Let say, we have the following Customer class.
 
@@ -67,8 +66,7 @@ var validEmail = NewCustomerWithEmail("nofec547@anim.com");
 var validAddress = NewCustomerWithAddress("4429 Kelley Road");
 ```
 
-Instead you can use the fluent builder pattern: create a helper method that returns a partially-built object whose state can be overridden in tests. The helper method initializes logically-required fields to reasonable defaults, so each test can specify only
-fields relevant to the case being tested:
+Instead you can use the fluent builder pattern: create a helper method that returns a partially-built object whose state can be overridden in tests. The helper method initializes logically-required fields to reasonable defaults, so each test can specify only fields relevant to the case being tested:
 
 ```csharp
 public class CustomerBuilder
@@ -150,12 +148,11 @@ Customer implicitCustomer = new CustomerBuilder()
 
 A big benefit is that the test code is now easier to write and read because the parameters are clearly identified.
 
-Also note that tests should never rely on default values that are specified by a helper method since
-that forces readers to read the helper method’s implementation details in order to understand the test.
+Also note that tests should never rely on default values that are specified by a helper method since that forces readers to read the helper method’s implementation details in order to understand the test.
 
 In some cases, Builders have so improved the code that they ended up being used in the production code as well.
 
-You can learn more about this topic [here](http://www.natpryce.com/articles/000714.html).
+You can learn more about this topic [in this article](http://www.natpryce.com/articles/000714.html).
 
 ---
 
