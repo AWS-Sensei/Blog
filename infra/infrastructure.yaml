@@ -22,6 +22,17 @@ Resources:
         BlockPublicPolicy: true
         IgnorePublicAcls: true
         RestrictPublicBuckets: true
+      NotificationConfiguration:
+        LambdaConfigurations:
+          - Event: "s3:ObjectCreated:*"
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: prefix
+                    Value: _content/posts/
+                  - Name: suffix
+                    Value: .md
+            Function: "{{resolve:ssm:/sensei/polly/function-arn}}"
         
   WebsiteBucketPolicy:
     Type: AWS::S3::BucketPolicy

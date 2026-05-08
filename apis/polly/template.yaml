@@ -1,0 +1,58 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Polly TTS for blog posts
+
+Globals:
+  Function:
+    Timeout: 120
+    Runtime: python3.12
+    MemorySize: 256
+
+Parameters:
+  WebsiteBucketName:
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: /sensei/blog/bucket-name
+
+Resources:
+
+  PollyFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: sensei-polly
+      Handler: handler.lambda_handler
+      CodeUri: src/
+      Environment:
+        Variables:
+          WEBSITE_BUCKET: !Ref WebsiteBucketName
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action: polly:SynthesizeSpeech
+              Resource: "*"
+            - Effect: Allow
+              Action:
+                - s3:GetObject
+                - s3:PutObject
+              Resource: !Sub "arn:aws:s3:::${WebsiteBucketName}/*"
+
+  PollyS3Permission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !GetAtt PollyFunction.Arn
+      Action: lambda:InvokeFunction
+      Principal: s3.amazonaws.com
+      SourceArn: !Sub "arn:aws:s3:::${WebsiteBucketName}"
+
+  PollyFunctionArnParam:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: /sensei/polly/function-arn
+      Type: String
+      Value: !GetAtt PollyFunction.Arn
+
+Outputs:
+  PollyFunctionArn:
+    Value: !GetAtt PollyFunction.Arn
+    Export:
+      Name: sensei-polly-function-arn

@@ -1,0 +1,15 @@
+{{- $lang := .Page.Lang -}}
+{{- $slug := path.Base (strings.TrimSuffix "/" .Page.File.Dir) -}}
+{{- $url := printf "/audio/%s.%s.mp3" $slug $lang -}}
+<div class="listen-widget">
+  <audio controls preload="none" style="width:100%">
+    <source src="{{ $url }}" type="audio/mpeg">
+  </audio>
+  <p class="listen-label">
+    {{- if eq $lang "de" -}}
+    🔊 Vorgelesen von <a href="https://aws.amazon.com/polly/" target="_blank" rel="noopener">Amazon Polly</a>
+    {{- else -}}
+    🔊 Voiced by <a href="https://aws.amazon.com/polly/" target="_blank" rel="noopener">Amazon Polly</a>
+    {{- end -}}
+  </p>
+</div>

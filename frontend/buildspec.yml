@@ -19,6 +19,6 @@ phases:
   post_build:
     commands:
       - echo "Deploying to $WEBSITE_BUCKET..."
-      - aws s3 sync public/ s3://$WEBSITE_BUCKET --delete
+      - aws s3 sync public/ s3://$WEBSITE_BUCKET --delete --exclude "audio/*" --exclude "_content/*"
       - echo "Invalidating CloudFront cache..."
       - aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_DISTRIBUTION_ID --paths "/*"
