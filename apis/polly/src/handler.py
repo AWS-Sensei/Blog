@@ -18,6 +18,7 @@ CODE_LABEL = {
 PARA_BREAK = "\x00"
 
 SKIP_IDS = {"chat-widget"}
+SKIP_CLASSES = {"listen-widget", "post-footer", "post-tags", "post-nav", "post-navigation"}
 
 
 class ArticleExtractor(HTMLParser):
@@ -36,7 +37,8 @@ class ArticleExtractor(HTMLParser):
         tag_class = attrs_dict.get("class", "")
 
         # Skip known unwanted sections
-        if tag_id in SKIP_IDS:
+        tag_classes = set(tag_class.split())
+        if tag_id in SKIP_IDS or tag_classes & SKIP_CLASSES:
             self.skip_depth += 1
             return
 
