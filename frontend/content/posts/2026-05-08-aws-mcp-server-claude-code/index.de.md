@@ -13,6 +13,8 @@ tags: ["AWS", "Claude Code", "MCP", "AI", "Developer Tools"]
 lightgallery: true
 ---
 
+{{< listen >}}
+
 AWS hat kürzlich die [General Availability des AWS MCP Servers](https://aws.amazon.com/de/blogs/aws/the-aws-mcp-server-is-now-generally-available/) angekündigt. Er gibt KI-Coding-Assistenten wie Claude Code direkten Zugriff auf über 15.000 AWS-API-Operationen, aktuelle Dokumentation und sandboxed Script-Ausführung — alles über das Model Context Protocol.
 
 Ich habe es für meinen eigenen Workflow eingerichtet und bin dabei über einige Stolpersteine gestolpert. Hier ist die kurze Version von dem, was tatsächlich funktioniert.
