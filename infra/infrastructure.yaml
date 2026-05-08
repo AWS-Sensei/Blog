@@ -5,9 +5,8 @@ Parameters:
     Type: String
     Default: aws-sensei.cloud
   PollyFunctionArn:
-    Type: String
-    Default: "none"
-    Description: ARN of the Polly Lambda (set after sensei-api-polly stack is deployed)
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: /sensei/polly/function-arn
   HostedZoneId:
     Type: String
     Description: The Route 53 hosted zone ID for aws-sensei.cloud
