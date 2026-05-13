@@ -6,7 +6,8 @@ phases:
       - |
         for template in apis/*/template.yaml; do
           [ -f "$template" ] || continue
-          stack_name="sensei-api-$(basename $(dirname $template))"
+          api_name="$(basename $(dirname $template))"
+          stack_name="sensei-api-${api_name}"
           echo "Deploying $stack_name from $template..."
           sam deploy \
             --template-file $template \
@@ -16,5 +17,6 @@ phases:
             --kms-key-id alias/aws/s3 \
             --no-confirm-changeset \
             --no-fail-on-empty-changeset \
-            --role-arn $CLOUDFORMATION_EXECUTION_ROLE_ARN
+            --role-arn $CLOUDFORMATION_EXECUTION_ROLE_ARN \
+            --tags "Project=aws-sensei" "Service=blog" "Component=api-${api_name}"
         done
