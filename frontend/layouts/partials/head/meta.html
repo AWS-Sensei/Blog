@@ -2,18 +2,37 @@
 
 <meta name="Description" content="{{ $params.description | default .Site.Params.description }}">
 
-{{- /* OG image: resize featured-image to 1200x630 for WhatsApp / LinkedIn / X */ -}}
+{{- /* OG image: photo left, title+domain right on white background */ -}}
 {{- $ogImage := "" -}}
 {{- $ogWidth := 0 -}}
 {{- $ogHeight := 0 -}}
-{{- with .Resources.GetMatch "featured-image*" -}}
-  {{- $resized := .Fill "1200x630 Center" -}}
-  {{- $ogImage = $resized.Permalink -}}
-  {{- $ogWidth = $resized.Width -}}
-  {{- $ogHeight = $resized.Height -}}
+{{- $bg := resources.Get "images/og-bg.png" -}}
+{{- $fontReg := resources.Get "fonts/sans-regular.ttf" -}}
+{{- if and $bg $fontReg -}}
+  {{- $canvas := $bg -}}
+  {{- $frame := resources.Get "images/og-photo-frame.png" -}}
+  {{- $mask  := resources.Get "images/og-photo-mask.png" -}}
+  {{- with .Resources.GetMatch "featured-image*" -}}
+    {{- $photo := .Fill "440x440 Center" -}}
+    {{- if $frame -}}{{- $canvas = $canvas | images.Filter (images.Overlay $frame 35 90) -}}{{- end -}}
+    {{- $canvas = $canvas | images.Filter (images.Overlay $photo 40 95) -}}
+    {{- if $mask -}}{{- $canvas = $canvas | images.Filter (images.Overlay $mask 40 95) -}}{{- end -}}
+  {{- end -}}
+  {{- $badge := resources.Get "images/og-badge.png" -}}
+  {{- $btn   := resources.Get "images/og-btn.png" -}}
+  {{- if eq .Site.Language.Lang "de" -}}{{- $btn = resources.Get "images/og-btn-de.png" -}}{{- end -}}
+  {{- if $badge -}}{{- $canvas = $canvas | images.Filter (images.Overlay $badge 560 150) -}}{{- end -}}
+  {{- $canvas = $canvas | images.Filter (images.Text (printf "%s" $.Title) (dict "color" "#111827" "size" 36 "x" 560 "y" 230 "font" $fontReg)) -}}
+  {{- if $btn -}}{{- $canvas = $canvas | images.Filter (images.Overlay $btn 560 390) -}}{{- end -}}
+  {{- $ogImage = $canvas.Permalink -}}
+  {{- $ogWidth = $canvas.Width -}}
+  {{- $ogHeight = $canvas.Height -}}
 {{- else -}}
-  {{- with $.Site.Params.images -}}
-    {{- $ogImage = index . 0 | absURL -}}
+  {{- with .Resources.GetMatch "featured-image*" -}}
+    {{- $resized := .Fill "1200x630 Center" -}}
+    {{- $ogImage = $resized.Permalink -}}
+    {{- $ogWidth = $resized.Width -}}
+    {{- $ogHeight = $resized.Height -}}
   {{- end -}}
 {{- end -}}
 
