@@ -1,0 +1,228 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Privacy-first analytics — API Gateway → Lambda → Firehose → S3 + Athena
+
+Globals:
+  Function:
+    Timeout: 10
+    Runtime: python3.12
+    MemorySize: 128
+
+Resources:
+
+  # ─── S3 (data lake) ─────────────────────────────────────────────────────────
+
+  AnalyticsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "sensei-analytics-${AWS::AccountId}"
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      LifecycleConfiguration:
+        Rules:
+          - Id: expire-after-one-year
+            Status: Enabled
+            ExpirationInDays: 365
+      Tags:
+        - Key: Project
+          Value: aws-sensei
+        - Key: Service
+          Value: blog
+        - Key: Component
+          Value: analytics
+
+  # ─── Kinesis Firehose ────────────────────────────────────────────────────────
+
+  FirehoseRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: firehose.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: s3-write
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:AbortMultipartUpload
+                  - s3:GetBucketLocation
+                  - s3:GetObject
+                  - s3:ListBucket
+                  - s3:ListBucketMultipartUploads
+                  - s3:PutObject
+                Resource:
+                  - !GetAtt AnalyticsBucket.Arn
+                  - !Sub "${AnalyticsBucket.Arn}/*"
+
+  AnalyticsDeliveryStream:
+    Type: AWS::KinesisFirehose::DeliveryStream
+    Properties:
+      DeliveryStreamName: sensei-analytics
+      DeliveryStreamType: DirectPut
+      ExtendedS3DestinationConfiguration:
+        BucketARN: !GetAtt AnalyticsBucket.Arn
+        RoleARN: !GetAtt FirehoseRole.Arn
+        Prefix: "events/year=!{timestamp:yyyy}/month=!{timestamp:MM}/day=!{timestamp:dd}/"
+        ErrorOutputPrefix: "errors/!{firehose:error-output-type}/year=!{timestamp:yyyy}/month=!{timestamp:MM}/day=!{timestamp:dd}/"
+        BufferingHints:
+          IntervalInSeconds: 60
+          SizeInMBs: 5
+        CompressionFormat: GZIP
+
+  # ─── Lambda ──────────────────────────────────────────────────────────────────
+
+  TrackFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: sensei-analytics-track
+      Handler: handler.lambda_handler
+      CodeUri: src/
+      Environment:
+        Variables:
+          FIREHOSE_STREAM: !Ref AnalyticsDeliveryStream
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action: firehose:PutRecord
+              Resource: !GetAtt AnalyticsDeliveryStream.Arn
+      Events:
+        Track:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref AnalyticsApi
+            Path: /track
+            Method: POST
+      Tags:
+        Project: aws-sensei
+        Service: blog
+        Component: analytics
+
+  # ─── HTTP API ────────────────────────────────────────────────────────────────
+
+  AnalyticsApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      Name: sensei-analytics-api
+      StageName: prod
+
+  # ─── Glue + Athena ───────────────────────────────────────────────────────────
+
+  AnalyticsGlueDatabase:
+    Type: AWS::Glue::Database
+    Properties:
+      CatalogId: !Ref AWS::AccountId
+      DatabaseInput:
+        Name: sensei_analytics
+        Description: Analytics events from aws-sensei.cloud
+
+  AnalyticsGlueTable:
+    Type: AWS::Glue::Table
+    Properties:
+      CatalogId: !Ref AWS::AccountId
+      DatabaseName: !Ref AnalyticsGlueDatabase
+      TableInput:
+        Name: page_views
+        TableType: EXTERNAL_TABLE
+        Parameters:
+          classification: json
+          compressionType: gzip
+          typeOfData: file
+          "projection.enabled": "true"
+          "projection.year.type": integer
+          "projection.year.range": "2026,2035"
+          "projection.month.type": integer
+          "projection.month.range": "1,12"
+          "projection.month.digits": "2"
+          "projection.day.type": integer
+          "projection.day.range": "1,31"
+          "projection.day.digits": "2"
+          "storage.location.template": !Sub "s3://${AnalyticsBucket}/events/year=${!year}/month=${!month}/day=${!day}/"
+        PartitionKeys:
+          - Name: year
+            Type: string
+          - Name: month
+            Type: string
+          - Name: day
+            Type: string
+        StorageDescriptor:
+          Location: !Sub "s3://${AnalyticsBucket}/events/"
+          InputFormat: org.apache.hadoop.mapred.TextInputFormat
+          OutputFormat: org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat
+          Compressed: true
+          SerdeInfo:
+            SerializationLibrary: org.apache.hive.hcatalog.data.JsonSerDe
+            Parameters:
+              serialization.format: "1"
+          Columns:
+            - Name: timestamp
+              Type: string
+            - Name: event
+              Type: string
+            - Name: page
+              Type: string
+            - Name: lang
+              Type: string
+            - Name: referrer_domain
+              Type: string
+            - Name: browser
+              Type: string
+            - Name: screen_width
+              Type: int
+            - Name: session_id
+              Type: string
+
+  AnalyticsWorkGroup:
+    Type: AWS::Athena::WorkGroup
+    Properties:
+      Name: sensei-analytics
+      WorkGroupConfiguration:
+        ResultConfiguration:
+          OutputLocation: !Sub "s3://${AnalyticsBucket}/athena-results/"
+        EnforceWorkGroupConfiguration: true
+        PublishCloudWatchMetricsEnabled: false
+      Tags:
+        - Key: Project
+          Value: aws-sensei
+        - Key: Component
+          Value: analytics
+
+  # ─── SSM (hostname for CloudFront origin) ────────────────────────────────────
+
+  AnalyticsApiHostParam:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: /sensei/analytics/api-host
+      Type: String
+      Value: !Sub "${AnalyticsApi}.execute-api.${AWS::Region}.amazonaws.com"
+      Tags:
+        Project: aws-sensei
+        Component: analytics
+
+Outputs:
+  AnalyticsApiUrl:
+    Description: Analytics endpoint URL
+    Value: !Sub "https://${AnalyticsApi}.execute-api.${AWS::Region}.amazonaws.com/prod/track"
+    Export:
+      Name: sensei-analytics-api-url
+
+  AnalyticsBucketName:
+    Description: S3 bucket for analytics data
+    Value: !Ref AnalyticsBucket
+    Export:
+      Name: sensei-analytics-bucket
+
+  AthenaWorkGroup:
+    Description: Athena WorkGroup name
+    Value: !Ref AnalyticsWorkGroup
+    Export:
+      Name: sensei-analytics-workgroup

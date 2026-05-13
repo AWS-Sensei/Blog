@@ -1,0 +1,16 @@
+<script>
+(function () {
+  if (navigator.doNotTrack === '1' || window.doNotTrack === '1') return;
+  fetch('/track', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      page: window.location.pathname,
+      lang: document.documentElement.lang || '',
+      referrer: document.referrer || '',
+      screen_width: window.screen ? window.screen.width : 0
+    }),
+    keepalive: true
+  }).catch(function () {});
+})();
+</script>
