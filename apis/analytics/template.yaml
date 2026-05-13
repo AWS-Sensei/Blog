@@ -15,7 +15,7 @@ Resources:
   AnalyticsBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub "sensei-analytics-${AWS::AccountId}"
+      BucketName: !Sub "aws-sensei-analytics-${AWS::AccountId}"
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
         BlockPublicPolicy: true
