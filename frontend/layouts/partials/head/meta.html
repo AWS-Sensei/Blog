@@ -12,7 +12,9 @@
   {{- $canvas := $bg -}}
   {{- $frame := resources.Get "images/og-photo-frame.png" -}}
   {{- $mask  := resources.Get "images/og-photo-mask.png" -}}
-  {{- with .Resources.GetMatch "featured-image*" -}}
+  {{- $photoRes := .Resources.GetMatch "featured-image*" -}}
+  {{- if not $photoRes -}}{{- $photoRes = resources.Get "images/avatar.png" -}}{{- end -}}
+  {{- with $photoRes -}}
     {{- $photo := .Fill "440x440 Center" -}}
     {{- if $frame -}}{{- $canvas = $canvas | images.Filter (images.Overlay $frame 35 90) -}}{{- end -}}
     {{- $canvas = $canvas | images.Filter (images.Overlay $photo 40 95) -}}
