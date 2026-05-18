@@ -9,7 +9,7 @@ draft: false
 Marcel Baltzer  
 Flotowstraße 4  
 10555 Berlin, Germany  
-Email: marcel.baltzer@hotmail.de
+Email: [marcel.baltzer@hotmail.de](mailto:marcel.baltzer@hotmail.de)
 
 ## 2. Hosting and Infrastructure
 
@@ -48,7 +48,7 @@ The legal basis is Art. 6(1)(b) GDPR (pre-contractual measures) and/or Art. 6(1)
 
 ## 5. Chat Feature
 
-The chat feature on some pages uses **Amazon API Gateway (WebSocket)** and **Amazon DynamoDB**. Messages are processed only for the duration of the active connection and are automatically deleted afterwards. No personal data is stored permanently.
+The chat feature on some pages uses **Amazon API Gateway (WebSocket)** and **Amazon DynamoDB**. Messages are stored together with the chosen display name to provide chat history. No additional personal data is collected. Messages can be deleted upon request.
 
 The legal basis is Art. 6(1)(f) GDPR.
 

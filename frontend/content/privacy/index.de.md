@@ -9,7 +9,7 @@ draft: false
 Marcel Baltzer  
 Flotowstraße 4  
 10555 Berlin  
-E-Mail: marcel.baltzer@hotmail.de
+E-Mail: [marcel.baltzer@hotmail.de](mailto:marcel.baltzer@hotmail.de)
 
 ## 2. Hosting und Infrastruktur
 
@@ -48,7 +48,7 @@ Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO (vorvertragliche Maßnahmen) bzw.
 
 ## 5. Chat-Funktion
 
-Die Chat-Funktion auf einzelnen Seiten nutzt **Amazon API Gateway (WebSocket)** und **Amazon DynamoDB**. Nachrichten werden nur für die Dauer der aktiven Verbindung verarbeitet und danach automatisch gelöscht. Es werden keine personenbezogenen Daten dauerhaft gespeichert.
+Die Chat-Funktion auf einzelnen Seiten nutzt **Amazon API Gateway (WebSocket)** und **Amazon DynamoDB**. Nachrichten werden zusammen mit dem gewählten Anzeigenamen gespeichert, um den Chat-Verlauf bereitzustellen. Es werden keine weiteren personenbezogenen Daten erfasst. Nachrichten können auf Anfrage gelöscht werden.
 
 Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO.
 
