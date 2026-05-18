@@ -115,7 +115,7 @@ enableEmoji = true
   enable = true
   hugo = false
   since = 2025
-  custom = '<a href="/impressum/">Impressum · Legal Notice</a>'
+  author = false
 
 [params.section]
   paginate = 20

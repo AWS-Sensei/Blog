@@ -1,0 +1,25 @@
+{{- if ne .Site.Params.footer.enable false -}}
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-line" itemscope itemtype="http://schema.org/CreativeWork">
+                {{- if ne .Site.Params.footer.copyright false -}}
+                    <i class="far fa-copyright fa-fw" aria-hidden="true"></i>
+                    {{- with .Site.Params.footer.since -}}
+                        <span itemprop="copyrightYear">
+                            {{- if lt . now.Year }}{{ . }} - {{ end }}{{ now.Year -}}
+                        </span>
+                    {{- else -}}
+                        <span itemprop="copyrightYear">{{ now.Year }}</span>
+                    {{- end -}}
+                    &nbsp;Marcel Baltzer
+                {{- end -}}
+                &nbsp;·&nbsp;
+                {{- if eq .Site.Language.Lang "de" -}}
+                    <a href="/de/impressum/">Impressum</a>
+                {{- else -}}
+                    <a href="/impressum/">Legal Notice</a>
+                {{- end -}}
+            </div>
+        </div>
+    </footer>
+{{- end -}}
