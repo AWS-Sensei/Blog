@@ -112,7 +112,10 @@ enableEmoji = true
     name="AWS Sensei"
 
 [params.footer]
-  enable = false
+  enable = true
+  hugo = false
+  since = 2025
+  custom = '<a href="/impressum/">Impressum · Legal Notice</a>'
 
 [params.section]
   paginate = 20
