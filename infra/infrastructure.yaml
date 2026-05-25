@@ -4,9 +4,6 @@ Parameters:
   DomainName:
     Type: String
     Default: aws-sensei.cloud
-  PollyFunctionArn:
-    Type: AWS::SSM::Parameter::Value<String>
-    Default: /sensei/polly/function-arn
   AnalyticsApiHost:
     Type: AWS::SSM::Parameter::Value<String>
     Default: /sensei/analytics/api-host
@@ -20,8 +17,7 @@ Parameters:
     Default: arn:aws:acm:us-east-1:804711834430:certificate/8c70eab8-1e9f-489e-b0ac-35c19bd85667
 
 Conditions:
-  HasPolly:     !Not [!Equals [!Ref PollyFunctionArn,   "none"]]
-  HasAnalytics: !Not [!Equals [!Ref AnalyticsApiHost,   "none"]]
+  HasAnalytics: !Not [!Equals [!Ref AnalyticsApiHost, "none"]]
 
 Resources:
   WebsiteBucket:
@@ -32,17 +28,15 @@ Resources:
         BlockPublicPolicy: true
         IgnorePublicAcls: true
         RestrictPublicBuckets: true
-      NotificationConfiguration: !If
-        - HasPolly
-        - LambdaConfigurations:
-            - Event: "s3:ObjectCreated:*"
-              Filter:
-                S3Key:
-                  Rules:
-                    - Name: prefix
-                      Value: _content/posts/
-              Function: !Ref PollyFunctionArn
-        - !Ref AWS::NoValue
+      NotificationConfiguration:
+        TopicConfigurations:
+          - Event: "s3:ObjectCreated:*"
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: prefix
+                    Value: _content/posts/
+            Topic: !Ref PostChangedTopic
       Tags:
         - Key: Project
           Value: aws-sensei
@@ -67,6 +61,34 @@ Resources:
               StringEquals:
                 AWS:SourceArn: !Sub "arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution}"
                 
+  PostChangedTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: sensei-post-changed
+
+  PostChangedTopicPolicy:
+    Type: AWS::SNS::TopicPolicy
+    Properties:
+      Topics:
+        - !Ref PostChangedTopic
+      PolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: s3.amazonaws.com
+            Action: sns:Publish
+            Resource: !Ref PostChangedTopic
+            Condition:
+              StringEquals:
+                aws:SourceAccount: !Ref AWS::AccountId
+
+  PostChangedTopicArnParam:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: /sensei/blog/post-changed-topic-arn
+      Type: String
+      Value: !Ref PostChangedTopic
+
   CloudFrontOAC:
     Type: AWS::CloudFront::OriginAccessControl
     Properties:
