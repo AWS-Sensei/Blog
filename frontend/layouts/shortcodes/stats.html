@@ -81,15 +81,29 @@
 (function () {
   var isDE = {{ if $isDE }}true{{ else }}false{{ end }};
 
+  var _data = null;
+  var _charts = [];
+
   fetch('/dashboard')
     .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
-    .then(function (d) { render(d); })
+    .then(function (d) { _data = d; render(d); })
     .catch(function () {
       document.getElementById('stats-loading').style.display = 'none';
       document.getElementById('stats-error').style.display = '';
     });
 
+  new MutationObserver(function () {
+    if (_data) render(_data);
+  }).observe(document.body, { attributes: true, attributeFilter: ['theme'] });
+
+  window.addEventListener('resize', function () {
+    _charts.forEach(function (c) { c.resize(); });
+  });
+
   function render(d) {
+    _charts.forEach(function (c) { c.dispose(); });
+    _charts = [];
+
     document.getElementById('stats-loading').style.display = 'none';
     document.getElementById('stats-grid').style.display = '';
 
@@ -170,7 +184,7 @@
     if (!el) return;
     var chart = echarts.init(el, document.body.getAttribute('theme') === 'dark' ? 'dark' : null);
     chart.setOption(option);
-    window.addEventListener('resize', function () { chart.resize(); });
+    _charts.push(chart);
   }
 })();
 </script>
