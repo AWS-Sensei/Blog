@@ -191,13 +191,17 @@ def lambda_handler(event, _context):
 
     audio_parts = []
     for chunk in to_ssml_chunks(text):
-        resp = polly.synthesize_speech(
-            Engine="neural",
-            VoiceId=VOICES[lang],
-            Text=chunk,
-            TextType="ssml",
-            OutputFormat="mp3",
-        )
+        try:
+            resp = polly.synthesize_speech(
+                Engine="neural",
+                VoiceId=VOICES[lang],
+                Text=chunk,
+                TextType="ssml",
+                OutputFormat="mp3",
+            )
+        except Exception as e:
+            print(f"Polly error on chunk ({len(chunk)} chars): {chunk}")
+            raise
         audio_parts.append(resp["AudioStream"].read())
 
     s3.put_object(
