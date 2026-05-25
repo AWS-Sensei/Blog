@@ -18,7 +18,7 @@ _QUERIES = {
     "top_articles": """
         SELECT page, COUNT(*) AS views
         FROM sensei_analytics.page_views
-        WHERE page LIKE '/posts/%'
+        WHERE REGEXP_LIKE(page, '^/posts/[^/]+/?$')
           AND CAST(from_iso8601_timestamp("timestamp") AS DATE)
               >= CURRENT_DATE - INTERVAL '30' DAY
         GROUP BY page

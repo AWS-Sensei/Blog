@@ -129,7 +129,7 @@
       tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
       grid: { left: 200, right: 16, top: 8, bottom: 24 },
       xAxis: { type: 'value', axisLabel: { color: textColor }, splitLine: { lineStyle: { color: gridColor } } },
-      yAxis: { type: 'category', data: artPages.slice().reverse(), axisLabel: { color: textColor, fontSize: 11, width: 190, overflow: 'truncate', align: 'left' } },
+      yAxis: { type: 'category', data: artPages.slice().reverse(), axisLabel: { color: textColor, fontSize: 11, width: 190, overflow: 'truncate' } },
       series: [{ type: 'bar', data: artViews.slice().reverse(), itemStyle: { color: accentBlue, borderRadius: [0, 4, 4, 0] } }]
     });
 
