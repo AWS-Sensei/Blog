@@ -41,8 +41,6 @@ Resources:
                   Rules:
                     - Name: prefix
                       Value: _content/posts/
-                    - Name: suffix
-                      Value: .md
               Function: !Ref PollyFunctionArn
         - !Ref AWS::NoValue
       Tags:
