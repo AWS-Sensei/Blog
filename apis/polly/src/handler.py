@@ -1,6 +1,7 @@
 import boto3
 import hashlib
 import html
+import json
 import os
 import re
 from html.parser import HTMLParser
@@ -147,7 +148,8 @@ def lambda_handler(event, _context):
     s3 = boto3.client("s3", region_name="eu-central-1")
     polly = boto3.client("polly", region_name="eu-central-1")
 
-    record = event["Records"][0]
+    s3_event = json.loads(event["Records"][0]["Sns"]["Message"])
+    record = s3_event["Records"][0]
     key = record["s3"]["object"]["key"]
     parts = key.split("/")
     slug = parts[2]

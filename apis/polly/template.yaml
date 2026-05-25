@@ -12,6 +12,9 @@ Parameters:
   WebsiteBucketName:
     Type: AWS::SSM::Parameter::Value<String>
     Default: /sensei/blog/bucket-name
+  PostChangedTopicArn:
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: /sensei/blog/post-changed-topic-arn
 
 Resources:
 
@@ -24,6 +27,11 @@ Resources:
       Environment:
         Variables:
           WEBSITE_BUCKET: !Ref WebsiteBucketName
+      Events:
+        PostChanged:
+          Type: SNS
+          Properties:
+            Topic: !Ref PostChangedTopicArn
       Policies:
         - Version: '2012-10-17'
           Statement:
@@ -36,23 +44,3 @@ Resources:
                 - s3:PutObject
               Resource: !Sub "arn:aws:s3:::${WebsiteBucketName}/*"
 
-  PollyS3Permission:
-    Type: AWS::Lambda::Permission
-    Properties:
-      FunctionName: !GetAtt PollyFunction.Arn
-      Action: lambda:InvokeFunction
-      Principal: s3.amazonaws.com
-      SourceArn: !Sub "arn:aws:s3:::${WebsiteBucketName}"
-
-  PollyFunctionArnParam:
-    Type: AWS::SSM::Parameter
-    Properties:
-      Name: /sensei/polly/function-arn
-      Type: String
-      Value: !GetAtt PollyFunction.Arn
-
-Outputs:
-  PollyFunctionArn:
-    Value: !GetAtt PollyFunction.Arn
-    Export:
-      Name: sensei-polly-function-arn
