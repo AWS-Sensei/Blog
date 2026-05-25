@@ -90,7 +90,7 @@ Resources:
     Properties:
       FunctionName: sensei-analytics-track
       Handler: handler.lambda_handler
-      CodeUri: src/
+      CodeUri: src/track/
       Environment:
         Variables:
           FIREHOSE_STREAM: !Ref AnalyticsDeliveryStream
@@ -107,6 +107,79 @@ Resources:
             ApiId: !Ref AnalyticsApi
             Path: /track
             Method: POST
+      Tags:
+        Project: aws-sensei
+        Service: blog
+        Component: analytics
+
+  DashboardRefreshFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: sensei-analytics-dashboard-refresh
+      Handler: handler.lambda_handler
+      CodeUri: src/dashboard_refresh/
+      Timeout: 120
+      Environment:
+        Variables:
+          ATHENA_WORKGROUP: !Ref AnalyticsWorkGroup
+          CACHE_BUCKET: !Ref AnalyticsBucket
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - athena:StartQueryExecution
+                - athena:GetQueryExecution
+                - athena:GetQueryResults
+                - athena:StopQueryExecution
+              Resource: !Sub "arn:aws:athena:${AWS::Region}:${AWS::AccountId}:workgroup/${AnalyticsWorkGroup}"
+            - Effect: Allow
+              Action:
+                - glue:GetTable
+                - glue:GetDatabase
+                - glue:GetPartitions
+              Resource: "*"
+            - Effect: Allow
+              Action:
+                - s3:GetObject
+                - s3:PutObject
+                - s3:GetBucketLocation
+                - s3:ListBucket
+              Resource:
+                - !GetAtt AnalyticsBucket.Arn
+                - !Sub "${AnalyticsBucket.Arn}/*"
+      Events:
+        HourlyRefresh:
+          Type: Schedule
+          Properties:
+            Schedule: rate(1 hour)
+      Tags:
+        Project: aws-sensei
+        Service: blog
+        Component: analytics
+
+  DashboardServeFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: sensei-analytics-dashboard-serve
+      Handler: handler.lambda_handler
+      CodeUri: src/dashboard_serve/
+      Environment:
+        Variables:
+          CACHE_BUCKET: !Ref AnalyticsBucket
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action: s3:GetObject
+              Resource: !Sub "${AnalyticsBucket.Arn}/cache/*"
+      Events:
+        Dashboard:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref AnalyticsApi
+            Path: /dashboard
+            Method: GET
       Tags:
         Project: aws-sensei
         Service: blog

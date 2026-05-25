@@ -1,0 +1,180 @@
+{{ $lang := .Page.Lang }}
+{{ $isDE := eq $lang "de" }}
+
+<div id="stats-dashboard">
+  <p id="stats-loading" class="stats-status">
+    {{ if $isDE }}Lade Statistiken…{{ else }}Loading statistics…{{ end }}
+  </p>
+  <p id="stats-error" class="stats-status" style="display:none;">
+    {{ if $isDE }}Statistiken konnten nicht geladen werden.{{ else }}Could not load statistics.{{ end }}
+  </p>
+
+  <div id="stats-grid" style="display:none;">
+    <div class="stats-row">
+      <div class="stats-card stats-card--wide">
+        <div class="stats-card__title">
+          {{ if $isDE }}Tagesgang (letzte 30 Tage){{ else }}Daily Traffic (last 30 days){{ end }}
+        </div>
+        <div id="chart-traffic" class="stats-chart"></div>
+      </div>
+    </div>
+    <div class="stats-row">
+      <div class="stats-card">
+        <div class="stats-card__title">
+          {{ if $isDE }}Top-Artikel (letzte 7 Tage){{ else }}Top Articles (last 7 days){{ end }}
+        </div>
+        <div id="chart-articles" class="stats-chart"></div>
+      </div>
+      <div class="stats-card">
+        <div class="stats-card__title">
+          {{ if $isDE }}Top-Referrer (letzte 30 Tage){{ else }}Top Referrers (last 30 days){{ end }}
+        </div>
+        <div id="chart-referrers" class="stats-chart"></div>
+      </div>
+    </div>
+    <div class="stats-row">
+      <div class="stats-card stats-card--narrow">
+        <div class="stats-card__title">
+          {{ if $isDE }}Geräte (letzte 30 Tage){{ else }}Devices (last 30 days){{ end }}
+        </div>
+        <div id="chart-devices" class="stats-chart stats-chart--small"></div>
+      </div>
+      <div class="stats-card stats-card--wide">
+        <div class="stats-card__title">
+          {{ if $isDE }}Zuletzt aktualisiert{{ else }}Last updated{{ end }}
+        </div>
+        <p id="stats-updated" class="stats-meta"></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+#stats-dashboard { margin: 1.5rem 0; }
+.stats-status { opacity: 0.6; font-size: 0.9rem; }
+.stats-row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+.stats-card {
+  flex: 1;
+  min-width: 280px;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  background: rgba(255,255,255,0.03);
+}
+.stats-card--wide  { flex: 2; }
+.stats-card--narrow { flex: 1; }
+.stats-card__title {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.5;
+  margin-bottom: 0.75rem;
+}
+.stats-chart        { height: 260px; }
+.stats-chart--small { height: 220px; }
+.stats-meta { font-size: 0.85rem; opacity: 0.6; margin: 0; }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<script>
+(function () {
+  var isDE = {{ if $isDE }}true{{ else }}false{{ end }};
+
+  fetch('/dashboard')
+    .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
+    .then(function (d) { render(d); })
+    .catch(function () {
+      document.getElementById('stats-loading').style.display = 'none';
+      document.getElementById('stats-error').style.display = '';
+    });
+
+  function render(d) {
+    document.getElementById('stats-loading').style.display = 'none';
+    document.getElementById('stats-grid').style.display = '';
+
+    var isDark = document.body.getAttribute('theme') === 'dark';
+    var textColor  = isDark ? 'rgba(255,255,255,0.65)' : 'rgba(0,0,0,0.65)';
+    var gridColor  = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)';
+    var accentBlue = '#4a9eff';
+    var accentTeal = '#36cfc9';
+
+    // ── Daily traffic ──────────────────────────────────────────────────────────
+    var trafficDays     = d.daily_traffic.map(function (r) { return r[0]; });
+    var trafficViews    = d.daily_traffic.map(function (r) { return parseInt(r[1], 10); });
+    var trafficVisitors = d.daily_traffic.map(function (r) { return parseInt(r[2], 10); });
+
+    initChart('chart-traffic', {
+      tooltip: { trigger: 'axis' },
+      legend: {
+        data: [isDE ? 'Seitenaufrufe' : 'Page Views', isDE ? 'Besucher' : 'Visitors'],
+        textStyle: { color: textColor }
+      },
+      grid: { left: 40, right: 16, top: 36, bottom: 24 },
+      xAxis: { type: 'category', data: trafficDays, axisLabel: { color: textColor, rotate: 30, fontSize: 11 }, axisLine: { lineStyle: { color: gridColor } } },
+      yAxis: { type: 'value', minInterval: 1, axisLabel: { color: textColor }, splitLine: { lineStyle: { color: gridColor } } },
+      series: [
+        { name: isDE ? 'Seitenaufrufe' : 'Page Views', type: 'line', smooth: true, data: trafficViews, itemStyle: { color: accentBlue }, areaStyle: { color: 'rgba(74,158,255,0.15)' } },
+        { name: isDE ? 'Besucher' : 'Visitors',        type: 'line', smooth: true, data: trafficVisitors, itemStyle: { color: accentTeal }, areaStyle: { color: 'rgba(54,207,201,0.1)' } }
+      ]
+    });
+
+    // ── Top articles ───────────────────────────────────────────────────────────
+    var artPages = d.top_articles.map(function (r) {
+      return r[0].replace('/posts/', '').replace(/\/$/, '').replace(/-/g, ' ');
+    });
+    var artViews = d.top_articles.map(function (r) { return parseInt(r[1], 10); });
+
+    initChart('chart-articles', {
+      tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+      grid: { left: 140, right: 16, top: 8, bottom: 24 },
+      xAxis: { type: 'value', axisLabel: { color: textColor }, splitLine: { lineStyle: { color: gridColor } } },
+      yAxis: { type: 'category', data: artPages.slice().reverse(), axisLabel: { color: textColor, fontSize: 11, width: 130, overflow: 'truncate' } },
+      series: [{ type: 'bar', data: artViews.slice().reverse(), itemStyle: { color: accentBlue, borderRadius: [0, 4, 4, 0] } }]
+    });
+
+    // ── Top referrers ──────────────────────────────────────────────────────────
+    var refSources = d.referrers.map(function (r) { return r[0]; });
+    var refVisits  = d.referrers.map(function (r) { return parseInt(r[1], 10); });
+
+    initChart('chart-referrers', {
+      tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+      grid: { left: 120, right: 16, top: 8, bottom: 24 },
+      xAxis: { type: 'value', axisLabel: { color: textColor }, splitLine: { lineStyle: { color: gridColor } } },
+      yAxis: { type: 'category', data: refSources.slice().reverse(), axisLabel: { color: textColor, fontSize: 11 } },
+      series: [{ type: 'bar', data: refVisits.slice().reverse(), itemStyle: { color: accentTeal, borderRadius: [0, 4, 4, 0] } }]
+    });
+
+    // ── Devices ────────────────────────────────────────────────────────────────
+    var deviceData = d.devices.map(function (r) {
+      return { name: r[0], value: parseInt(r[1], 10) };
+    });
+
+    initChart('chart-devices', {
+      tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
+      legend: { orient: 'vertical', right: 8, top: 'center', textStyle: { color: textColor } },
+      series: [{
+        type: 'pie', radius: ['45%', '70%'], center: ['38%', '50%'],
+        data: deviceData,
+        label: { show: false },
+        itemStyle: { borderRadius: 4 }
+      }]
+    });
+
+    // ── Updated timestamp ──────────────────────────────────────────────────────
+    document.getElementById('stats-updated').textContent = d.generated_at.replace('T', ' ').replace('Z', ' UTC');
+  }
+
+  function initChart(id, option) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    var chart = echarts.init(el, document.body.getAttribute('theme') === 'dark' ? 'dark' : null);
+    chart.setOption(option);
+    window.addEventListener('resize', function () { chart.resize(); });
+  }
+})();
+</script>

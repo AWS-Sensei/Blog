@@ -139,6 +139,18 @@ Resources:
           SslSupportMethod: sni-only
           MinimumProtocolVersion: TLSv1.2_2021
         CacheBehaviors:
+          - PathPattern: "/dashboard"
+            TargetOriginId: analyticsApiOrigin
+            AllowedMethods: [GET, HEAD]
+            CachedMethods: [GET, HEAD]
+            ViewerProtocolPolicy: redirect-to-https
+            ForwardedValues:
+              QueryString: false
+              Cookies:
+                Forward: none
+            DefaultTTL: 300
+            MinTTL: 0
+            MaxTTL: 3600
           - PathPattern: "/track"
             TargetOriginId: analyticsApiOrigin
             AllowedMethods: [GET, HEAD, OPTIONS, PUT, POST, PATCH, DELETE]
