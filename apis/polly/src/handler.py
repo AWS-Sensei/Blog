@@ -32,9 +32,13 @@ class ArticleExtractor(HTMLParser):
         self.content_depth = 0
         self.skip_depth = 0
         self.in_pre = False
+        self.in_raw = False
         self.parts = []
 
     def handle_starttag(self, tag, attrs):
+        if self.in_raw:
+            return
+
         attrs_dict = dict(attrs)
         tag_id = attrs_dict.get("id", "")
         tag_class = attrs_dict.get("class", "")
@@ -67,9 +71,14 @@ class ArticleExtractor(HTMLParser):
             elif tag == "pre":
                 self.in_pre = True
             elif tag in ("script", "style"):
-                self.skip_depth += 1
+                self.in_raw = True
 
     def handle_endtag(self, tag):
+        if self.in_raw:
+            if tag in ("script", "style"):
+                self.in_raw = False
+            return
+
         if self.skip_depth > 0:
             if tag == "div":
                 self.skip_depth -= 1
@@ -89,15 +98,13 @@ class ArticleExtractor(HTMLParser):
         elif tag == "pre":
             self.in_pre = False
             self.parts.append(PARA_BREAK)
-        elif tag in ("script", "style"):
-            self.skip_depth -= 1
         elif tag == "div":
             self.content_depth -= 1
             if self.content_depth == 0:
                 self.in_content = False
 
     def handle_data(self, data):
-        if self.skip_depth > 0:
+        if self.skip_depth > 0 or self.in_raw:
             return
         if (self.in_title or self.in_content) and not self.in_pre:
             self.parts.append(data)
