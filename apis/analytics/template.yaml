@@ -2,6 +2,11 @@ AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: Privacy-first analytics — API Gateway → Lambda → Firehose → S3 + Athena
 
+Parameters:
+  HostedZoneId:
+    Type: String
+    Default: Z0003192F8JJC6RWXV1M
+
 Globals:
   Function:
     Timeout: 10
@@ -114,6 +119,44 @@ Resources:
     Properties:
       Name: sensei-analytics-api
       StageName: prod
+      DisableExecuteApiEndpoint: true
+
+  # ─── Custom Domain (analytics.aws-sensei.cloud) ──────────────────────────────
+
+  AnalyticsCertificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: analytics.aws-sensei.cloud
+      ValidationMethod: DNS
+      DomainValidationOptions:
+        - DomainName: analytics.aws-sensei.cloud
+          HostedZoneId: !Ref HostedZoneId
+
+  AnalyticsCustomDomain:
+    Type: AWS::ApiGatewayV2::DomainName
+    Properties:
+      DomainName: analytics.aws-sensei.cloud
+      DomainNameConfigurations:
+        - CertificateArn: !Ref AnalyticsCertificate
+          EndpointType: REGIONAL
+
+  AnalyticsApiMapping:
+    Type: AWS::ApiGatewayV2::ApiMapping
+    DependsOn: AnalyticsCustomDomain
+    Properties:
+      ApiId: !Ref AnalyticsApi
+      DomainName: analytics.aws-sensei.cloud
+      Stage: prod
+
+  AnalyticsDnsRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref HostedZoneId
+      Name: analytics.aws-sensei.cloud
+      Type: A
+      AliasTarget:
+        DNSName: !GetAtt AnalyticsCustomDomain.RegionalDomainName
+        HostedZoneId: !GetAtt AnalyticsCustomDomain.RegionalHostedZoneId
 
   # ─── Glue + Athena ───────────────────────────────────────────────────────────
 
@@ -196,24 +239,12 @@ Resources:
         - Key: Component
           Value: analytics
 
-  # ─── SSM (hostname for CloudFront origin) ────────────────────────────────────
-
-  AnalyticsApiHostParam:
-    Type: AWS::SSM::Parameter
-    Properties:
-      Name: /sensei/analytics/api-host
-      Type: String
-      Value: !Sub "${AnalyticsApi}.execute-api.${AWS::Region}.amazonaws.com"
-      Tags:
-        Project: aws-sensei
-        Component: analytics
-
 Outputs:
-  AnalyticsApiUrl:
+  AnalyticsEndpoint:
     Description: Analytics endpoint URL
-    Value: !Sub "https://${AnalyticsApi}.execute-api.${AWS::Region}.amazonaws.com/prod/track"
+    Value: https://analytics.aws-sensei.cloud/track
     Export:
-      Name: sensei-analytics-api-url
+      Name: sensei-analytics-endpoint
 
   AnalyticsBucketName:
     Description: S3 bucket for analytics data

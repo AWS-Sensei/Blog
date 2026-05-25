@@ -4,9 +4,6 @@ Parameters:
   DomainName:
     Type: String
     Default: aws-sensei.cloud
-  AnalyticsApiHost:
-    Type: AWS::SSM::Parameter::Value<String>
-    Default: /sensei/analytics/api-host
   HostedZoneId:
     Type: String
     Description: The Route 53 hosted zone ID for aws-sensei.cloud
@@ -15,9 +12,6 @@ Parameters:
     Type: String
     Description: ACM certificate ARN for the domain (must be in us-east-1)
     Default: arn:aws:acm:us-east-1:804711834430:certificate/8c70eab8-1e9f-489e-b0ac-35c19bd85667
-
-Conditions:
-  HasAnalytics: !Not [!Equals [!Ref AnalyticsApiHost, "none"]]
 
 Resources:
   WebsiteBucket:
@@ -145,27 +139,24 @@ Resources:
           SslSupportMethod: sni-only
           MinimumProtocolVersion: TLSv1.2_2021
         CacheBehaviors:
-          - !If
-            - HasAnalytics
-            - PathPattern: "/track"
-              TargetOriginId: analyticsApiOrigin
-              AllowedMethods: [GET, HEAD, OPTIONS, PUT, POST, PATCH, DELETE]
-              CachedMethods: [GET, HEAD]
-              ViewerProtocolPolicy: redirect-to-https
-              ForwardedValues:
-                QueryString: false
-                Cookies:
-                  Forward: none
-                Headers:
-                  - User-Agent
-                  - Content-Type
-              DefaultTTL: 0
-              MinTTL: 0
-              MaxTTL: 0
-              FunctionAssociations:
-                - EventType: viewer-request
-                  FunctionARN: !GetAtt CloudFrontAnalyticsFunction.FunctionMetadata.FunctionARN
-            - !Ref AWS::NoValue
+          - PathPattern: "/track"
+            TargetOriginId: analyticsApiOrigin
+            AllowedMethods: [GET, HEAD, OPTIONS, PUT, POST, PATCH, DELETE]
+            CachedMethods: [GET, HEAD]
+            ViewerProtocolPolicy: redirect-to-https
+            ForwardedValues:
+              QueryString: false
+              Cookies:
+                Forward: none
+              Headers:
+                - User-Agent
+                - Content-Type
+            DefaultTTL: 0
+            MinTTL: 0
+            MaxTTL: 0
+            FunctionAssociations:
+              - EventType: viewer-request
+                FunctionARN: !GetAtt CloudFrontAnalyticsFunction.FunctionMetadata.FunctionARN
         DefaultCacheBehavior:
           AllowedMethods: ["GET", "HEAD"]
           CachedMethods: ["GET", "HEAD"]
@@ -183,15 +174,11 @@ Resources:
             DomainName: !GetAtt WebsiteBucket.RegionalDomainName
             S3OriginConfig: {}
             OriginAccessControlId: !Ref CloudFrontOAC
-          - !If
-            - HasAnalytics
-            - Id: analyticsApiOrigin
-              DomainName: !Ref AnalyticsApiHost
-              OriginPath: /prod
-              CustomOriginConfig:
-                OriginProtocolPolicy: https-only
-                HTTPSPort: 443
-            - !Ref AWS::NoValue
+          - Id: analyticsApiOrigin
+            DomainName: analytics.aws-sensei.cloud
+            CustomOriginConfig:
+              OriginProtocolPolicy: https-only
+              HTTPSPort: 443
       Tags:
         - Key: Project
           Value: aws-sensei
