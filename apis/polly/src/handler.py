@@ -134,7 +134,7 @@ def to_ssml_chunks(text):
         if len(current) + len(addition) > MAX_SSML_CHARS:
             if current:
                 chunks.append(f"<speak>{current}</speak>")
-            current = segment
+            current = escaped
         else:
             current += addition
 
