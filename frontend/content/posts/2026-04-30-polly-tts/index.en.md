@@ -75,6 +75,8 @@ s3.put_object(
 
 So even though every markdown file triggers the Lambda on every deploy, only posts with actually changed text go through Polly.
 
+> This mechanism was later redesigned. See [Smarter S3 Triggers](/posts/2026-05-22-smarter-post-triggers/) for the hash-based approach that prevents the Lambda from being called at all for unchanged posts — and adds SNS fanout for future consumers.
+
 ---
 
 ## Why Read the HTML for Text?

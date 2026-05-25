@@ -75,6 +75,8 @@ s3.put_object(
 
 So triggern zwar alle Markdown-Dateien die Lambda bei jedem Deployment, aber nur Posts mit wirklich geändertem Text durchlaufen Polly.
 
+> Dieser Mechanismus wurde später neu gebaut. Siehe [Intelligentere S3-Trigger](/de/posts/2026-05-22-smarter-post-triggers/) für den Hash-basierten Ansatz, der die Lambda für unveränderte Posts gar nicht erst aufruft — plus SNS-Fanout für künftige Consumer.
+
 ---
 
 ## Warum HTML für den Text?
