@@ -6,6 +6,9 @@ draft: false
 author: "Marcel"
 description: "Wie eine 0-Byte-Datei mit MD5-Hash im Namen das KMS-ETag-Problem löst, überflüssige Lambda-Aufrufe eliminiert und die Tür für einen SNS-basierten Event-Fanout öffnet."
 images: []
+resources:
+- name: "featured-image"
+  src: "featured-image.jpg"
 tags: ["AWS", "Lambda", "S3", "SNS", "Serverless", "CI/CD"]
 lightgallery: true
 ---

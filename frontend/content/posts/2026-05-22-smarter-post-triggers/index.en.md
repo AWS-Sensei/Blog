@@ -6,6 +6,9 @@ draft: false
 author: "Marcel"
 description: "How a 0-byte file with an MD5 hash in its name fixes the KMS ETag problem, eliminates redundant Lambda invocations, and opens the door for an SNS-based event fan-out."
 images: []
+resources:
+- name: "featured-image"
+  src: "featured-image.jpg"
 tags: ["AWS", "Lambda", "S3", "SNS", "Serverless", "CI/CD"]
 lightgallery: true
 ---
