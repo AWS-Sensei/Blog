@@ -20,7 +20,16 @@ phases:
     commands:
       - echo "Deploying to $WEBSITE_BUCKET..."
       - aws s3 sync public/ s3://$WEBSITE_BUCKET --delete --exclude "audio/*" --exclude "_content/*"
-      - echo "Syncing markdown files for Polly triggers..."
-      - aws s3 sync content/posts/ s3://$WEBSITE_BUCKET/_content/posts/ --exclude "*" --include "*.md"
+      - echo "Generating hash-based trigger files for changed posts..."
+      - mkdir -p /tmp/post-triggers
+      - |
+        find content/posts -name "*.md" | while read md_file; do
+          slug=$(echo "$md_file" | cut -d'/' -f3)
+          lang=$(basename "$md_file" | cut -d'.' -f2)
+          hash=$(md5sum "$md_file" | cut -d' ' -f1)
+          mkdir -p "/tmp/post-triggers/$slug"
+          touch "/tmp/post-triggers/$slug/index.$lang.$hash"
+        done
+      - aws s3 sync /tmp/post-triggers/ s3://$WEBSITE_BUCKET/_content/posts/ --size-only --delete
       - echo "Invalidating CloudFront cache..."
       - aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_DISTRIBUTION_ID --paths "/*"
