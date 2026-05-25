@@ -20,7 +20,7 @@ _QUERIES = {
         FROM sensei_analytics.page_views
         WHERE page LIKE '/posts/%'
           AND CAST(from_iso8601_timestamp("timestamp") AS DATE)
-              >= CURRENT_DATE - INTERVAL '7' DAY
+              >= CURRENT_DATE - INTERVAL '30' DAY
         GROUP BY page
         ORDER BY views DESC
         LIMIT 10

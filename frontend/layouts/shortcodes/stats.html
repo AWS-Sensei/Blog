@@ -11,7 +11,7 @@
 
   <div id="stats-grid" style="display:none;">
     <div class="stats-row">
-      <div class="stats-card stats-card--wide">
+      <div class="stats-card stats-card--full">
         <div class="stats-card__title">
           {{ if $isDE }}Tagesgang (letzte 30 Tage){{ else }}Daily Traffic (last 30 days){{ end }}
         </div>
@@ -19,11 +19,19 @@
       </div>
     </div>
     <div class="stats-row">
+      <div class="stats-card stats-card--full">
+        <div class="stats-card__title">
+          {{ if $isDE }}Top-Artikel (letzte 30 Tage){{ else }}Top Articles (last 30 days){{ end }}
+        </div>
+        <div id="chart-articles" class="stats-chart stats-chart--tall"></div>
+      </div>
+    </div>
+    <div class="stats-row">
       <div class="stats-card">
         <div class="stats-card__title">
-          {{ if $isDE }}Top-Artikel (letzte 7 Tage){{ else }}Top Articles (last 7 days){{ end }}
+          {{ if $isDE }}Geräte (letzte 30 Tage){{ else }}Devices (last 30 days){{ end }}
         </div>
-        <div id="chart-articles" class="stats-chart"></div>
+        <div id="chart-devices" class="stats-chart stats-chart--small"></div>
       </div>
       <div class="stats-card">
         <div class="stats-card__title">
@@ -32,20 +40,7 @@
         <div id="chart-referrers" class="stats-chart"></div>
       </div>
     </div>
-    <div class="stats-row">
-      <div class="stats-card stats-card--narrow">
-        <div class="stats-card__title">
-          {{ if $isDE }}Geräte (letzte 30 Tage){{ else }}Devices (last 30 days){{ end }}
-        </div>
-        <div id="chart-devices" class="stats-chart stats-chart--small"></div>
-      </div>
-      <div class="stats-card stats-card--wide">
-        <div class="stats-card__title">
-          {{ if $isDE }}Zuletzt aktualisiert{{ else }}Last updated{{ end }}
-        </div>
-        <p id="stats-updated" class="stats-meta"></p>
-      </div>
-    </div>
+    <p id="stats-updated" class="stats-meta stats-meta--footer"></p>
   </div>
 </div>
 
@@ -66,8 +61,7 @@
   padding: 1rem 1.25rem;
   background: rgba(255,255,255,0.03);
 }
-.stats-card--wide  { flex: 2; }
-.stats-card--narrow { flex: 1; }
+.stats-card--full  { flex: 1 1 100%; }
 .stats-card__title {
   font-size: 0.8rem;
   text-transform: uppercase;
@@ -76,8 +70,10 @@
   margin-bottom: 0.75rem;
 }
 .stats-chart        { height: 260px; }
+.stats-chart--tall  { height: 340px; }
 .stats-chart--small { height: 220px; }
 .stats-meta { font-size: 0.85rem; opacity: 0.6; margin: 0; }
+.stats-meta--footer { margin-top: 0.25rem; }
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
@@ -131,9 +127,9 @@
 
     initChart('chart-articles', {
       tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
-      grid: { left: 140, right: 16, top: 8, bottom: 24 },
+      grid: { left: 200, right: 16, top: 8, bottom: 24 },
       xAxis: { type: 'value', axisLabel: { color: textColor }, splitLine: { lineStyle: { color: gridColor } } },
-      yAxis: { type: 'category', data: artPages.slice().reverse(), axisLabel: { color: textColor, fontSize: 11, width: 130, overflow: 'truncate' } },
+      yAxis: { type: 'category', data: artPages.slice().reverse(), axisLabel: { color: textColor, fontSize: 11, width: 190, overflow: 'truncate', align: 'left' } },
       series: [{ type: 'bar', data: artViews.slice().reverse(), itemStyle: { color: accentBlue, borderRadius: [0, 4, 4, 0] } }]
     });
 
