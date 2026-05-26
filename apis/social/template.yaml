@@ -92,7 +92,7 @@ Resources:
       Environment:
         Variables:
           TABLE_NAME: !Ref SocialPostsTable
-          LINKEDIN_SECRET_NAME: !Ref LinkedInSecret
+          LINKEDIN_SECRET_NAME: sensei/linkedin/oauth
       Policies:
         - DynamoDBReadPolicy:
             TableName: !Ref SocialPostsTable
