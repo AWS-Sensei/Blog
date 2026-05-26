@@ -97,9 +97,7 @@ Getting the LinkedIn API access was the most friction-heavy part. The developer 
 
 You don't. Select it and move on.
 
-{{< expand "Screenshot: Default Company Page for Individual Users" >}}
-{{< figure src="linkedin-default-company-page.png" >}}
-{{< /expand >}}
+{{< image src="linkedin-default-company-page.png" caption="Default Company Page for Individual Users" width="500" >}}
 
 The OAuth scopes you need:
 

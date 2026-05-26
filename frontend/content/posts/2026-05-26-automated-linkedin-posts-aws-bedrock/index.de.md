@@ -97,9 +97,7 @@ Der LinkedIn-API-Zugang war der reibungsintensivste Teil. Das Developer-Portal v
 
 Muss man nicht. Einfach auswählen und weitermachen.
 
-{{< expand "Screenshot: Default Company Page für Individual Users" >}}
-{{< figure src="linkedin-default-company-page.png" >}}
-{{< /expand >}}
+{{< image src="linkedin-default-company-page.png" caption="Default Company Page für Individual Users" width="500" >}}
 
 Die benötigten OAuth Scopes:
 
