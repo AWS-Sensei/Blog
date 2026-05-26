@@ -31,6 +31,10 @@ def lambda_handler(event, context):
 
         frontmatter, body = parse_frontmatter(content)
 
+        if ".en." not in key:
+            print(f"Skipping {key}: not an English post")
+            return
+
         if not frontmatter.get("socialmedia", False):
             print(f"Skipping {key}: socialmedia not true")
             return
