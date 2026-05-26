@@ -116,8 +116,7 @@ enableEmoji = true
   defaultTheme = "auto"
   gitRepo = "https://github.com/AWS-Sensei/Blog"
   dateFormat = "2006-01-02"
-#  title = "Marcel Baltzer"
-#  description = "Marcel Baltzer's Blog"
+  description = "Hands-on AWS engineering: serverless, CI/CD, and cloud-native features — built on a real project."
 
 [params.header]
   [params.header.title]
