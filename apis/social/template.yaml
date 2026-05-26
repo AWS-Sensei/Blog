@@ -1,0 +1,186 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Automatic LinkedIn post generation for new English blog articles
+
+Parameters:
+  HostedZoneId:
+    Type: String
+    Default: Z0003192F8JJC6RWXV1M
+  PostChangedTopicArn:
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: /sensei/blog/post-changed-topic-arn
+  WebsiteBucketName:
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: /sensei/blog/bucket-name
+
+Globals:
+  Function:
+    Runtime: python3.12
+    MemorySize: 256
+
+Resources:
+
+  # ─── DynamoDB ────────────────────────────────────────────────────────────────
+
+  SocialPostsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: sensei-social-posts
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: postId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: postId
+          KeyType: HASH
+      Tags:
+        - Key: Project
+          Value: aws-sensei
+        - Key: Service
+          Value: blog
+        - Key: Component
+          Value: api-social
+
+  # ─── Secrets Manager ─────────────────────────────────────────────────────────
+
+  LinkedInSecret:
+    Type: AWS::SecretsManager::Secret
+    DeletionPolicy: Retain
+    Properties:
+      Name: sensei/linkedin/oauth
+      Description: LinkedIn OAuth token for automated posting
+      SecretString: '{"access_token":"REPLACE_ME","person_id":"REPLACE_ME"}'
+      Tags:
+        - Key: Project
+          Value: aws-sensei
+
+  # ─── Lambda: Orchestrator ────────────────────────────────────────────────────
+
+  OrchestratorFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: sensei-social-orchestrator
+      Handler: handler.lambda_handler
+      CodeUri: src/orchestrator/
+      Timeout: 60
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref SocialPostsTable
+          FROM_EMAIL: noreply@aws-sensei.cloud
+          TO_EMAIL: marcel.baltzer@hotmail.de
+          APPROVE_URL: https://social.aws-sensei.cloud/approve
+          BEDROCK_MODEL_ID: eu.anthropic.claude-3-5-haiku-20241022-v1:0
+      Policies:
+        - DynamoDBWritePolicy:
+            TableName: !Ref SocialPostsTable
+        - Statement:
+            - Effect: Allow
+              Action: s3:GetObject
+              Resource: !Sub "arn:aws:s3:::${WebsiteBucketName}/_content/posts/*"
+            - Effect: Allow
+              Action: bedrock:InvokeModel
+              Resource: "*"
+            - Effect: Allow
+              Action: ses:SendEmail
+              Resource: "*"
+      Events:
+        NewPost:
+          Type: SNS
+          Properties:
+            Topic: !Ref PostChangedTopicArn
+            FilterPolicyScope: MessageBody
+            FilterPolicy:
+              Records:
+                s3:
+                  object:
+                    key:
+                      - contains: ".en."
+      Tags:
+        Project: aws-sensei
+        Service: blog
+        Component: api-social
+
+  # ─── Lambda: Approver ────────────────────────────────────────────────────────
+
+  ApproverFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: sensei-social-approver
+      Handler: handler.lambda_handler
+      CodeUri: src/approver/
+      Timeout: 15
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref SocialPostsTable
+          LINKEDIN_SECRET_NAME: !Ref LinkedInSecret
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref SocialPostsTable
+        - DynamoDBWritePolicy:
+            TableName: !Ref SocialPostsTable
+        - Statement:
+            - Effect: Allow
+              Action: secretsmanager:GetSecretValue
+              Resource: !Ref LinkedInSecret
+      Events:
+        ApproveGet:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref ApproveApi
+            Path: /approve
+            Method: GET
+      Tags:
+        Project: aws-sensei
+        Service: blog
+        Component: api-social
+
+  # ─── HTTP API ────────────────────────────────────────────────────────────────
+
+  ApproveApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      Name: sensei-social-api
+      StageName: prod
+      DisableExecuteApiEndpoint: true
+
+  # ─── Custom Domain (social.aws-sensei.cloud) ─────────────────────────────────
+
+  SocialCertificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: social.aws-sensei.cloud
+      ValidationMethod: DNS
+      DomainValidationOptions:
+        - DomainName: social.aws-sensei.cloud
+          HostedZoneId: !Ref HostedZoneId
+
+  SocialCustomDomain:
+    Type: AWS::ApiGatewayV2::DomainName
+    Properties:
+      DomainName: social.aws-sensei.cloud
+      DomainNameConfigurations:
+        - CertificateArn: !Ref SocialCertificate
+          EndpointType: REGIONAL
+
+  SocialApiMapping:
+    Type: AWS::ApiGatewayV2::ApiMapping
+    DependsOn: SocialCustomDomain
+    Properties:
+      ApiId: !Ref ApproveApi
+      DomainName: social.aws-sensei.cloud
+      Stage: prod
+
+  SocialDnsRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref HostedZoneId
+      Name: social.aws-sensei.cloud
+      Type: A
+      AliasTarget:
+        DNSName: !GetAtt SocialCustomDomain.RegionalDomainName
+        HostedZoneId: !GetAtt SocialCustomDomain.RegionalHostedZoneId
+
+Outputs:
+  ApproveUrl:
+    Description: Approval endpoint URL
+    Value: https://social.aws-sensei.cloud/approve

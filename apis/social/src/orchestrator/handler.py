@@ -1,0 +1,152 @@
+import json
+import os
+import re
+import uuid
+from datetime import datetime, timezone
+from urllib.parse import unquote_plus
+
+import boto3
+
+s3 = boto3.client("s3")
+bedrock = boto3.client("bedrock-runtime", region_name="eu-central-1")
+ses = boto3.client("ses", region_name="eu-central-1")
+dynamodb = boto3.resource("dynamodb")
+
+TABLE_NAME = os.environ["TABLE_NAME"]
+FROM_EMAIL = os.environ["FROM_EMAIL"]
+TO_EMAIL = os.environ["TO_EMAIL"]
+APPROVE_URL = os.environ["APPROVE_URL"]
+BEDROCK_MODEL_ID = os.environ["BEDROCK_MODEL_ID"]
+
+
+def lambda_handler(event, context):
+    for record in event["Records"]:
+        message = json.loads(record["Sns"]["Message"])
+        s3_record = message["Records"][0]
+        bucket = s3_record["s3"]["bucket"]["name"]
+        key = unquote_plus(s3_record["s3"]["object"]["key"])
+
+        obj = s3.get_object(Bucket=bucket, Key=key)
+        content = obj["Body"].read().decode("utf-8")
+
+        frontmatter, body = parse_frontmatter(content)
+
+        if not frontmatter.get("socialmedia", False):
+            print(f"Skipping {key}: socialmedia not true")
+            return
+
+        # key format: _content/posts/{slug}/index.en.{hash}
+        slug = key.split("/")[2]
+        title = frontmatter.get("title", slug)
+
+        linkedin_post = generate_linkedin_post(frontmatter, body)
+
+        post_id = str(uuid.uuid4())
+        dynamodb.Table(TABLE_NAME).put_item(Item={
+            "postId": post_id,
+            "slug": slug,
+            "platform": "linkedin",
+            "content": linkedin_post,
+            "status": "pending",
+            "articleTitle": title,
+            "createdAt": datetime.now(timezone.utc).isoformat(),
+        })
+
+        send_approval_email(post_id, title, linkedin_post)
+        print(f"Created pending post {post_id} for {slug}")
+
+
+def parse_frontmatter(content):
+    match = re.match(r"^---\n(.*?)\n---\n(.*)$", content, re.DOTALL)
+    if not match:
+        return {}, content
+
+    fm = {}
+    for line in match.group(1).split("\n"):
+        if ":" not in line:
+            continue
+        key, _, value = line.partition(":")
+        key = key.strip()
+        value = value.strip()
+        if value.lower() == "true":
+            fm[key] = True
+        elif value.lower() == "false":
+            fm[key] = False
+        elif value.startswith("[") and value.endswith("]"):
+            fm[key] = [v.strip().strip("\"'") for v in value[1:-1].split(",") if v.strip()]
+        else:
+            fm[key] = value.strip("\"'")
+
+    return fm, match.group(2)
+
+
+def generate_linkedin_post(frontmatter, body):
+    title = frontmatter.get("title", "")
+    description = frontmatter.get("description", "")
+    tags = frontmatter.get("tags", [])
+    if isinstance(tags, str):
+        tags = [tags]
+
+    prompt = f"""You are a technical content writer. Create a professional LinkedIn post for a new AWS/cloud engineering blog article.
+
+Article title: {title}
+Description: {description}
+Tags: {", ".join(tags)}
+
+Article excerpt:
+{body[:3000]}
+
+Write a LinkedIn post that:
+- Opens with a compelling hook (question, bold claim, or surprising fact)
+- Summarizes the key technical insight in 2-3 sentences
+- Ends with a call to action to read the full article
+- Includes 3-5 relevant hashtags at the end
+- Sounds like a real engineer sharing knowledge, not marketing copy
+- Is between 150-250 words
+
+Return only the post text, no explanations."""
+
+    response = bedrock.invoke_model(
+        modelId=BEDROCK_MODEL_ID,
+        body=json.dumps({
+            "anthropic_version": "bedrock-2023-05-31",
+            "max_tokens": 600,
+            "messages": [{"role": "user", "content": prompt}],
+        }),
+    )
+
+    result = json.loads(response["body"].read())
+    return result["content"][0]["text"]
+
+
+def send_approval_email(post_id, title, content):
+    approve_link = f"{APPROVE_URL}?postId={post_id}"
+    content_escaped = content.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
+    ses.send_email(
+        Source=FROM_EMAIL,
+        Destination={"ToAddresses": [TO_EMAIL]},
+        Message={
+            "Subject": {"Data": f"LinkedIn Post: {title}"},
+            "Body": {
+                "Html": {
+                    "Data": f"""<!DOCTYPE html>
+<html>
+<body style="font-family:sans-serif;max-width:600px;margin:40px auto;color:#1a1a1a;">
+  <h2 style="color:#0077b5;">New LinkedIn Post Ready</h2>
+  <h3>{title}</h3>
+  <div style="background:#f5f5f5;padding:20px;border-radius:8px;
+              white-space:pre-wrap;font-size:14px;line-height:1.6;">
+{content_escaped}
+  </div>
+  <a href="{approve_link}"
+     style="display:inline-block;margin-top:24px;background:#0077b5;color:white;
+            padding:14px 28px;text-decoration:none;border-radius:6px;font-weight:bold;">
+    Approve &amp; Post to LinkedIn
+  </a>
+</body>
+</html>"""
+                }
+            },
+        },
+    )
