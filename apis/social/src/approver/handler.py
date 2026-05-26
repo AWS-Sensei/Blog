@@ -29,8 +29,17 @@ def lambda_handler(event, context):
         post_url = item.get("postUrl", "https://www.linkedin.com/")
         return html_response(200, f'<h1>Already posted</h1><p><a href="{post_url}">View on LinkedIn</a></p>')
 
-    if item["status"] != "pending":
-        return html_response(409, f'<h1>Unexpected status: {item["status"]}</h1>')
+    # Claim the post before calling LinkedIn — only one concurrent Lambda wins
+    try:
+        table.update_item(
+            Key={"postId": post_id},
+            UpdateExpression="SET #s = :publishing",
+            ConditionExpression="#s = :pending",
+            ExpressionAttributeNames={"#s": "status"},
+            ExpressionAttributeValues={":publishing": "publishing", ":pending": "pending"},
+        )
+    except dynamodb.meta.client.exceptions.ConditionalCheckFailedException:
+        return html_response(200, "<h1>Already posted or in progress</h1>")
 
     secret = json.loads(secrets.get_secret_value(SecretId=LINKEDIN_SECRET_NAME)["SecretString"])
     access_token = secret["access_token"]
@@ -38,18 +47,12 @@ def lambda_handler(event, context):
 
     post_url = post_to_linkedin(access_token, person_id, item["content"])
 
-    try:
-        table.update_item(
-            Key={"postId": post_id},
-            UpdateExpression="SET #s = :s, postUrl = :url",
-            ConditionExpression="#s = :pending",
-            ExpressionAttributeNames={"#s": "status"},
-            ExpressionAttributeValues={
-                ":s": "sent", ":url": post_url, ":pending": "pending"
-            },
-        )
-    except dynamodb.meta.client.exceptions.ConditionalCheckFailedException:
-        return html_response(200, "<h1>Already posted</h1>")
+    table.update_item(
+        Key={"postId": post_id},
+        UpdateExpression="SET #s = :s, postUrl = :url",
+        ExpressionAttributeNames={"#s": "status"},
+        ExpressionAttributeValues={":s": "sent", ":url": post_url},
+    )
 
     return html_response(200, f"""
       <h1 style="color:#0077b5;">Posted to LinkedIn!</h1>
