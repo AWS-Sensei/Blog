@@ -144,7 +144,9 @@ Resources:
 
   SocialApiMapping:
     Type: AWS::ApiGatewayV2::ApiMapping
-    DependsOn: SocialCustomDomain
+    DependsOn:
+      - SocialCustomDomain
+      - ApproveApi
     Properties:
       ApiId: !Ref ApproveApi
       DomainName: social.aws-sensei.cloud
