@@ -138,8 +138,6 @@ enableEmoji = true
   [params.home.profile]
     enable = true
     avatarURL = "/images/avatar.png"
-#    title = "Tech Lead and AWS Developer"
-#    subtitle = "This blog is a place for me to share what I’ve learned, capture my thoughts, and hopefully help others along the way."
     typeit = true
     social = true
     [params.home.posts]
