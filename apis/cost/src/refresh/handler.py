@@ -18,6 +18,7 @@ def lambda_handler(event, context):
         TimePeriod={"Start": start, "End": end},
         Granularity="MONTHLY",
         Metrics=["UnblendedCost"],
+        Filter={"Tags": {"Key": "project", "Values": ["aws-sensei"]}},
         GroupBy=[{"Type": "DIMENSION", "Key": "SERVICE"}],
     )
 
