@@ -1,7 +1,7 @@
+import hashlib
 import json
 import os
 import re
-import uuid
 from datetime import datetime, timezone
 from urllib.parse import unquote_plus
 
@@ -45,16 +45,23 @@ def lambda_handler(event, context):
 
         linkedin_post = generate_linkedin_post(frontmatter, body)
 
-        post_id = str(uuid.uuid4())
-        dynamodb.Table(TABLE_NAME).put_item(Item={
-            "postId": post_id,
-            "slug": slug,
-            "platform": "linkedin",
-            "content": linkedin_post,
-            "status": "pending",
-            "articleTitle": title,
-            "createdAt": datetime.now(timezone.utc).isoformat(),
-        })
+        post_id = hashlib.md5(key.encode()).hexdigest()
+        try:
+            dynamodb.Table(TABLE_NAME).put_item(
+                Item={
+                    "postId": post_id,
+                    "slug": slug,
+                    "platform": "linkedin",
+                    "content": linkedin_post,
+                    "status": "pending",
+                    "articleTitle": title,
+                    "createdAt": datetime.now(timezone.utc).isoformat(),
+                },
+                ConditionExpression="attribute_not_exists(postId)",
+            )
+        except dynamodb.meta.client.exceptions.ConditionalCheckFailedException:
+            print(f"Duplicate SNS delivery for {key}, skipping")
+            return
 
         send_approval_email(post_id, title, linkedin_post)
         print(f"Created pending post {post_id} for {slug}")

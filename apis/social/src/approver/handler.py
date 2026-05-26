@@ -38,12 +38,18 @@ def lambda_handler(event, context):
 
     post_url = post_to_linkedin(access_token, person_id, item["content"])
 
-    table.update_item(
-        Key={"postId": post_id},
-        UpdateExpression="SET #s = :s, postUrl = :url",
-        ExpressionAttributeNames={"#s": "status"},
-        ExpressionAttributeValues={":s": "sent", ":url": post_url},
-    )
+    try:
+        table.update_item(
+            Key={"postId": post_id},
+            UpdateExpression="SET #s = :s, postUrl = :url",
+            ConditionExpression="#s = :pending",
+            ExpressionAttributeNames={"#s": "status"},
+            ExpressionAttributeValues={
+                ":s": "sent", ":url": post_url, ":pending": "pending"
+            },
+        )
+    except dynamodb.meta.client.exceptions.ConditionalCheckFailedException:
+        return html_response(200, "<h1>Already posted</h1>")
 
     return html_response(200, f"""
       <h1 style="color:#0077b5;">Posted to LinkedIn!</h1>
