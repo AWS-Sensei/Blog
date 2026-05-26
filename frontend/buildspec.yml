@@ -28,7 +28,7 @@ phases:
           lang=$(basename "$md_file" | cut -d'.' -f2)
           hash=$(md5sum "$md_file" | cut -d' ' -f1)
           mkdir -p "/tmp/post-triggers/$slug"
-          touch "/tmp/post-triggers/$slug/index.$lang.$hash"
+          cp "$md_file" "/tmp/post-triggers/$slug/index.$lang.$hash"
         done
       - aws s3 sync /tmp/post-triggers/ s3://$WEBSITE_BUCKET/_content/posts/ --size-only --delete
       - echo "Invalidating CloudFront cache..."
