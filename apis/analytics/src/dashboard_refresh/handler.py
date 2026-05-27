@@ -75,8 +75,8 @@ def _make_queries(hour_start: datetime, hour_end: datetime) -> dict:
 
 def lambda_handler(event, context):
     now       = datetime.now(timezone.utc)
-    hour_start = now.replace(minute=0, second=0, microsecond=0)
-    hour_end   = hour_start + timedelta(hours=1)
+    hour_end   = now.replace(minute=0, second=0, microsecond=0)
+    hour_start = hour_end - timedelta(hours=1)
 
     # 1. Run 4 Athena queries for the current hour only
     queries = _make_queries(hour_start, hour_end)
