@@ -45,7 +45,7 @@ def lambda_handler(event, context):
     access_token = secret["access_token"]
     person_id = secret["person_id"]
 
-    post_url = post_to_linkedin(access_token, person_id, item["content"])
+    post_url = post_to_linkedin(access_token, person_id, item["content"], item.get("articleUrl"))
 
     table.update_item(
         Key={"postId": post_id},
@@ -65,8 +65,8 @@ def lambda_handler(event, context):
     """)
 
 
-def post_to_linkedin(access_token, person_id, content):
-    payload = json.dumps({
+def post_to_linkedin(access_token, person_id, content, article_url=None):
+    body = {
         "author": f"urn:li:person:{person_id}",
         "commentary": content,
         "visibility": "PUBLIC",
@@ -77,7 +77,10 @@ def post_to_linkedin(access_token, person_id, content):
         },
         "lifecycleState": "PUBLISHED",
         "isReshareDisabledByAuthor": False,
-    }).encode("utf-8")
+    }
+    if article_url:
+        body["content"] = {"article": {"source": article_url}}
+    payload = json.dumps(body).encode("utf-8")
 
     req = Request(
         "https://api.linkedin.com/rest/posts",

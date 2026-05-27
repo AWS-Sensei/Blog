@@ -56,6 +56,7 @@ def lambda_handler(event, context):
                     "content": linkedin_post,
                     "status": "pending",
                     "articleTitle": title,
+                    "articleUrl": article_url,
                     "createdAt": datetime.now(timezone.utc).isoformat(),
                 },
                 ConditionExpression="attribute_not_exists(postId)",
