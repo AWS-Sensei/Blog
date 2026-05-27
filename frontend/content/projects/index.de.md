@@ -26,11 +26,12 @@ Ein serverloser camt-Import ... .
 ### 🛠️ Migration von Logistik- und Einkaufs-Monolith zu Microservices
 
 **Beschreibung**:  
-Leitung der Re-Architektur eines Legacy-Visual-Basic-Monolithen hin zu skalierbaren Microservices.
+Greenfield-Neuentwicklung einer Logistik- und Einkaufsplattform als Teil der cloudnativen Migration eines VB6-Monolithen zu Microservices auf AWS. In einem internationalen Team – In-House-Entwickler und externe Kollegen, alles auf Englisch – baute ich auf technisch völlig neuem Terrain auf: Microservices, Event-Driven Architecture, Terraform, CI/CD. Erstes großes Deliverable war ein EDI-Service zur digitalen Lieferscheinübertragung zwischen Lieferanten und Lager. Über die Zeit übernahm ich die Tech-Lead-Rolle, leitete interne Workshops und trieb Best Practices für Unit Tests, Terraform-Module und Event-Driven-Patterns teamübergreifend voran.
 
 **Rolle**: Senior & Lead Developer  
-**Tech**: C#, xUnit, FluentAssertions, Docker, Terraform, ECS Fargate, AWS PostgreSQL, GitHub  
-**Impact**: ...
+**Tech**: C#, .NET Core, ASP.NET Core, AWS (ECS Fargate, SQS, SNS), PostgreSQL, Terraform, Docker, xUnit, FluentAssertions, GitHub  
+**Impact**:  
+Der EDI-Service eliminierte manuelle Lieferscheinprozesse und beschleunigte die Lagerkommissionierung. Als Tech Lead entstanden Standards, die alle drei Entwicklungsteams der Plattform übernahmen.
 
 ---
 
