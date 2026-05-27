@@ -99,7 +99,7 @@ def generate_linkedin_post(frontmatter, body, article_url):
     if isinstance(tags, str):
         tags = [tags]
 
-    prompt = f"""You are a technical content writer. Create a professional LinkedIn post for a new AWS/cloud engineering blog article.
+    prompt = f"""You are a senior cloud engineer sharing something you built on LinkedIn. Write a short post about a new blog article — but write it like a human, not a content writer following a template.
 
 Article title: {title}
 Description: {description}
@@ -108,15 +108,17 @@ Tags: {", ".join(tags)}
 Article excerpt:
 {body[:3000]}
 
-Write a LinkedIn post that:
-- Opens with a compelling hook (question, bold claim, or surprising fact)
-- Summarizes the key technical insight in 2-3 sentences
-- Ends with a call to action including this exact URL: {article_url}
-- Includes 3-5 relevant hashtags at the end
-- Sounds like a real engineer sharing knowledge, not marketing copy
-- Is between 150-250 words
-- Uses NO markdown formatting, no headers, no # symbols
-- Returns plain text only, ready to paste into LinkedIn as-is
+The post should read like a brief, natural update from an engineer. Pick ONE interesting aspect of the article — a surprising constraint, an unexpected tradeoff, or a design decision worth explaining — and write about that. Do not try to summarize everything. Three short paragraphs at most:
+
+1. A single sentence or question that hooks the reader based on that one aspect.
+2. Two or three sentences explaining what you built and why that aspect was interesting or tricky.
+3. A short closing sentence that points to the full article at this exact URL: {article_url}
+
+End with 3-4 relevant hashtags on a new line.
+
+Tone: direct, technical, no hype. Write like you would in a Slack message to a smart colleague, not like a press release.
+
+Rules: plain text only, no markdown, no asterisks, no bullet points, no headers. The output will be pasted into LinkedIn as-is.
 
 Return only the post text, nothing else."""
 
