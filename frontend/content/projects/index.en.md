@@ -36,9 +36,10 @@ Lead the re-architecture of a legacy Visual Basix monolith into scalable microse
 
 ### ✈️ Group Booking & Inventory System Modernization
 
-**Description**:
-...
+**Description**:  
+Co-developed a group booking module within a company-wide flight inventory system covering flight schedules, pricing, seating, and aircraft capacity. Since the public booking flow was limited to 9 passengers, the internal group travel department needed a dedicated tool for individual price negotiations. In a small team alongside a frontend colleague and external developers, I quickly grew into the backend lead role and coordinated the redevelopment of the group tool closely with Revenue Management and the groups team.
 
 **Role**: Software Developer  
-**Tech**: C#, WPF, Amadeus, MSSql  
-**Impact**: ...
+**Tech**: C#, .NET 4.6, WPF, WCF, Amadeus Altea, MSSQL, TFS  
+**Impact**:  
+The department was able to capture, calculate, and confirm group requests entirely within the system for the first time — without manual workarounds or external communication channels. For me personally, it was the first step beyond a pure developer role.

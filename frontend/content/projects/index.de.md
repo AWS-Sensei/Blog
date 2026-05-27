@@ -37,8 +37,9 @@ Leitung der Re-Architektur eines Legacy-Visual-Basic-Monolithen hin zu skalierba
 ### ✈️ Modernisierung von Group Booking & Inventory System
 
 **Beschreibung**:  
-...
+Mitentwicklung eines Gruppenbuchen-Moduls innerhalb eines unternehmensweiten Fluginventarsystems, das Flugpläne, Preise, Sitzplätze und Flugzeugkapazitäten zentral verwaltete. Da die öffentliche Buchungsstrecke bei 9 Passagieren endete, benötigte die interne Gruppenreise-Abteilung ein eigenes Werkzeug für individuelle Preisverhandlungen. In einem kleinen Team mit einem Frontend-Kollegen und externen Entwicklern wuchs ich schnell in die Backend-Lead-Rolle hinein und koordinierte eng mit Revenue Management und dem Gruppenteam die Neuentwicklung des Gruppen-Tools.
 
 **Rolle**: Software Developer  
-**Tech**: C#, WPF, Amadeus, MSSql  
-**Impact**: ...
+**Tech**: C#, .NET 4.6, WPF, WCF, Amadeus Altea, MSSQL, TFS  
+**Impact**:  
+Die Abteilung konnte Gruppenanfragen erstmals vollständig im System erfassen, kalkulieren und bestätigen – ohne manuelle Zwischenschritte oder externe Kommunikationswege. Für mich persönlich war es der erste Schritt aus der reinen Entwicklerrolle heraus.
