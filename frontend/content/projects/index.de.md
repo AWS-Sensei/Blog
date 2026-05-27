@@ -12,14 +12,15 @@ Hier ist eine kuratierte Auswahl an Arbeiten, auf die ich stolz bin.
 
 ---
 
-### 💵 Cloud-basiertes Payment Next System
+### 💵 Enterprise CAMT-Verarbeitungsplattform
 
 **Beschreibung**:  
-Ein serverloser camt-Import ... .
+Neuentwicklung eines Verarbeitungsdienstes für gesetzlich vorgeschriebene Kontoumsatzdaten im CAMT-Format – ein Pionierprojekt auf AWS in einem großen Enterprise-Umfeld. Ich startete als DevOps-Entwickler und etablierte DevOps als Mindset und Framework im Team statt als reinen Jobtitel. Von dort entwickelte sich die Tech-Lead-Rolle, in der ich die Teamstruktur aktiv mitgestaltete und eng mit Enterprise-Architekten und dem Infrastruktur-Plattformteam zusammenarbeitete. Die Architektur baute auf bewährten event-driven Microservices auf AWS auf – vertraut vom Vorgängerprojekt, jedoch bei deutlich höherem erwartetem Traffic und in einer Organisation, die den Schritt in die Cloud gerade erst vollzog.
 
 **Rolle**: Lead Developer  
-**Tech**: Java 17, Spring Boot, Docker, ECS Fargate, AWS Aurora, GitLab  
-**Impact**: ...
+**Tech**: Java 21, Spring Boot 3.4, RabbitMQ, AWS (ECS Fargate, Aurora PostgreSQL), Terraform, Docker, Datadog, GitLab  
+**Impact**:  
+Das System läuft erfolgreich im Produktivbetrieb; nahezu alle Banken sind migriert. Als Tech Lead prägte ich DevOps-Kultur und Architekturentscheidungen, die über das Team hinaus Wirkung hatten.
 
 ---
 
