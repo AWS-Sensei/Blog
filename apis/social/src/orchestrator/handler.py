@@ -42,8 +42,9 @@ def lambda_handler(event, context):
         # key format: _content/posts/{slug}/index.en.{hash}
         slug = key.split("/")[2]
         title = frontmatter.get("title", slug)
+        article_url = f"https://aws-sensei.cloud/posts/{slug}/"
 
-        linkedin_post = generate_linkedin_post(frontmatter, body)
+        linkedin_post = generate_linkedin_post(frontmatter, body, article_url)
 
         post_id = hashlib.md5(key.encode()).hexdigest()
         try:
@@ -91,7 +92,7 @@ def parse_frontmatter(content):
     return fm, match.group(2)
 
 
-def generate_linkedin_post(frontmatter, body):
+def generate_linkedin_post(frontmatter, body, article_url):
     title = frontmatter.get("title", "")
     description = frontmatter.get("description", "")
     tags = frontmatter.get("tags", [])
@@ -110,7 +111,7 @@ Article excerpt:
 Write a LinkedIn post that:
 - Opens with a compelling hook (question, bold claim, or surprising fact)
 - Summarizes the key technical insight in 2-3 sentences
-- Ends with a call to action to read the full article
+- Ends with a call to action including this exact URL: {article_url}
 - Includes 3-5 relevant hashtags at the end
 - Sounds like a real engineer sharing knowledge, not marketing copy
 - Is between 150-250 words
