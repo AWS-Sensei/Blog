@@ -4,7 +4,7 @@ date: 2026-05-26T00:00:00+02:00
 lastmod: 2026-05-26T00:00:00+02:00
 draft: false
 author: "Marcel"
-socialmedia: false
+socialmedia: true
 description: "How I built a serverless pipeline that automatically generates LinkedIn posts from new blog articles using AWS Lambda, Bedrock, and an approval-first workflow."
 images: []
 resources:
