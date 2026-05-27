@@ -143,6 +143,7 @@ Resources:
               Action:
                 - s3:GetObject
                 - s3:PutObject
+                - s3:DeleteObject
                 - s3:GetBucketLocation
                 - s3:ListBucket
               Resource:
@@ -153,6 +154,48 @@ Resources:
           Type: Schedule
           Properties:
             Schedule: rate(1 hour)
+      Tags:
+        Project: aws-sensei
+        Service: blog
+        Component: analytics
+
+  BackfillFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: sensei-analytics-backfill
+      Handler: handler.lambda_handler
+      CodeUri: src/backfill/
+      Timeout: 900
+      MemorySize: 256
+      Environment:
+        Variables:
+          ATHENA_WORKGROUP: !Ref AnalyticsWorkGroup
+          CACHE_BUCKET: !Ref AnalyticsBucket
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - athena:StartQueryExecution
+                - athena:GetQueryExecution
+                - athena:GetQueryResults
+                - athena:StopQueryExecution
+              Resource: !Sub "arn:aws:athena:${AWS::Region}:${AWS::AccountId}:workgroup/${AnalyticsWorkGroup}"
+            - Effect: Allow
+              Action:
+                - glue:GetTable
+                - glue:GetDatabase
+                - glue:GetPartitions
+              Resource: "*"
+            - Effect: Allow
+              Action:
+                - s3:GetObject
+                - s3:PutObject
+                - s3:GetBucketLocation
+                - s3:ListBucket
+              Resource:
+                - !GetAtt AnalyticsBucket.Arn
+                - !Sub "${AnalyticsBucket.Arn}/*"
       Tags:
         Project: aws-sensei
         Service: blog
