@@ -2,6 +2,11 @@ AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: Contact form using SES
 
+Parameters:
+  HostedZoneId:
+    Type: String
+    Default: Z0003192F8JJC6RWXV1M
+
 Globals:
   Function:
     Timeout: 10
@@ -55,7 +60,46 @@ Resources:
             Path: /contact
             Method: OPTIONS
 
+  ContactCertificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: contact.aws-sensei.cloud
+      ValidationMethod: DNS
+      DomainValidationOptions:
+        - DomainName: contact.aws-sensei.cloud
+          HostedZoneId: !Ref HostedZoneId
+
+  ContactCustomDomain:
+    Type: AWS::ApiGateway::DomainName
+    Properties:
+      DomainName: contact.aws-sensei.cloud
+      RegionalCertificateArn: !Ref ContactCertificate
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+      SecurityPolicy: TLS_1_2
+
+  ContactBasePathMapping:
+    Type: AWS::ApiGateway::BasePathMapping
+    DependsOn:
+      - ContactCustomDomain
+      - ContactApi
+    Properties:
+      DomainName: !Ref ContactCustomDomain
+      RestApiId: !Ref ContactApi
+      Stage: prod
+
+  ContactDnsRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref HostedZoneId
+      Name: contact.aws-sensei.cloud
+      Type: A
+      AliasTarget:
+        DNSName: !GetAtt ContactCustomDomain.RegionalDomainName
+        HostedZoneId: !GetAtt ContactCustomDomain.RegionalHostedZoneId
+
 Outputs:
   ContactApiUrl:
     Description: Contact form API URL
-    Value: !Sub "https://${ContactApi}.execute-api.${AWS::Region}.amazonaws.com/prod/contact"
+    Value: https://contact.aws-sensei.cloud/contact
