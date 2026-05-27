@@ -45,7 +45,7 @@ def lambda_handler(event, context):
     access_token = secret["access_token"]
     person_id = secret["person_id"]
 
-    post_url = post_to_linkedin(access_token, person_id, item["content"], item.get("articleUrl"))
+    post_url = post_to_linkedin(access_token, person_id, item["content"], item.get("articleUrl"), item.get("articleTitle"))
 
     table.update_item(
         Key={"postId": post_id},
@@ -65,7 +65,7 @@ def lambda_handler(event, context):
     """)
 
 
-def post_to_linkedin(access_token, person_id, content, article_url=None):
+def post_to_linkedin(access_token, person_id, content, article_url=None, article_title=None):
     body = {
         "author": f"urn:li:person:{person_id}",
         "commentary": content,
@@ -79,7 +79,7 @@ def post_to_linkedin(access_token, person_id, content, article_url=None):
         "isReshareDisabledByAuthor": False,
     }
     if article_url:
-        body["content"] = {"article": {"source": article_url}}
+        body["content"] = {"article": {"source": article_url, "title": article_title or ""}}
     payload = json.dumps(body).encode("utf-8")
 
     req = Request(
