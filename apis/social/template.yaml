@@ -68,6 +68,11 @@ Resources:
               Action: bedrock:InvokeModel
               Resource: "*"
             - Effect: Allow
+              Action:
+                - aws-marketplace:ViewSubscriptions
+                - aws-marketplace:Subscribe
+              Resource: "*"
+            - Effect: Allow
               Action: ses:SendEmail
               Resource: "*"
       Events:
