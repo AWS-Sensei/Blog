@@ -56,7 +56,7 @@ Resources:
           FROM_EMAIL: noreply@aws-sensei.cloud
           TO_EMAIL: marcel.baltzer@hotmail.de
           APPROVE_URL: https://social.aws-sensei.cloud/approve
-          BEDROCK_MODEL_ID: eu.anthropic.claude-3-5-haiku-20241022-v1:0
+          BEDROCK_MODEL_ID: anthropic.claude-haiku-4-5-20251001-v1:0
       Policies:
         - DynamoDBWritePolicy:
             TableName: !Ref SocialPostsTable
