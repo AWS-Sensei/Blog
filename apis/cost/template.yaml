@@ -20,6 +20,7 @@ Resources:
     Properties:
       Name: sensei-cost-api
       StageName: prod
+      DisableExecuteApiEndpoint: true
       Cors:
         AllowMethods: "'GET, OPTIONS'"
         AllowHeaders: "'Content-Type'"

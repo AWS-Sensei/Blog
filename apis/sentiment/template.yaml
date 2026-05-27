@@ -47,6 +47,7 @@ Resources:
     Properties:
       Name: sensei-sentiment-api
       StageName: prod
+      DisableExecuteApiEndpoint: true
       Cors:
         AllowMethods: "'POST, OPTIONS'"
         AllowHeaders: "'Content-Type'"

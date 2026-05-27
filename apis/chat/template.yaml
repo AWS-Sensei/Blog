@@ -60,6 +60,7 @@ Resources:
       Name: sensei-chat-ws
       ProtocolType: WEBSOCKET
       RouteSelectionExpression: "$request.body.action"
+      DisableExecuteApiEndpoint: true
 
   ChatStage:
     Type: AWS::ApiGatewayV2::Stage

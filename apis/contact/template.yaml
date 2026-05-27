@@ -20,6 +20,7 @@ Resources:
     Properties:
       Name: sensei-contact-api
       StageName: prod
+      DisableExecuteApiEndpoint: true
       Cors:
         AllowOrigin: "'https://aws-sensei.cloud'"
         AllowMethods: "'POST, OPTIONS'"
