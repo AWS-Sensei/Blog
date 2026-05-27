@@ -6,11 +6,13 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone, timedelta
 
 import boto3
+from botocore.exceptions import ClientError
 
 ATHENA_DB = "sensei_analytics"
 ATHENA_WORKGROUP = os.environ["ATHENA_WORKGROUP"]
 CACHE_BUCKET = os.environ["CACHE_BUCKET"]
 HOURLY_PREFIX = "cache/hourly/"
+MERGED_STATE_KEY = "cache/merged_state.json"
 DASHBOARD_KEY = "cache/dashboard.json"
 WINDOW_DAYS = 30
 
@@ -25,7 +27,6 @@ def _make_queries(hour_start: datetime, hour_end: datetime) -> dict:
     ts_start = hour_start.strftime("%Y-%m-%d %H:%M:%S")
     ts_end   = hour_end.strftime("%Y-%m-%d %H:%M:%S")
 
-    # Partition filter limits Athena to one day; timestamp filter limits to one hour.
     where = (
         f"year = '{year}' AND month = '{month}' AND day = '{day}'"
         f" AND from_iso8601_timestamp(\"timestamp\") >= TIMESTAMP '{ts_start}'"
@@ -73,48 +74,59 @@ def _make_queries(hour_start: datetime, hour_end: datetime) -> dict:
     }
 
 
-def lambda_handler(event, context):
-    now       = datetime.now(timezone.utc)
-    hour_end   = now.replace(minute=0, second=0, microsecond=0)
-    hour_start = hour_end - timedelta(hours=1)
+def _load_state() -> dict:
+    try:
+        return json.loads(_s3.get_object(Bucket=CACHE_BUCKET, Key=MERGED_STATE_KEY)["Body"].read())
+    except ClientError as e:
+        if e.response["Error"]["Code"] != "NoSuchKey":
+            raise
 
-    # 1. Run 4 Athena queries for the current hour only
-    queries = _make_queries(hour_start, hour_end)
-    with ThreadPoolExecutor(max_workers=4) as executor:
-        futures = {executor.submit(_run_query, name, sql): name for name, sql in queries.items()}
-        hourly_data = {futures[f]: f.result() for f in as_completed(futures)}
-
-    # 2. Write hourly snapshot
-    hourly_key = f"{HOURLY_PREFIX}{hour_start.strftime('%Y-%m-%d-%H')}.json"
-    _s3.put_object(
-        Bucket=CACHE_BUCKET,
-        Key=hourly_key,
-        Body=json.dumps(hourly_data).encode(),
-        ContentType="application/json",
-    )
-
-    # 3. List all hourly files; separate current window from expired ones
-    cutoff = now - timedelta(days=WINDOW_DAYS)
-    valid_keys, stale_keys = [], []
+    # First run: bootstrap from existing hourly files
+    state = {}
     pager = _s3.get_paginator("list_objects_v2")
     for page in pager.paginate(Bucket=CACHE_BUCKET, Prefix=HOURLY_PREFIX):
         for obj in page.get("Contents", []):
             key = obj["Key"]
             slug = key.split("/")[-1].replace(".json", "")
             try:
-                file_dt = datetime.strptime(slug, "%Y-%m-%d-%H").replace(tzinfo=timezone.utc)
-                (stale_keys if file_dt < cutoff else valid_keys).append(key)
-            except ValueError:
+                datetime.strptime(slug, "%Y-%m-%d-%H")
+                data = json.loads(_s3.get_object(Bucket=CACHE_BUCKET, Key=key)["Body"].read())
+                state[slug] = data
+            except (ValueError, ClientError):
                 pass
+    return state
 
-    # 4. Merge all valid hourly files
+
+def lambda_handler(event, context):
+    now        = datetime.now(timezone.utc)
+    hour_end   = now.replace(minute=0, second=0, microsecond=0)
+    hour_start = hour_end - timedelta(hours=1)
+    hour_key   = hour_start.strftime("%Y-%m-%d-%H")
+
+    # 1. Load merged state (or bootstrap from hourly files on first run)
+    state = _load_state()
+
+    # 2. Run Athena queries for the previous completed hour
+    queries = _make_queries(hour_start, hour_end)
+    with ThreadPoolExecutor(max_workers=4) as executor:
+        futures = {executor.submit(_run_query, name, sql): name for name, sql in queries.items()}
+        hourly_data = {futures[f]: f.result() for f in as_completed(futures)}
+
+    # 3. Upsert this hour, prune hours outside the window
+    state[hour_key] = hourly_data
+    cutoff = now - timedelta(days=WINDOW_DAYS)
+    state = {
+        k: v for k, v in state.items()
+        if datetime.strptime(k, "%Y-%m-%d-%H").replace(tzinfo=timezone.utc) >= cutoff
+    }
+
+    # 4. Aggregate across all hours in Python
     top_articles  = defaultdict(int)
     daily_traffic = defaultdict(lambda: {"views": 0, "visitors": 0})
     devices       = defaultdict(int)
     referrers     = defaultdict(int)
 
-    for key in valid_keys:
-        data = json.loads(_s3.get_object(Bucket=CACHE_BUCKET, Key=key)["Body"].read())
+    for data in state.values():
         for row in data.get("top_articles",  []):
             top_articles[row[0]] += int(row[1] or 0)
         for row in data.get("daily_traffic", []):
@@ -125,7 +137,13 @@ def lambda_handler(event, context):
         for row in data.get("referrers", []):
             referrers[row[0]] += int(row[1] or 0)
 
-    # 5. Write merged dashboard cache
+    # 5. Write merged state + dashboard (2 PUTs)
+    _s3.put_object(
+        Bucket=CACHE_BUCKET,
+        Key=MERGED_STATE_KEY,
+        Body=json.dumps(state).encode(),
+        ContentType="application/json",
+    )
     _s3.put_object(
         Bucket=CACHE_BUCKET,
         Key=DASHBOARD_KEY,
@@ -138,10 +156,6 @@ def lambda_handler(event, context):
         }).encode(),
         ContentType="application/json",
     )
-
-    # 6. Delete expired hourly files
-    for key in stale_keys:
-        _s3.delete_object(Bucket=CACHE_BUCKET, Key=key)
 
 
 def _run_query(name: str, sql: str) -> list:
