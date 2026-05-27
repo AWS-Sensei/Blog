@@ -215,7 +215,9 @@ Resources:
 
   AnalyticsApiMapping:
     Type: AWS::ApiGatewayV2::ApiMapping
-    DependsOn: AnalyticsCustomDomain
+    DependsOn:
+      - AnalyticsCustomDomain
+      - AnalyticsApi
     Properties:
       ApiId: !Ref AnalyticsApi
       DomainName: analytics.aws-sensei.cloud
