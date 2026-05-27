@@ -2,6 +2,11 @@ AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: Cost Dashboard API — reads AWS Cost Explorer data cached in SSM
 
+Parameters:
+  HostedZoneId:
+    Type: String
+    Default: Z0003192F8JJC6RWXV1M
+
 Globals:
   Function:
     Timeout: 15
@@ -76,9 +81,48 @@ Resources:
             Schedule: cron(0 6 * * ? *)
             Name: sensei-cost-refresh-daily
 
+  CostCertificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: cost.aws-sensei.cloud
+      ValidationMethod: DNS
+      DomainValidationOptions:
+        - DomainName: cost.aws-sensei.cloud
+          HostedZoneId: !Ref HostedZoneId
+
+  CostCustomDomain:
+    Type: AWS::ApiGateway::DomainName
+    Properties:
+      DomainName: cost.aws-sensei.cloud
+      RegionalCertificateArn: !Ref CostCertificate
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+      SecurityPolicy: TLS_1_2
+
+  CostBasePathMapping:
+    Type: AWS::ApiGateway::BasePathMapping
+    DependsOn:
+      - CostCustomDomain
+      - CostApi
+    Properties:
+      DomainName: !Ref CostCustomDomain
+      RestApiId: !Ref CostApi
+      Stage: prod
+
+  CostDnsRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref HostedZoneId
+      Name: cost.aws-sensei.cloud
+      Type: A
+      AliasTarget:
+        DNSName: !GetAtt CostCustomDomain.RegionalDomainName
+        HostedZoneId: !GetAtt CostCustomDomain.RegionalHostedZoneId
+
 Outputs:
   CostApiUrl:
     Description: Cost API endpoint URL
-    Value: !Sub "https://${CostApi}.execute-api.${AWS::Region}.amazonaws.com/prod/cost"
+    Value: https://cost.aws-sensei.cloud/cost
     Export:
       Name: sensei-cost-api-url
