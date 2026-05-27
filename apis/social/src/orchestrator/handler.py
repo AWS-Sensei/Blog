@@ -115,8 +115,10 @@ Write a LinkedIn post that:
 - Includes 3-5 relevant hashtags at the end
 - Sounds like a real engineer sharing knowledge, not marketing copy
 - Is between 150-250 words
+- Uses NO markdown formatting, no headers, no # symbols
+- Returns plain text only, ready to paste into LinkedIn as-is
 
-Return only the post text, no explanations."""
+Return only the post text, nothing else."""
 
     response = bedrock.invoke_model(
         modelId=BEDROCK_MODEL_ID,
