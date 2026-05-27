@@ -2,6 +2,11 @@ AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: Real-time chat widget using WebSocket API Gateway + DynamoDB
 
+Parameters:
+  HostedZoneId:
+    Type: String
+    Default: Z0003192F8JJC6RWXV1M
+
 Globals:
   Function:
     Timeout: 10
@@ -189,9 +194,46 @@ Resources:
       Principal: apigateway.amazonaws.com
       SourceArn: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ChatWebSocketApi}/*/*"
 
+  ChatCertificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: chat.aws-sensei.cloud
+      ValidationMethod: DNS
+      DomainValidationOptions:
+        - DomainName: chat.aws-sensei.cloud
+          HostedZoneId: !Ref HostedZoneId
+
+  ChatCustomDomain:
+    Type: AWS::ApiGatewayV2::DomainName
+    Properties:
+      DomainName: chat.aws-sensei.cloud
+      DomainNameConfigurations:
+        - CertificateArn: !Ref ChatCertificate
+          EndpointType: REGIONAL
+
+  ChatApiMapping:
+    Type: AWS::ApiGatewayV2::ApiMapping
+    DependsOn:
+      - ChatCustomDomain
+      - ChatStage
+    Properties:
+      ApiId: !Ref ChatWebSocketApi
+      DomainName: chat.aws-sensei.cloud
+      Stage: prod
+
+  ChatDnsRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref HostedZoneId
+      Name: chat.aws-sensei.cloud
+      Type: A
+      AliasTarget:
+        DNSName: !GetAtt ChatCustomDomain.RegionalDomainName
+        HostedZoneId: !GetAtt ChatCustomDomain.RegionalHostedZoneId
+
 Outputs:
   ChatWebSocketUrl:
     Description: WebSocket URL
-    Value: !Sub "wss://${ChatWebSocketApi}.execute-api.${AWS::Region}.amazonaws.com/prod"
+    Value: wss://chat.aws-sensei.cloud
     Export:
       Name: sensei-chat-ws-url
