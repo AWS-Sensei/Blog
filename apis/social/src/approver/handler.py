@@ -86,7 +86,7 @@ def post_to_linkedin(access_token, person_id, content):
         headers={
             "Authorization": f"Bearer {access_token}",
             "Content-Type": "application/json",
-            "LinkedIn-Version": "202401",
+            "LinkedIn-Version": "202501",
             "X-Restli-Protocol-Version": "2.0.0",
         },
     )
