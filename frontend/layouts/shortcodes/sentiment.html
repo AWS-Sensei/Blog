@@ -125,7 +125,7 @@ async function analyzeSentiment() {
   result.className = "sentiment-result";
 
   try {
-    const res = await fetch("https://bgb3jg1qy4.execute-api.eu-central-1.amazonaws.com/prod/sentiment", {
+    const res = await fetch("https://sentiment.aws-sensei.cloud/sentiment", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text, lang: sentimentLang }),
