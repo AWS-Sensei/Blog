@@ -2,6 +2,11 @@ AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: Sentiment Analysis API using AWS Comprehend
 
+Parameters:
+  HostedZoneId:
+    Type: String
+    Default: Z0003192F8JJC6RWXV1M
+
 Globals:
   Function:
     Timeout: 10
@@ -52,9 +57,48 @@ Resources:
           ThrottlingRateLimit: 1
           ThrottlingBurstLimit: 5
 
+  SentimentCertificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: sentiment.aws-sensei.cloud
+      ValidationMethod: DNS
+      DomainValidationOptions:
+        - DomainName: sentiment.aws-sensei.cloud
+          HostedZoneId: !Ref HostedZoneId
+
+  SentimentCustomDomain:
+    Type: AWS::ApiGateway::DomainName
+    Properties:
+      DomainName: sentiment.aws-sensei.cloud
+      RegionalCertificateArn: !Ref SentimentCertificate
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+      SecurityPolicy: TLS_1_2
+
+  SentimentBasePathMapping:
+    Type: AWS::ApiGateway::BasePathMapping
+    DependsOn:
+      - SentimentCustomDomain
+      - SentimentApi
+    Properties:
+      DomainName: !Ref SentimentCustomDomain
+      RestApiId: !Ref SentimentApi
+      Stage: prod
+
+  SentimentDnsRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref HostedZoneId
+      Name: sentiment.aws-sensei.cloud
+      Type: A
+      AliasTarget:
+        DNSName: !GetAtt SentimentCustomDomain.RegionalDomainName
+        HostedZoneId: !GetAtt SentimentCustomDomain.RegionalHostedZoneId
+
 Outputs:
   SentimentApiUrl:
     Description: API Gateway endpoint URL
-    Value: !Sub "https://${SentimentApi}.execute-api.${AWS::Region}.amazonaws.com/prod/sentiment"
+    Value: https://sentiment.aws-sensei.cloud/sentiment
     Export:
       Name: sensei-sentiment-api-url
