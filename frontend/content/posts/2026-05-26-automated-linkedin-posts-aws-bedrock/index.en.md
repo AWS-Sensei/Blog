@@ -1,7 +1,7 @@
 ---
 title: "Automated LinkedIn Posts with AWS Lambda and Bedrock — An Approval-First Approach"
 date: 2026-05-26T00:00:00+02:00
-lastmod: 2026-05-26T00:00:00+02:00
+lastmod: 2026-05-28T00:00:00+02:00
 draft: false
 author: "Marcel"
 socialmedia: true
@@ -30,14 +30,17 @@ S3: new article deployed
     → Lambda: Orchestrator
         ├─ Language check (.en. in key)
         ├─ Frontmatter check (socialmedia: true)
-        ├─ Bedrock: generate LinkedIn post
+        ├─ Bedrock: generate LinkedIn post text
         ├─ DynamoDB: save (status: pending)
         └─ SES: send approval email
 
 Email link: /approve?postId=xxx
   → Lambda: Approver
       ├─ DynamoDB: pending → publishing  (distributed lock)
-      ├─ LinkedIn Share API: post
+      ├─ Scrape og:image URL from article page
+      ├─ Upload image to LinkedIn (register + PUT)
+      ├─ LinkedIn ugcPosts API: IMAGE post (text + image)
+      ├─ LinkedIn socialActions API: comment with article URL
       └─ DynamoDB: publishing → sent + postUrl
 ```
 
@@ -153,6 +156,24 @@ table.update_item(UpdateExpression="SET #s = :sent, postUrl = :url", ...)
 ```
 
 The `pending → publishing` update is atomic in DynamoDB. The second Lambda's conditional update fails immediately and returns "Already posted" — before any LinkedIn API call is made.
+
+## The LinkedIn Card Size Problem
+
+After the pipeline was working, I noticed the posts appeared with a small thumbnail on the left instead of a full-width image. Digging into it: LinkedIn changed how external link previews work in 2024. Organic posts that share external URLs now always get the compact card format — no matter what your `og:image` dimensions are.
+
+The workaround used by most people: don't attach the URL as an article link. Post the image directly to LinkedIn and put the URL in the first comment. LinkedIn treats a directly uploaded image as native content, which gets the full-width display. The URL in the comments is still clickable, and keeping it out of the post body also helps with LinkedIn's algorithm (external links reduce reach).
+
+So the Approver now does a few extra steps:
+
+1. Scrape the `og:image` URL from the published article page
+2. Register an image upload slot with the LinkedIn Assets API
+3. `PUT` the image binary to the upload URL
+4. Create the post with `shareMediaCategory: IMAGE`
+5. Post the article URL as the first comment via the socialActions API
+
+If the OG image can't be scraped for any reason, it falls back to a text-only post (`shareMediaCategory: NONE`).
+
+The Bedrock prompt was updated accordingly — the generated text ends with "Link in the comments." instead of the URL.
 
 ## Why Approval-First?
 
