@@ -184,7 +184,7 @@ with ThreadPoolExecutor(max_workers=4) as executor:
 The queries:
 
 | Query | What |
-|-------|------|
+| --- | --- |
 | `daily_traffic` | Views + unique visitors per day, last 30 days |
 | `top_articles` | Top 10 posts by views, last 30 days |
 | `referrers` | Top 10 traffic sources, last 30 days |
@@ -221,6 +221,8 @@ Google Analytics is free — but the price is data control and privacy. This sta
 ## Result
 
 The dashboard is live at [/stats](/stats/). Daily traffic, top articles, referrers, and device breakdown — all from my own data, no third parties, no cookies.
+
+**Update:** The first day in production revealed that hourly Athena queries scanning 30 days of data generate far more S3 requests than expected. How I reduced that from ~768,000 to ~72 requests per day using incremental caching is covered in [this follow-up post](/posts/2026-05-28-analytics-cost-optimization/).
 
 ---
 

@@ -222,6 +222,8 @@ Google Analytics ist kostenlos — aber der Preis ist Datenkontrolle und Datensc
 
 Das Dashboard ist live unter [/stats](/stats/). Tagesgang, Top-Artikel, Referrer und Geräte — alles aus eigenen Daten, ohne Drittanbieter, ohne Cookies.
 
+**Update:** Der erste Betriebstag hat gezeigt, dass stündliche Athena-Queries über 30 Tage deutlich mehr S3-Requests erzeugen als erwartet. Wie ich das durch inkrementelles Caching von ~768.000 auf ~72 Requests pro Tag reduziert habe, beschreibe ich in [diesem Follow-up-Post](/posts/2026-05-28-analytics-cost-optimization/).
+
 ---
 
 {{< chat >}}
