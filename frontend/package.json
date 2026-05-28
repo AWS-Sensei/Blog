@@ -1,0 +1,15 @@
+{
+  "name": "aws-sensei-blog",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "generate-og": "node scripts/generate-og.mjs"
+  },
+  "dependencies": {
+    "@resvg/resvg-js": "^2.6.0",
+    "fast-glob": "^3.3.2",
+    "gray-matter": "^4.0.3",
+    "react": "^18.3.1",
+    "satori": "^0.10.14"
+  }
+}

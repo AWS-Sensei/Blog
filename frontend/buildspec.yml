@@ -15,6 +15,9 @@ phases:
     commands:
       - echo "Build Hugo Website..."
       - cd frontend
+      - npm ci --omit=dev
+      - echo "Generating OG images..."
+      - node scripts/generate-og.mjs
       - hugo --minify
   post_build:
     commands:

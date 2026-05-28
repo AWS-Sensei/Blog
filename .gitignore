@@ -1,3 +1,5 @@
 /frontend/public/*
 /frontend/resources/_gen/images/
+/frontend/static/og/
+/frontend/node_modules/
 .claude
