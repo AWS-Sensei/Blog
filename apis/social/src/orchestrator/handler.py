@@ -57,6 +57,7 @@ def lambda_handler(event, context):
                     "status": "pending",
                     "articleTitle": title,
                     "articleUrl": article_url,
+                    "articleDescription": frontmatter.get("description", ""),
                     "createdAt": datetime.now(timezone.utc).isoformat(),
                 },
                 ConditionExpression="attribute_not_exists(postId)",

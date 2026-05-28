@@ -45,7 +45,7 @@ def lambda_handler(event, context):
     access_token = secret["access_token"]
     person_id = secret["person_id"]
 
-    post_url = post_to_linkedin(access_token, person_id, item["content"], item.get("articleUrl"), item.get("articleTitle"))
+    post_url = post_to_linkedin(access_token, person_id, item["content"], item.get("articleUrl"), item.get("articleTitle"), item.get("articleDescription"))
 
     table.update_item(
         Key={"postId": post_id},
@@ -65,31 +65,38 @@ def lambda_handler(event, context):
     """)
 
 
-def post_to_linkedin(access_token, person_id, content, article_url=None, article_title=None):
-    body = {
-        "author": f"urn:li:person:{person_id}",
-        "commentary": content,
-        "visibility": "PUBLIC",
-        "distribution": {
-            "feedDistribution": "MAIN_FEED",
-            "targetEntities": [],
-            "thirdPartyDistributionChannels": [],
-        },
-        "lifecycleState": "PUBLISHED",
-        "isReshareDisabledByAuthor": False,
+def post_to_linkedin(access_token, person_id, content, article_url=None, article_title=None, article_description=None):
+    media_category = "ARTICLE" if article_url else "NONE"
+    share_content = {
+        "shareCommentary": {"text": content},
+        "shareMediaCategory": media_category,
     }
     if article_url:
-        body["content"] = {"article": {"source": article_url, "title": article_title or ""}}
-    payload = json.dumps(body).encode("utf-8")
+        media = {"status": "READY", "originalUrl": article_url}
+        if article_title:
+            media["title"] = {"text": article_title}
+        if article_description:
+            media["description"] = {"text": article_description}
+        share_content["media"] = [media]
+
+    payload = json.dumps({
+        "author": f"urn:li:person:{person_id}",
+        "lifecycleState": "PUBLISHED",
+        "specificContent": {
+            "com.linkedin.ugc.ShareContent": share_content,
+        },
+        "visibility": {
+            "com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC",
+        },
+    }).encode("utf-8")
 
     req = Request(
-        "https://api.linkedin.com/rest/posts",
+        "https://api.linkedin.com/v2/ugcPosts",
         data=payload,
         method="POST",
         headers={
             "Authorization": f"Bearer {access_token}",
             "Content-Type": "application/json",
-            "LinkedIn-Version": "202605",
             "X-Restli-Protocol-Version": "2.0.0",
         },
     )
@@ -101,9 +108,9 @@ def post_to_linkedin(access_token, person_id, content, article_url=None, article
         body = e.read().decode("utf-8")
         raise RuntimeError(f"LinkedIn API error {e.code}: {body}") from e
 
-    if urn.startswith("urn:li:share:"):
-        share_id = urn.split(":")[-1]
-        return f"https://www.linkedin.com/feed/update/urn:li:share:{share_id}/"
+    if urn.startswith("urn:li:ugcPost:"):
+        post_id = urn.split(":")[-1]
+        return f"https://www.linkedin.com/feed/update/urn:li:ugcPost:{post_id}/"
     return "https://www.linkedin.com/"
 
 
