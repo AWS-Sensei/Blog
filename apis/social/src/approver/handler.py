@@ -72,12 +72,7 @@ def post_to_linkedin(access_token, person_id, content, article_url=None, article
         "shareMediaCategory": media_category,
     }
     if article_url:
-        media = {"status": "READY", "originalUrl": article_url}
-        if article_title:
-            media["title"] = {"text": article_title}
-        if article_description:
-            media["description"] = {"text": article_description}
-        share_content["media"] = [media]
+        share_content["media"] = [{"status": "READY", "originalUrl": article_url}]
 
     payload = json.dumps({
         "author": f"urn:li:person:{person_id}",
