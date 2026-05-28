@@ -46,7 +46,7 @@ def lambda_handler(event, context):
 
         linkedin_post = generate_linkedin_post(frontmatter, body, article_url)
 
-        post_id = hashlib.md5(key.encode()).hexdigest()
+        post_id = hashlib.md5(slug.encode()).hexdigest()
         try:
             dynamodb.Table(TABLE_NAME).put_item(
                 Item={
