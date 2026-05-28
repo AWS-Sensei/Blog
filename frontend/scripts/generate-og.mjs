@@ -1,5 +1,6 @@
 import satori from 'satori'
 import { Resvg } from '@resvg/resvg-js'
+import sharp from 'sharp'
 import matter from 'gray-matter'
 import pkg from 'fast-glob'
 const { glob } = pkg
@@ -18,10 +19,12 @@ const fallbackBg = ['og-bg.jpg', 'og-bg.jpeg', 'og-bg.png']
   .map(f => path.join(ROOT, 'assets/images', f))
   .find(f => fs.existsSync(f))
 
-function toDataUrl(filePath) {
-  const ext = path.extname(filePath).slice(1).toLowerCase()
-  const mime = ext === 'png' ? 'image/png' : 'image/jpeg'
-  return `data:${mime};base64,${fs.readFileSync(filePath).toString('base64')}`
+async function toDataUrl(filePath) {
+  const resized = await sharp(filePath)
+    .resize(WIDTH, HEIGHT, { fit: 'cover', position: 'centre' })
+    .jpeg({ quality: 90 })
+    .toBuffer()
+  return `data:image/jpeg;base64,${resized.toString('base64')}`
 }
 
 function resolveOutputPath(contentFile) {
@@ -33,7 +36,7 @@ function resolveOutputPath(contentFile) {
   const dir = parts.slice(0, -1).join('/')
   const slug = dir || 'index'
   const prefix = lang === DEFAULT_LANG ? '' : `${lang}/`
-  return `static/og/${prefix}${slug}.png`
+  return `static/og/${prefix}${slug}.jpg`
 }
 
 function findFeaturedImage(contentFile) {
@@ -46,7 +49,7 @@ function findFeaturedImage(contentFile) {
 }
 
 async function buildOgImage({ title, description, bgPath }) {
-  const bgDataUrl = toDataUrl(bgPath || fallbackBg)
+  const bgDataUrl = await toDataUrl(bgPath || fallbackBg)
 
   const el = h('div', {
     style: {
@@ -112,7 +115,8 @@ async function buildOgImage({ title, description, bgPath }) {
     ],
   })
 
-  return new Resvg(svg, { fitTo: { mode: 'width', value: WIDTH } }).render().asPng()
+  const png = new Resvg(svg, { fitTo: { mode: 'width', value: WIDTH } }).render().asPng()
+  return sharp(png).jpeg({ quality: 85 }).toBuffer()
 }
 
 async function main() {
