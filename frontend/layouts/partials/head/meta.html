@@ -13,7 +13,7 @@
 {{- end -}}
 {{- $staticFile := printf "static/og%s.jpg" $relPath -}}
 {{- if fileExists $staticFile -}}
-  {{- $ogImage = printf "/og%s.jpg" $relPath -}}
+  {{- $ogImage = printf "/og%s.jpg" $relPath | absURL -}}
   {{- $ogWidth = 1200 -}}
   {{- $ogHeight = 630 -}}
 {{- end -}}
