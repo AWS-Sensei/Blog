@@ -18,6 +18,19 @@ Parameters:
 
 Resources:
 
+  PollyDLQ:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: sensei-polly-dlq
+      MessageRetentionPeriod: 1209600
+      Tags:
+        - Key: Project
+          Value: aws-sensei
+        - Key: Service
+          Value: blog
+        - Key: Component
+          Value: api-polly
+
   PollyFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -27,6 +40,9 @@ Resources:
       Environment:
         Variables:
           WEBSITE_BUCKET: !Ref WebsiteBucketName
+      DeadLetterQueue:
+        Type: SQS
+        TargetArn: !GetAtt PollyDLQ.Arn
       Events:
         PostChanged:
           Type: SNS
@@ -43,4 +59,12 @@ Resources:
                 - s3:GetObject
                 - s3:PutObject
               Resource: !Sub "arn:aws:s3:::${WebsiteBucketName}/*"
+
+Outputs:
+  DLQUrl:
+    Description: Polly Dead Letter Queue URL
+    Value: !Ref PollyDLQ
+  DLQArn:
+    Description: Polly Dead Letter Queue ARN
+    Value: !GetAtt PollyDLQ.Arn
 

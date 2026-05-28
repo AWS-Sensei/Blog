@@ -41,6 +41,21 @@ Resources:
         - Key: Component
           Value: api-social
 
+  # ─── Dead Letter Queue ───────────────────────────────────────────────────────
+
+  OrchestratorDLQ:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: sensei-social-orchestrator-dlq
+      MessageRetentionPeriod: 1209600
+      Tags:
+        - Key: Project
+          Value: aws-sensei
+        - Key: Service
+          Value: blog
+        - Key: Component
+          Value: api-social
+
   # ─── Lambda: Orchestrator ────────────────────────────────────────────────────
 
   OrchestratorFunction:
@@ -75,6 +90,9 @@ Resources:
             - Effect: Allow
               Action: ses:SendEmail
               Resource: "*"
+      DeadLetterQueue:
+        Type: SQS
+        TargetArn: !GetAtt OrchestratorDLQ.Arn
       Events:
         NewPost:
           Type: SNS
@@ -171,3 +189,9 @@ Outputs:
   ApproveUrl:
     Description: Approval endpoint URL
     Value: https://social.aws-sensei.cloud/approve
+  OrchestratorDLQUrl:
+    Description: Orchestrator Dead Letter Queue URL
+    Value: !Ref OrchestratorDLQ
+  OrchestratorDLQArn:
+    Description: Orchestrator Dead Letter Queue ARN
+    Value: !GetAtt OrchestratorDLQ.Arn
