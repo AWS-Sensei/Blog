@@ -123,10 +123,10 @@ Hinweis: LinkedIn Access Tokens laufen nach 60 Tagen ab. Token-Refresh steht auf
 
 Zwei Fehlermodi sind zu bedenken:
 
-**SNS At-least-once Delivery** — die Orchestrator-Lambda könnte für dasselbe S3-Event mehrfach aufgerufen werden. Eine zufällige UUID als `postId` würde doppelte Pending-Posts erzeugen. Fix: deterministische ID aus dem S3-Key:
+**SNS At-least-once Delivery** — die Orchestrator-Lambda könnte für dasselbe S3-Event mehrfach aufgerufen werden. Eine zufällige UUID als `postId` würde doppelte Pending-Posts erzeugen. Fix: deterministische ID aus dem Post-Slug:
 
 ```python
-post_id = hashlib.md5(key.encode()).hexdigest()
+post_id = hashlib.md5(slug.encode()).hexdigest()
 
 table.put_item(
     Item={...},
@@ -134,7 +134,7 @@ table.put_item(
 )
 ```
 
-Der zweite Aufruf scheitert an der Bedingung und kehrt still zurück.
+Der zweite Aufruf scheitert an der Bedingung und kehrt still zurück. Den Slug statt dem S3-Key zu verwenden verhindert außerdem, dass bei jeder Bearbeitung des Artikels ein neuer LinkedIn-Entwurf generiert wird — ein LinkedIn-Post pro Artikel, egal wie oft die Quelldatei geändert wird.
 
 **Gleichzeitige Approval-Klicks** — zwei schnelle Klicks auf den E-Mail-Link könnten die LinkedIn API zweimal aufrufen, bevor DynamoDB aktualisiert ist. Der naive Fix (Conditional Update nach dem Posten) hilft nicht, weil beide Aufrufe den Status-Check bereits bestanden haben.
 

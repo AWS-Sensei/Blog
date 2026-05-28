@@ -123,10 +123,10 @@ Note: LinkedIn access tokens expire after 60 days. Token refresh is on the backl
 
 Two failure modes to think about:
 
-**SNS at-least-once delivery** — the Orchestrator Lambda could be called multiple times for the same S3 event. Using a random UUID as `postId` would create duplicate pending posts. Fix: use a deterministic ID based on the S3 key:
+**SNS at-least-once delivery** — the Orchestrator Lambda could be called multiple times for the same S3 event. Using a random UUID as `postId` would create duplicate pending posts. Fix: use a deterministic ID based on the post slug:
 
 ```python
-post_id = hashlib.md5(key.encode()).hexdigest()
+post_id = hashlib.md5(slug.encode()).hexdigest()
 
 table.put_item(
     Item={...},
@@ -134,7 +134,7 @@ table.put_item(
 )
 ```
 
-The second invocation hits the condition and returns silently.
+The second invocation hits the condition and returns silently. Using the slug (not the S3 key) also prevents a new draft from being generated every time the article is edited — one LinkedIn post per article, regardless of how many times the source file changes.
 
 **Concurrent approval clicks** — clicking the email link twice quickly could call the LinkedIn API twice before DynamoDB updates. The naive fix (conditional update after posting) doesn't help because both invocations already passed the status check.
 
