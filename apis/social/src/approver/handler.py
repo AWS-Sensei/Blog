@@ -45,7 +45,7 @@ def lambda_handler(event, context):
     access_token = secret["access_token"]
     person_id = secret["person_id"]
 
-    post_url = post_to_linkedin(access_token, person_id, item["content"], item.get("articleUrl"), item.get("articleTitle"), item.get("articleDescription"))
+    post_url = post_to_linkedin(access_token, person_id, item["content"], item.get("articleUrl"))
 
     table.update_item(
         Key={"postId": post_id},
@@ -65,7 +65,7 @@ def lambda_handler(event, context):
     """)
 
 
-def post_to_linkedin(access_token, person_id, content, article_url=None, article_title=None, article_description=None):
+def post_to_linkedin(access_token, person_id, content, article_url=None):
     media_category = "ARTICLE" if article_url else "NONE"
     share_content = {
         "shareCommentary": {"text": content},
@@ -103,9 +103,14 @@ def post_to_linkedin(access_token, person_id, content, article_url=None, article
         body = e.read().decode("utf-8")
         raise RuntimeError(f"LinkedIn API error {e.code}: {body}") from e
 
+    print(f"LinkedIn x-restli-id: {urn!r}")
+
     if urn.startswith("urn:li:ugcPost:"):
         post_id = urn.split(":")[-1]
         return f"https://www.linkedin.com/feed/update/urn:li:ugcPost:{post_id}/"
+    if urn.startswith("urn:li:share:"):
+        share_id = urn.split(":")[-1]
+        return f"https://www.linkedin.com/feed/update/urn:li:share:{share_id}/"
     return "https://www.linkedin.com/"
 
 
