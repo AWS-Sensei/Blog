@@ -1,7 +1,9 @@
 import json
 import os
+import re
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError
+from urllib.parse import quote
 
 import boto3
 
@@ -65,14 +67,81 @@ def lambda_handler(event, context):
     """)
 
 
+def fetch_og_image_url(article_url):
+    with urlopen(article_url) as response:
+        html = response.read().decode("utf-8")
+    match = re.search(r'property="og:image"\s+content="([^"]+)"', html)
+    if not match:
+        match = re.search(r'content="([^"]+)"\s+property="og:image"', html)
+    return match.group(1) if match else None
+
+
+def upload_image_to_linkedin(access_token, person_id, image_url):
+    register_payload = json.dumps({
+        "registerUploadRequest": {
+            "recipes": ["urn:li:digitalmediaRecipe:feedshare-image"],
+            "owner": f"urn:li:person:{person_id}",
+            "serviceRelationships": [{
+                "relationshipType": "OWNER",
+                "identifier": "urn:li:userGeneratedContent",
+            }],
+        }
+    }).encode("utf-8")
+
+    req = Request(
+        "https://api.linkedin.com/v2/assets?action=registerUpload",
+        data=register_payload,
+        method="POST",
+        headers={
+            "Authorization": f"Bearer {access_token}",
+            "Content-Type": "application/json",
+            "X-Restli-Protocol-Version": "2.0.0",
+        },
+    )
+    with urlopen(req) as response:
+        register_data = json.loads(response.read().decode("utf-8"))
+
+    upload_url = register_data["value"]["uploadMechanism"][
+        "com.linkedin.digitalmedia.uploading.MediaUploadHttpRequest"
+    ]["uploadUrl"]
+    asset_urn = register_data["value"]["asset"]
+
+    with urlopen(image_url) as img_response:
+        image_data = img_response.read()
+        content_type = img_response.headers.get("Content-Type", "image/png")
+
+    upload_req = Request(
+        upload_url,
+        data=image_data,
+        method="PUT",
+        headers={
+            "Authorization": f"Bearer {access_token}",
+            "Content-Type": content_type,
+        },
+    )
+    try:
+        with urlopen(upload_req) as _:
+            pass
+    except HTTPError as e:
+        if e.code not in (200, 201):
+            raise
+
+    return asset_urn
+
+
 def post_to_linkedin(access_token, person_id, content, article_url=None):
-    media_category = "ARTICLE" if article_url else "NONE"
+    asset_urn = None
+    if article_url:
+        og_image_url = fetch_og_image_url(article_url)
+        if og_image_url:
+            asset_urn = upload_image_to_linkedin(access_token, person_id, og_image_url)
+
     share_content = {
         "shareCommentary": {"text": content},
-        "shareMediaCategory": media_category,
+        "shareMediaCategory": "IMAGE" if asset_urn else "NONE",
     }
-    if article_url:
-        share_content["media"] = [{"status": "READY", "originalUrl": article_url}]
+    if asset_urn:
+        share_content["media"] = [{"status": "READY", "media": asset_urn}]
 
     payload = json.dumps({
         "author": f"urn:li:person:{person_id}",
@@ -98,20 +167,46 @@ def post_to_linkedin(access_token, person_id, content, article_url=None):
 
     try:
         with urlopen(req) as response:
-            urn = response.headers.get("x-restli-id", "")
+            post_urn = response.headers.get("x-restli-id", "")
     except HTTPError as e:
         body = e.read().decode("utf-8")
         raise RuntimeError(f"LinkedIn API error {e.code}: {body}") from e
 
-    print(f"LinkedIn x-restli-id: {urn!r}")
+    print(f"LinkedIn x-restli-id: {post_urn!r}")
 
-    if urn.startswith("urn:li:ugcPost:"):
-        post_id = urn.split(":")[-1]
-        return f"https://www.linkedin.com/feed/update/urn:li:ugcPost:{post_id}/"
-    if urn.startswith("urn:li:share:"):
-        share_id = urn.split(":")[-1]
-        return f"https://www.linkedin.com/feed/update/urn:li:share:{share_id}/"
+    if article_url and post_urn:
+        post_comment(access_token, person_id, post_urn, article_url)
+
+    if post_urn.startswith("urn:li:ugcPost:"):
+        return f"https://www.linkedin.com/feed/update/urn:li:ugcPost:{post_urn.split(':')[-1]}/"
+    if post_urn.startswith("urn:li:share:"):
+        return f"https://www.linkedin.com/feed/update/urn:li:share:{post_urn.split(':')[-1]}/"
     return "https://www.linkedin.com/"
+
+
+def post_comment(access_token, person_id, post_urn, article_url):
+    encoded_urn = quote(post_urn, safe="")
+    payload = json.dumps({
+        "actor": f"urn:li:person:{person_id}",
+        "message": {"text": article_url},
+    }).encode("utf-8")
+
+    req = Request(
+        f"https://api.linkedin.com/v2/socialActions/{encoded_urn}/comments",
+        data=payload,
+        method="POST",
+        headers={
+            "Authorization": f"Bearer {access_token}",
+            "Content-Type": "application/json",
+            "X-Restli-Protocol-Version": "2.0.0",
+        },
+    )
+    try:
+        with urlopen(req) as _:
+            pass
+    except HTTPError as e:
+        body = e.read().decode("utf-8")
+        print(f"Comment failed {e.code}: {body}")
 
 
 def html_response(status_code, body):
