@@ -9,27 +9,23 @@
 {{- $bg := resources.Get "images/og-bg.png" -}}
 {{- $fontReg := resources.Get "fonts/sans-regular.ttf" -}}
 {{- if and $bg $fontReg -}}
-  {{- $canvas := $bg.Resize "1200x628 Lanczos" -}}
+  {{- $canvas := $bg -}}
   {{- $frame := resources.Get "images/og-photo-frame.png" -}}
   {{- $mask  := resources.Get "images/og-photo-mask.png" -}}
-  {{- if $frame -}}{{- $frame = $frame.Resize (printf "%dx%d Lanczos" (div (mul $frame.Width 3) 2) (div (mul $frame.Height 3) 2)) -}}{{- end -}}
-  {{- if $mask  -}}{{- $mask  = $mask.Resize  (printf "%dx%d Lanczos" (div (mul $mask.Width  3) 2) (div (mul $mask.Height  3) 2)) -}}{{- end -}}
   {{- $photoRes := .Resources.GetMatch "featured-image*" -}}
   {{- if not $photoRes -}}{{- $photoRes = resources.Get "images/avatar.png" -}}{{- end -}}
   {{- with $photoRes -}}
-    {{- $photo := .Fill "660x660 Center" -}}
-    {{- if $frame -}}{{- $canvas = $canvas | images.Filter (images.Overlay $frame 52 135) -}}{{- end -}}
-    {{- $canvas = $canvas | images.Filter (images.Overlay $photo 60 142) -}}
-    {{- if $mask -}}{{- $canvas = $canvas | images.Filter (images.Overlay $mask 60 142) -}}{{- end -}}
+    {{- $photo := .Fill "440x440 Center" -}}
+    {{- if $frame -}}{{- $canvas = $canvas | images.Filter (images.Overlay $frame 35 90) -}}{{- end -}}
+    {{- $canvas = $canvas | images.Filter (images.Overlay $photo 40 95) -}}
+    {{- if $mask -}}{{- $canvas = $canvas | images.Filter (images.Overlay $mask 40 95) -}}{{- end -}}
   {{- end -}}
   {{- $badge := resources.Get "images/og-badge.png" -}}
   {{- $btn   := resources.Get "images/og-btn.png" -}}
   {{- if eq .Site.Language.Lang "de" -}}{{- $btn = resources.Get "images/og-btn-de.png" -}}{{- end -}}
-  {{- if $badge -}}{{- $badge = $badge.Resize (printf "%dx%d Lanczos" (div (mul $badge.Width 3) 2) (div (mul $badge.Height 3) 2)) -}}{{- end -}}
-  {{- if $btn   -}}{{- $btn   = $btn.Resize   (printf "%dx%d Lanczos" (div (mul $btn.Width   3) 2) (div (mul $btn.Height   3) 2)) -}}{{- end -}}
-  {{- if $badge -}}{{- $canvas = $canvas | images.Filter (images.Overlay $badge 840 225) -}}{{- end -}}
-  {{- $canvas = $canvas | images.Filter (images.Text (printf "%s" $.Title) (dict "color" "#111827" "size" 54 "x" 840 "y" 345 "font" $fontReg)) -}}
-  {{- if $btn -}}{{- $canvas = $canvas | images.Filter (images.Overlay $btn 840 585) -}}{{- end -}}
+  {{- if $badge -}}{{- $canvas = $canvas | images.Filter (images.Overlay $badge 560 150) -}}{{- end -}}
+  {{- $canvas = $canvas | images.Filter (images.Text (printf "%s" $.Title) (dict "color" "#111827" "size" 36 "x" 560 "y" 230 "font" $fontReg)) -}}
+  {{- if $btn -}}{{- $canvas = $canvas | images.Filter (images.Overlay $btn 560 390) -}}{{- end -}}
   {{- $ogImage = $canvas.Permalink -}}
   {{- $ogWidth = $canvas.Width -}}
   {{- $ogHeight = $canvas.Height -}}
