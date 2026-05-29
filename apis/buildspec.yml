@@ -20,7 +20,7 @@ phases:
             echo "$service: unchanged — skip"
           fi
         done
-        echo "CHANGED_SERVICES=$CHANGED" > /tmp/changed.env
+        echo "CHANGED_SERVICES=\"$CHANGED\"" > /tmp/changed.env
         cat /tmp/changed.env
 
   build:
