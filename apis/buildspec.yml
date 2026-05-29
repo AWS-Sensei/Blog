@@ -25,8 +25,8 @@ phases:
 
   build:
     commands:
-      - source /tmp/changed.env
       - |
+        . /tmp/changed.env
         # Run tests for all changed services first — fail fast before any deploy
         for service in $CHANGED_SERVICES; do
           if [ -f "apis/$service/tests/run.sh" ]; then
@@ -37,6 +37,7 @@ phases:
           fi
         done
       - |
+        . /tmp/changed.env
         # Deploy only after all tests pass
         for service in $CHANGED_SERVICES; do
           echo "=== Deploying $service ==="
