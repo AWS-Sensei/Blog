@@ -1,22 +1,60 @@
 version: 0.2
 
 phases:
-  build:
+  pre_build:
     commands:
       - |
+        # Auto-discover services and detect which ones changed via hash comparison
+        CHANGED=""
         for template in apis/*/template.yaml; do
           [ -f "$template" ] || continue
-          api_name="$(basename $(dirname $template))"
-          stack_name="sensei-api-${api_name}"
-          echo "Deploying $stack_name from $template..."
+          service=$(basename $(dirname $template))
+          HASH=$(find apis/$service -type f \( -name "*.py" -o -name "template.yaml" \) \
+                 | sort | xargs sha256sum | sha256sum | cut -d' ' -f1)
+          STORED=$(aws ssm get-parameter --name "/sensei/deploy-hash/$service" \
+                   --query "Parameter.Value" --output text 2>/dev/null || echo "none")
+          if [ "$HASH" != "$STORED" ]; then
+            echo "$service: changed — will test and deploy"
+            CHANGED="$CHANGED $service"
+          else
+            echo "$service: unchanged — skip"
+          fi
+        done
+        echo "CHANGED_SERVICES=$CHANGED" > /tmp/changed.env
+        cat /tmp/changed.env
+
+  build:
+    commands:
+      - source /tmp/changed.env
+      - |
+        # Run tests for all changed services first — fail fast before any deploy
+        for service in $CHANGED_SERVICES; do
+          if [ -f "apis/$service/tests/run.sh" ]; then
+            echo "=== Testing $service ==="
+            bash apis/$service/tests/run.sh
+          else
+            echo "=== $service: no tests/run.sh — skipping tests ==="
+          fi
+        done
+      - |
+        # Deploy only after all tests pass
+        for service in $CHANGED_SERVICES; do
+          echo "=== Deploying $service ==="
           sam deploy \
-            --template-file $template \
-            --stack-name $stack_name \
+            --template-file apis/$service/template.yaml \
+            --stack-name sensei-api-$service \
             --capabilities CAPABILITY_IAM CAPABILITY_AUTO_EXPAND \
             --s3-bucket $SAM_ARTIFACT_BUCKET \
             --kms-key-id alias/aws/s3 \
             --no-confirm-changeset \
             --no-fail-on-empty-changeset \
             --role-arn $CLOUDFORMATION_EXECUTION_ROLE_ARN \
-            --tags "Project=aws-sensei" "Service=blog" "Component=api-${api_name}"
+            --tags "Project=aws-sensei" "Service=blog" "Component=api-${service}"
+
+          # Store hash after successful deploy
+          HASH=$(find apis/$service -type f \( -name "*.py" -o -name "template.yaml" \) \
+                 | sort | xargs sha256sum | sha256sum | cut -d' ' -f1)
+          aws ssm put-parameter \
+            --name "/sensei/deploy-hash/$service" \
+            --value "$HASH" --type String --overwrite
         done
