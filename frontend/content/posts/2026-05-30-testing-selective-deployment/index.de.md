@@ -149,7 +149,7 @@ pre_build:  Hash-Vergleich für alle Services
             → CHANGED_SERVICES = "social"
 
 build:      bash apis/social/tests/run.sh
-            → pytest: 8 passed
+            → pytest: 11 passed
             sam deploy --stack-name sensei-api-social ...
             → Deploy erfolgreich
             aws ssm put-parameter /sensei/deploy-hash/social ...
