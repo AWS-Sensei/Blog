@@ -31,20 +31,24 @@ def lambda_handler(event, context):
 
         frontmatter, body = parse_frontmatter(content)
 
-        if ".en." not in key:
-            print(f"Skipping {key}: not an English post")
+        if ".en." in key:
+            lang = "en"
+        elif ".de." in key:
+            lang = "de"
+        else:
+            print(f"Skipping {key}: unknown language")
             return
 
         if not frontmatter.get("socialmedia", False):
             print(f"Skipping {key}: socialmedia not true")
             return
 
-        # key format: _content/posts/{slug}/index.en.{hash}
+        # key format: _content/posts/{slug}/index.{lang}.{hash}
         slug = key.split("/")[2]
         title = frontmatter.get("title", slug)
-        article_url = f"https://aws-sensei.cloud/posts/{slug}/"
+        article_url = f"https://aws-sensei.cloud/de/posts/{slug}/" if lang == "de" else f"https://aws-sensei.cloud/posts/{slug}/"
 
-        linkedin_post = generate_linkedin_post(frontmatter, body, article_url)
+        linkedin_post = generate_linkedin_post(frontmatter, body, article_url, lang)
 
         post_id = hashlib.md5(slug.encode()).hexdigest()
         try:
@@ -94,7 +98,7 @@ def parse_frontmatter(content):
     return fm, match.group(2)
 
 
-def generate_linkedin_post(frontmatter, body, article_url):
+def generate_linkedin_post(frontmatter, body, article_url, lang="en"):
     title = frontmatter.get("title", "")
     description = frontmatter.get("description", "")
     tags = frontmatter.get("tags", [])
@@ -122,7 +126,7 @@ Tone: direct, technical, no hype. Write like you would in a Slack message to a s
 
 Rules: plain text only, no markdown, no asterisks, no bullet points, no headers. The output will be pasted into LinkedIn as-is.
 
-Return only the post text, nothing else."""
+Return only the post text, nothing else. Write the post in {"German" if lang == "de" else "English"}."""
 
     response = bedrock.invoke_model(
         modelId=BEDROCK_MODEL_ID,
