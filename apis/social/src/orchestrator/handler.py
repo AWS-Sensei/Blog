@@ -118,7 +118,7 @@ The post should read like a brief, natural update from an engineer. Pick ONE int
 
 1. A single sentence or question that hooks the reader based on that one aspect.
 2. Two or three sentences explaining what you built and why that aspect was interesting or tricky.
-3. End with "Link in the comments." on its own line.
+3. End with "{"Link in den Kommentaren." if lang == "de" else "Link in the comments."}" on its own line.
 
 End with 3-4 relevant hashtags on a new line.
 
