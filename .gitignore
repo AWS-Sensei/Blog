@@ -3,3 +3,6 @@
 /frontend/static/og/
 /frontend/node_modules/
 .claude
+__pycache__/
+*.pyc
+.pytest_cache/
