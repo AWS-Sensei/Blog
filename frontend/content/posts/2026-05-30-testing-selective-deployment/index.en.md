@@ -2,7 +2,7 @@
 title: "Deploy smarter, sleep better — unit tests and change detection for Lambda APIs"
 date: 2026-05-30T00:00:00+02:00
 lastmod: 2026-05-30T00:00:00+02:00
-draft: true
+draft: false
 author: "Marcel"
 socialmedia: false
 description: "How I added unit tests to all seven Lambda APIs and rebuilt the pipeline to only deploy services that actually changed — motivated by going public on LinkedIn."

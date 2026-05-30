@@ -2,7 +2,7 @@
 title: "Smarter deployen, sicher schlafen — Unit Tests und Change Detection für Lambda APIs"
 date: 2026-05-30T00:00:00+02:00
 lastmod: 2026-05-30T00:00:00+02:00
-draft: true
+draft: false
 author: "Marcel"
 socialmedia: false
 description: "Wie ich meine sieben Lambda-APIs mit Unit Tests abgesichert und die Pipeline so umgebaut habe, dass nur noch geänderte Services deployt werden — motiviert durch den Schritt in die Öffentlichkeit."
