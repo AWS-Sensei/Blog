@@ -16,6 +16,7 @@ TABLE_NAME = os.environ["TABLE_NAME"]
 FROM_EMAIL = os.environ["FROM_EMAIL"]
 TO_EMAIL = os.environ["TO_EMAIL"]
 APPROVE_URL = os.environ["APPROVE_URL"]
+RETRY_URL = os.environ["RETRY_URL"]
 BEDROCK_MODEL_ID = os.environ["BEDROCK_MODEL_ID"]
 
 
@@ -62,6 +63,8 @@ def lambda_handler(event, context):
                     "articleTitle": title,
                     "articleUrl": article_url,
                     "articleDescription": frontmatter.get("description", ""),
+                    "s3Bucket": bucket,
+                    "s3Key": key,
                     "createdAt": datetime.now(timezone.utc).isoformat(),
                 },
                 ConditionExpression="attribute_not_exists(postId)",
@@ -70,7 +73,7 @@ def lambda_handler(event, context):
             print(f"Duplicate SNS delivery for {key}, skipping")
             return
 
-        send_approval_email(post_id, title, linkedin_post)
+        send_approval_email(post_id, title, linkedin_post, slug)
         print(f"Created pending post {post_id} for {slug}")
 
 
@@ -141,8 +144,9 @@ Return only the post text, nothing else. Write the post in {"German" if lang == 
     return result["content"][0]["text"]
 
 
-def send_approval_email(post_id, title, content):
+def send_approval_email(post_id, title, content, slug):
     approve_link = f"{APPROVE_URL}?postId={post_id}"
+    retry_link = f"{RETRY_URL}?postId={post_id}"
     content_escaped = content.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
     ses.send_email(
@@ -161,11 +165,18 @@ def send_approval_email(post_id, title, content):
               white-space:pre-wrap;font-size:14px;line-height:1.6;">
 {content_escaped}
   </div>
-  <a href="{approve_link}"
-     style="display:inline-block;margin-top:24px;background:#0077b5;color:white;
-            padding:14px 28px;text-decoration:none;border-radius:6px;font-weight:bold;">
-    Approve &amp; Post to LinkedIn
-  </a>
+  <div style="margin-top:24px;display:flex;gap:12px;">
+    <a href="{approve_link}"
+       style="display:inline-block;background:#0077b5;color:white;
+              padding:14px 28px;text-decoration:none;border-radius:6px;font-weight:bold;">
+      Approve &amp; Post to LinkedIn
+    </a>
+    <a href="{retry_link}"
+       style="display:inline-block;background:#6b7280;color:white;
+              padding:14px 28px;text-decoration:none;border-radius:6px;font-weight:bold;">
+      Regenerate
+    </a>
+  </div>
 </body>
 </html>"""
                 }

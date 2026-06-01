@@ -71,6 +71,7 @@ Resources:
           FROM_EMAIL: noreply@aws-sensei.cloud
           TO_EMAIL: marcel.baltzer@hotmail.de
           APPROVE_URL: https://social.aws-sensei.cloud/approve
+          RETRY_URL: https://social.aws-sensei.cloud/retry
           BEDROCK_MODEL_ID: eu.anthropic.claude-haiku-4-5-20251001-v1:0
       Policies:
         - DynamoDBWritePolicy:
@@ -98,6 +99,40 @@ Resources:
           Type: SNS
           Properties:
             Topic: !Ref PostChangedTopicArn
+      Tags:
+        Project: aws-sensei
+        Service: blog
+        Component: api-social
+
+  # ─── Lambda: Retrier ─────────────────────────────────────────────────────────
+
+  RetrierFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: sensei-social-retrier
+      Handler: handler.lambda_handler
+      CodeUri: src/retrier/
+      Timeout: 15
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref SocialPostsTable
+          ORCHESTRATOR_FUNCTION_NAME: !Ref OrchestratorFunction
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref SocialPostsTable
+        - DynamoDBWritePolicy:
+            TableName: !Ref SocialPostsTable
+        - Statement:
+            - Effect: Allow
+              Action: lambda:InvokeFunction
+              Resource: !GetAtt OrchestratorFunction.Arn
+      Events:
+        RetryGet:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref ApproveApi
+            Path: /retry
+            Method: GET
       Tags:
         Project: aws-sensei
         Service: blog
