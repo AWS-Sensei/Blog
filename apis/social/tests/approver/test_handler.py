@@ -9,6 +9,7 @@ PENDING_ITEM = {
     "status": "pending",
     "content": "Post content here",
     "articleUrl": "https://aws-sensei.cloud/posts/my-article/",
+    "slug": "my-article",
 }
 
 SENT_ITEM = {
@@ -72,3 +73,30 @@ def test_happy_path_claims_post_calls_linkedin_and_marks_sent():
     assert post_url in result["body"]
     mock_post.assert_called_once_with("token123", "pid123", PENDING_ITEM["content"], PENDING_ITEM["articleUrl"])
     assert mock_ddb.Table.return_value.update_item.call_count == 2
+
+
+def test_post_comment_with_slug_includes_both_languages():
+    import json as _json
+    mock_ctx = MagicMock()
+    mock_ctx.__enter__ = lambda s: s
+    mock_ctx.__exit__ = MagicMock(return_value=False)
+    with patch.object(handler, "urlopen", return_value=mock_ctx) as mock_urlopen:
+        handler.post_comment("token", "pid", "urn:li:ugcPost:123", "https://aws-sensei.cloud/posts/my-slug/", "my-slug")
+
+    req = mock_urlopen.call_args[0][0]
+    body = _json.loads(req.data.decode("utf-8"))
+    assert "https://aws-sensei.cloud/de/posts/my-slug/" in body["message"]["text"]
+    assert "https://aws-sensei.cloud/posts/my-slug/" in body["message"]["text"]
+
+
+def test_post_comment_without_slug_uses_article_url():
+    import json as _json
+    mock_ctx = MagicMock()
+    mock_ctx.__enter__ = lambda s: s
+    mock_ctx.__exit__ = MagicMock(return_value=False)
+    with patch.object(handler, "urlopen", return_value=mock_ctx) as mock_urlopen:
+        handler.post_comment("token", "pid", "urn:li:ugcPost:123", "https://aws-sensei.cloud/posts/my-slug/")
+
+    req = mock_urlopen.call_args[0][0]
+    body = _json.loads(req.data.decode("utf-8"))
+    assert body["message"]["text"] == "https://aws-sensei.cloud/posts/my-slug/"

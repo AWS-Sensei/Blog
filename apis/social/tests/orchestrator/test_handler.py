@@ -95,7 +95,37 @@ def test_happy_path_creates_pending_post_and_sends_approval_email():
     assert item["status"] == "pending"
     assert item["slug"] == "my-slug"
     assert item["platform"] == "linkedin"
+    assert item["s3Bucket"] == "bucket"
+    assert item["s3Key"] == "_content/posts/my-slug/index.en.hash"
     mock_ses.send_email.assert_called_once()
+
+
+def test_approval_email_contains_approve_and_retry_links():
+    with patch.object(handler, "s3", make_s3_mock()), \
+         patch.object(handler, "bedrock", make_bedrock_mock()), \
+         patch.object(handler, "ses") as mock_ses, \
+         patch.object(handler, "dynamodb"):
+        handler.lambda_handler(
+            make_sns_event("bucket", "_content/posts/my-slug/index.en.hash"), {}
+        )
+
+    email_html = mock_ses.send_email.call_args[1]["Message"]["Body"]["Html"]["Data"]
+    assert "https://example.com/approve" in email_html
+    assert "https://example.com/retry" in email_html
+    assert "Regenerate" in email_html
+
+
+def test_german_post_uses_de_url():
+    with patch.object(handler, "s3", make_s3_mock()), \
+         patch.object(handler, "bedrock", make_bedrock_mock()), \
+         patch.object(handler, "ses"), \
+         patch.object(handler, "dynamodb") as mock_ddb:
+        handler.lambda_handler(
+            make_sns_event("bucket", "_content/posts/my-slug/index.de.hash"), {}
+        )
+
+    item = mock_ddb.Table.return_value.put_item.call_args[1]["Item"]
+    assert item["articleUrl"] == "https://aws-sensei.cloud/de/posts/my-slug/"
 
 
 def test_duplicate_sns_delivery_is_skipped():
