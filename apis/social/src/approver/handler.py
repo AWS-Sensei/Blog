@@ -175,7 +175,7 @@ def post_to_linkedin(access_token, person_id, content, article_url=None):
     print(f"LinkedIn x-restli-id: {post_urn!r}")
 
     if article_url and post_urn:
-        post_comment(access_token, person_id, post_urn, article_url)
+        post_comment(access_token, person_id, post_urn, article_url, item.get("slug"))
 
     if post_urn.startswith("urn:li:ugcPost:"):
         return f"https://www.linkedin.com/feed/update/urn:li:ugcPost:{post_urn.split(':')[-1]}/"
@@ -184,11 +184,16 @@ def post_to_linkedin(access_token, person_id, content, article_url=None):
     return "https://www.linkedin.com/"
 
 
-def post_comment(access_token, person_id, post_urn, article_url):
+def post_comment(access_token, person_id, post_urn, article_url, slug=None):
+    if slug:
+        comment_text = f"🇩🇪 DE: https://aws-sensei.cloud/de/posts/{slug}/\nEN: https://aws-sensei.cloud/posts/{slug}/"
+    else:
+        comment_text = article_url
+
     encoded_urn = quote(post_urn, safe="")
     payload = json.dumps({
         "actor": f"urn:li:person:{person_id}",
-        "message": {"text": article_url},
+        "message": {"text": comment_text},
     }).encode("utf-8")
 
     req = Request(
