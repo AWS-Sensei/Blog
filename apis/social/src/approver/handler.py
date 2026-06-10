@@ -47,7 +47,7 @@ def lambda_handler(event, context):
     access_token = secret["access_token"]
     person_id = secret["person_id"]
 
-    post_url = post_to_linkedin(access_token, person_id, item["content"], item.get("articleUrl"))
+    post_url = post_to_linkedin(access_token, person_id, item["content"], item.get("articleUrl"), item.get("slug"))
 
     table.update_item(
         Key={"postId": post_id},
@@ -129,7 +129,7 @@ def upload_image_to_linkedin(access_token, person_id, image_url):
     return asset_urn
 
 
-def post_to_linkedin(access_token, person_id, content, article_url=None):
+def post_to_linkedin(access_token, person_id, content, article_url=None, slug=None):
     asset_urn = None
     if article_url:
         og_image_url = fetch_og_image_url(article_url)
@@ -175,7 +175,7 @@ def post_to_linkedin(access_token, person_id, content, article_url=None):
     print(f"LinkedIn x-restli-id: {post_urn!r}")
 
     if article_url and post_urn:
-        post_comment(access_token, person_id, post_urn, article_url, item.get("slug"))
+        post_comment(access_token, person_id, post_urn, article_url, slug)
 
     if post_urn.startswith("urn:li:ugcPost:"):
         return f"https://www.linkedin.com/feed/update/urn:li:ugcPost:{post_urn.split(':')[-1]}/"

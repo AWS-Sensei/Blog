@@ -71,7 +71,7 @@ def test_happy_path_claims_post_calls_linkedin_and_marks_sent():
 
     assert result["statusCode"] == 200
     assert post_url in result["body"]
-    mock_post.assert_called_once_with("token123", "pid123", PENDING_ITEM["content"], PENDING_ITEM["articleUrl"])
+    mock_post.assert_called_once_with("token123", "pid123", PENDING_ITEM["content"], PENDING_ITEM["articleUrl"], PENDING_ITEM.get("slug"))
     assert mock_ddb.Table.return_value.update_item.call_count == 2
 
 
