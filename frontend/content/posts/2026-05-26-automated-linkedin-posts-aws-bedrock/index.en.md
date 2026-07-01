@@ -190,6 +190,7 @@ The click IS the publish. No scheduler needed, no optimal-time magic. The right 
 
 ## What's Next
 
+- ~~Token refresh before the 60-day expiry~~ → [done](/posts/2026-07-01-linkedin-oauth-reauth/)
 - Edit functionality in the approval email (in case the generated post needs tweaking)
 
 ---

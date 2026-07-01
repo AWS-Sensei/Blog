@@ -4,7 +4,7 @@ date: 2026-07-01T00:00:00+02:00
 lastmod: 2026-07-01T00:00:00+02:00
 draft: false
 author: "Marcel"
-socialmedia: false
+socialmedia: true
 description: "LinkedIn-Access-Tokens laufen nach 60 Tagen ab — und für Standard-Apps gibt es keinen Refresh Token. Hier ist die Lösung: ein One-Click Re-Auth-Flow mit AWS Lambda, API Gateway und EventBridge."
 images: []
 resources:
@@ -16,9 +16,9 @@ lightgallery: true
 
 {{< listen >}}
 
-Die automatisierte LinkedIn-Pipeline, die ich [vor ein paar Wochen gebaut habe](/de/posts/2026-05-26-automated-linkedin-posts-aws-bedrock/), funktionierte gut — bis sie nach 60 Tagen stillschweigend aufgehört hätte zu funktionieren. LinkedIn-Access-Tokens laufen ab. Und anders als bei den meisten OAuth-Anbietern gibt es für Standard-Apps keinen Refresh Token. Wenn der Token stirbt, gehen keine Posts mehr raus.
+Die automatisierte LinkedIn-Pipeline, die ich [vor ein paar Wochen gebaut habe](/de/posts/2026-05-26-automated-linkedin-posts-aws-bedrock/), funktionierte gut — bis sie nach 60 Tagen stillschweigend aufgehört hätte zu funktionieren. LinkedIn-Access-Tokens laufen ab. Und anders als bei den meisten OAuth-Anbietern gibt es für Standard-Apps keinen Refresh Token. Wenn der Token abläuft, gehen keine Posts mehr raus.
 
-Das hier ist der Write-up der Lösung: ein One-Click Re-Auth-Flow, der etwa 30 Sekunden dauert und vollständig auf AWS läuft.
+Das hier ist die Aufschlüsselung der Lösung: ein One-Click Re-Auth-Flow, der etwa 30 Sekunden dauert und vollständig auf AWS läuft.
 
 ## Warum es keinen Refresh Token gibt
 
@@ -169,10 +169,6 @@ Policies:
 5. **Fertig** — Erfolgsseite zeigt das neue Ablaufdatum
 
 Gesamtdauer: etwa 30 Sekunden. Das `expires_at` in Secrets Manager wird aktualisiert, die Pipeline läuft weitere 60 Tage, und der Zyklus wiederholt sich.
-
-## Was als Nächstes kommt
-
-- Bearbeitungsfunktion in der Approval-Mail — manchmal braucht der Bedrock-generierte Post eine kleine Anpassung vor dem Veröffentlichen
 
 ---
 

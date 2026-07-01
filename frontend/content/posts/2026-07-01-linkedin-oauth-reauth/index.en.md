@@ -16,9 +16,9 @@ lightgallery: true
 
 {{< listen >}}
 
-The automated LinkedIn pipeline I [built a few weeks ago](/posts/2026-05-26-automated-linkedin-posts-aws-bedrock/) worked well — until it would quietly stop working after 60 days. LinkedIn access tokens expire. And unlike most OAuth providers, LinkedIn does not issue refresh tokens to standard developer apps. When the token dies, posts stop.
+The automated LinkedIn pipeline I [built a few weeks ago](/posts/2026-05-26-automated-linkedin-posts-aws-bedrock/) worked well — until it would quietly stop working after 60 days. LinkedIn access tokens expire. And unlike most OAuth providers, LinkedIn does not issue refresh tokens to standard developer apps. When the token expires, posts stop.
 
-This is the write-up of the fix: a one-click re-authorization flow that takes about 30 seconds and runs entirely on AWS.
+This is the breakdown of the fix: a one-click re-authorization flow that takes about 30 seconds and runs entirely on AWS.
 
 ## Why There Is No Refresh Token
 
@@ -169,10 +169,6 @@ Policies:
 5. **Done** — success page shows new expiry date
 
 Total time: about 30 seconds. The `expires_at` in Secrets Manager is updated, the pipeline continues working for another 60 days, and the whole cycle repeats.
-
-## What's Next
-
-- Edit functionality in the approval email — sometimes the Bedrock-generated post needs a small tweak before publishing
 
 ---
 
