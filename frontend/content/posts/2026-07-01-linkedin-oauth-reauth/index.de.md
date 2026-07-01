@@ -4,7 +4,7 @@ date: 2026-07-01T00:00:00+02:00
 lastmod: 2026-07-01T00:00:00+02:00
 draft: false
 author: "Marcel"
-socialmedia: true
+socialmedia: false
 description: "LinkedIn-Access-Tokens laufen nach 60 Tagen ab — und für Standard-Apps gibt es keinen Refresh Token. Hier ist die Lösung: ein One-Click Re-Auth-Flow mit AWS Lambda, API Gateway und EventBridge."
 images: []
 resources:
