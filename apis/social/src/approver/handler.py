@@ -186,7 +186,7 @@ def post_to_linkedin(access_token, person_id, content, article_url=None, slug=No
 
 def post_comment(access_token, person_id, post_urn, article_url, slug=None):
     if slug:
-        comment_text = f"🇩🇪 DE: https://aws-sensei.cloud/de/posts/{slug}/\nEN: https://aws-sensei.cloud/posts/{slug}/"
+        comment_text = f"DE: https://aws-sensei.cloud/de/posts/{slug}/\nEN: https://aws-sensei.cloud/posts/{slug}/"
     else:
         comment_text = article_url
 
