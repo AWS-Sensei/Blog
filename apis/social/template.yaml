@@ -124,6 +124,9 @@ Resources:
             TableName: !Ref SocialPostsTable
         - Statement:
             - Effect: Allow
+              Action: dynamodb:DeleteItem
+              Resource: !GetAtt SocialPostsTable.Arn
+            - Effect: Allow
               Action: lambda:InvokeFunction
               Resource: !GetAtt OrchestratorFunction.Arn
       Events:
